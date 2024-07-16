@@ -1,8 +1,5 @@
 import React, { useState, useContext } from "react";
-import DarkModeSwitcher from "../../components/DarkModeSwitcher";
-import MainColorSwitcher from "../../components/MainColorSwitcher";
-import logoUrl from "../../assets/images/logo.svg";
-import illustrationUrl from "../../assets/images/illustration.svg";
+
 import { FormInput, FormCheck } from "../../base-components/Form";
 import Button from "../../base-components/Button";
 import lag from "../../assets/images/lag.jpg";
@@ -10,7 +7,6 @@ import lag from "../../assets/images/lag.jpg";
 import clsx from "clsx";
 
 import logo from "../../assets/images/logo.svg";
-import GoogleLogo from "../../assets/images/google.svg";
 import Notification from "../../base-components/Notification";
 import Lucide from "../../base-components/Lucide";
 import LoadingIcon from "../../base-components/LoadingIcon";
@@ -269,6 +265,32 @@ function Main() {
                   </div>
                 </form>
 
+                <Notification
+              id="success-notification-content"
+              className="flex hidden"
+            >
+              <Lucide icon="CheckCircle" className="text-success" />
+              <div className="ml-4 mr-4">
+                <div className="font-medium">Login successful!</div>
+                <div className="mt-1 text-slate-500">
+                  It's good to have you back again
+                </div>
+              </div>
+            </Notification>
+            {/* END: Success Notification Content */}
+            {/* BEGIN: Failed Notification Content */}
+            <Notification
+              id="failed-notification-content"
+              className="flex hidden"
+            >
+              <Lucide icon="XCircle" className="text-danger" />
+              <div className="ml-4 mr-4">
+                <div className="font-medium">Login failed!</div>
+                <div className="mt-1 text-slate-500">
+                  Please check the fileld form.
+                </div>
+              </div>
+            </Notification>
 
             </div>
           </div>
