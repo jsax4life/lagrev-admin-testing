@@ -34,7 +34,7 @@ function Tab({
             fullWidth && "flex-1",
             list.variant == "tabs" && "-mb-px",
           ])}
-          {...props}
+          // {...props}
         >
           <tabContext.Provider
             value={{
@@ -43,8 +43,9 @@ function Tab({
           >
             {typeof children === "function"
               ? children({
-                  selected: selected,
-                })
+                selected: selected,
+                disabled: false
+              })
               : children}
           </tabContext.Provider>
         </li>
@@ -69,7 +70,7 @@ Tab.Button = <C extends React.ElementType = "a">({
   return (
     <Component
       className={twMerge([
-        "cursor-pointer block appearance-none px-5 py-2.5 border border-transparent text-slate-700 dark:text-slate-400",
+        "cursor-pointer bg-slate-200 block appearance-none px-3 py-2.5 border border-transparent text-slate-700 dark:text-slate-400 ",
         tab.selected && "text-slate-800 dark:text-white",
 
         // Default
@@ -83,10 +84,10 @@ Tab.Button = <C extends React.ElementType = "a">({
           "hover:bg-slate-100 dark:hover:bg-darkmode-400 dark:hover:border-transparent",
 
         // Pills
-        list.variant == "pills" && "rounded-md border-0",
+        list.variant == "pills" && "rounded-full border-0 ",
         list.variant == "pills" &&
           tab.selected &&
-          "bg-primary text-white font-medium",
+          "bg-[#E7E7FF]  text-primary font-medium ",
 
         // Boxed tabs
         list.variant == "boxed-tabs" &&
@@ -174,7 +175,8 @@ Tab.Panel = ({
       {({ selected }) => (
         <Transition
           appear
-          as="div"
+        // as= 'div'
+          
           show={selected}
           enter="transition-opacity duration-300"
           enterFrom="opacity-0"
@@ -183,7 +185,7 @@ Tab.Panel = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
           className={className}
-          {...props}
+          // {...props}
         >
           <>
             {typeof children === "function"

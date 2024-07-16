@@ -42,8 +42,8 @@ function Main() {
 
   const schema = yup
     .object({
-      identifier: yup.string().required().min(5),
-      password: yup.string().required().min(6),
+      email: yup.string().required().min(4),
+      password: yup.string().required().min(4),
     })
     .required();
 
@@ -167,21 +167,21 @@ function Main() {
                   <div className="mt-8 intro-x">
                     <FormInput
                       type="text"
-                      placeholder="Email address/Phone Number/user name"
-                      {...register("identifier")}
+                      placeholder="Email address"
+                      {...register("email")}
                       id="validation-form-1"
-                      name="identifier"
+                      name="email"
                       className={`${clsx({
-                        "border-danger": errors.identifier,
+                        "border-danger": errors.email,
                       })} block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]`}
 
                       // className="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
                       // placeholder="Full Name"
                     />
-                    {errors.identifier && (
+                    {errors.email && (
                       <div className="mt-2 text-danger">
-                        {typeof errors.identifier.message === "string" &&
-                          errors.identifier.message}
+                        {typeof errors.email.message === "string" &&
+                          errors.email.message}
                       </div>
                     )}
                     <div className="relative">
@@ -239,7 +239,6 @@ function Main() {
                   </div>
                   <div className="mt-5 text-center intro-x xl:mt-8 xl:text-left">
                     <Button
-                      disabled={!isValid || !isDirty || isLoading}
                       variant="primary"
                       className="w-full px-4 py-3 align-top xl:mr-3"
                     >

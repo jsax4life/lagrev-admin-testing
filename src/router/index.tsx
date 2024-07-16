@@ -11,12 +11,12 @@ import Register from "../pages/Register";
 function Router() {
   const routes = [
     {
-      path: "/",
+      path: "/dashboard",
       element: <SideMenu />,
       children: [
      
         {
-          path: "point-of-sale",
+          path: "/dashboard",
           element: <PointOfSale />,
         },
        
@@ -33,7 +33,7 @@ function Router() {
   
        
         {
-          path: "point-of-sale",
+          path: "dashboard",
           element: <PointOfSale />,
         },
       
