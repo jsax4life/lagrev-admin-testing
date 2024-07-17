@@ -6,6 +6,7 @@ export const UserContext = createContext<MyContext>({});
 const userReducer = (state: any, action: { type: any; user: any; action: { data: any, firstLogin: any }, legible: any }) => {
     switch (action.type) {
         case 'STORE_USER_DATA': {
+            console.log('true')
             return action.user;
         }
 

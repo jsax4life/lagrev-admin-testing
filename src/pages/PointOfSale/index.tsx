@@ -93,13 +93,13 @@ function Main() {
       </div> */}
 
 
-      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y bg-gradient-to-r from-primary via-purple-700 to-primary  px-2 lg:px-[22px] py-8">
+      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y bg-gradient-to-r from-primary via-purple-700 to-primary  px-2 lg:px-[22px] py-8  lg:rounded-t-[1.3rem]">
 
       <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
                 
 
-      <div className="flex w-full  text-primary">
-            <div className="relative w-1/4 text-slate-500">
+      <div className="flex flex-col lg:flex-row w-full   gap-y-2 text-primary">
+            <div className="relative lg:w-1/4 w-full text-slate-500">
               <FormInput
                 type="text"
                 className=" pr-10 !box"
@@ -113,7 +113,7 @@ function Main() {
 
         
 
-            <FormSelect className="w-48 ml-2 xl:w-1/5 !box mr-2">
+            <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2">
               <option>All Parks</option>
               <option>Active</option>
               <option>Removed</option>
@@ -130,7 +130,7 @@ function Main() {
             </FormSelect>
 
 
-            <div className="relative mt-3  sm:mt-0  text-slate-500">
+            <div className="relative   sm:mt-0  text-slate-500">
                 <Lucide
                   icon="Calendar"
                   className="absolute inset-y-0 left-0 z-10 w-4 h-4 my-auto ml-3"

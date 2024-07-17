@@ -235,7 +235,7 @@ Super Admin        </div>
 
           {/* END: Side Menu */}
           {/* BEGIN: Content */}
-          <div className="px-4  md:px-0 max-w-full md:max-w-auto rounded-[1.3rem] flex-1 min-w-0 min-h-screen pb-10 shadow-sm bg-slate-100 dark:bg-darkmode-700 before:content-[''] before:w-full before:h-px before:block">
+          <div className="px-2  md:px-0 max-w-full md:max-w-auto rounded-[1.3rem] flex-1 min-w-0 min-h-screen pb-10 shadow-sm bg-slate-100 dark:bg-darkmode-700 before:content-[''] before:w-full before:h-px before:block">
             <Outlet />
           </div>
           {/* END: Content */}

@@ -78,6 +78,7 @@ function Main() {
   };
 
   function onLogin(userData: any) {
+    console.log(userData)
 
     setIsLoading(false);
     userDispatch({ type: "STORE_USER_DATA", user: userData });
@@ -96,6 +97,7 @@ function Main() {
       stopOnFocus: true,
     }).showToast();
     history("/dashboard");
+    console.log('logged in')
   }
 
   function onFail(error: any) {

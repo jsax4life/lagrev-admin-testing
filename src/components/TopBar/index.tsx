@@ -22,7 +22,7 @@ function Main() {
   return (
     <>
       {/* BEGIN: Top Bar */}
-      <div className="top-bar-boxed h-[70px] z-[51] text-primary relative border-b border-white/[0.08] mt-12 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 md:pt-0 mb-12 lg:mb-0">
+      <div className="top-bar-boxed h-[70px] z-[51] text-primary relative border-b border-white/[0.08]  md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 md:pt-0  lg:mb-0">
         <div className="flex items-center h-full">
           {/* BEGIN: Logo */}
           <Link to="/" className="hidden -intro-x md:flex mr-auto">
