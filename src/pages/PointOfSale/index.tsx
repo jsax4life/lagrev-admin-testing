@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import fakerData from "../../utils/faker";
 import Button from "../../base-components/Button";
 import {
@@ -11,6 +11,9 @@ import {
 import Lucide from "../../base-components/Lucide";
 import { Menu, Tab, Dialog } from "../../base-components/Headless";
 import Litepicker from "../../base-components/Litepicker";
+import { UserContext } from "../../stores/UserContext";
+import API from "../../utils/API";
+import DashboardCard from "./DashboardCard";
 
 
 const lagosLGAs = [
@@ -22,11 +25,56 @@ const lagosLGAs = [
 
 
 function Main() {
+  const { user } = useContext(UserContext);
+
   const [newOrderModal, setNewOrderModal] = useState(false);
   const [addItemModal, setAddItemModal] = useState(false);
   const createTicketRef = useRef(null);
   const addItemRef = useRef(null);
   const [dashboardFilter, setDashboardFilter] = useState<string>();
+  // const { lga } = user.user;
+
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+console.log(user);
+
+  useEffect(() => {
+    if (user?.token) {
+      fetchDashboardData();
+
+    }
+  }, [user?.token]);
+
+
+
+  const fetchDashboardData =  () => {
+    // setIsLoading(true);
+
+
+    setError("");
+    API(
+      "get",
+      `dashboard-analytics`,
+
+      {lga: 'Alimosho'},
+      // {},
+      function (dashboardData: any) {
+        console.log(dashboardData);
+        setDashboardData(dashboardData);
+        setLoading(false);
+
+      },
+      function (error: any) {
+        console.error("Error fetching recent searches:", error);
+        setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
+
+
 
   return (
     <div className="">
@@ -161,7 +209,7 @@ function Main() {
 
         {/* BEGIN: Item List */}
         <div className="col-span-12 intro-y lg:col-span-8">
-          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
+          {/* <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
             <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box ">
             <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
             <Lucide
@@ -172,7 +220,7 @@ function Main() {
             
           </div>
              <div>
-             <div className="text-base font-medium">5000</div>
+             <div className="text-base font-medium">{dashboardData?.daily_registered_vehicles}</div>
               <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
              </div>
             </div>
@@ -186,8 +234,8 @@ function Main() {
             
           </div>
              <div>
-             <div className="text-base font-medium">5000</div>
-              <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
+             <div className="text-base font-medium">{dashboardData?.daily_untagged_vehicles}</div>
+              <div className="text-slate-500 text-xs">Daily Untagged Vehicle</div>
              </div>
             </div>
             <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
@@ -200,8 +248,8 @@ function Main() {
             
           </div>
              <div>
-             <div className="text-base font-medium">5000</div>
-              <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
+             <div className="text-base font-medium">{dashboardData?.daily_tagged_vehicles}</div>
+              <div className="text-slate-500 text-xs">Daily Tagged Vehicle</div>
              </div>
             </div>
             <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
@@ -214,8 +262,8 @@ function Main() {
             
           </div>
              <div>
-             <div className="text-base font-medium">5000</div>
-              <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
+             <div className="text-base font-medium">{dashboardData?.total_registered_vehicles}</div>
+              <div className="text-slate-500 text-xs">Total Registered Vehicles</div>
              </div>
             </div>
             
@@ -229,8 +277,8 @@ function Main() {
             
           </div>
              <div>
-             <div className="text-base font-medium">5000</div>
-              <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
+             <div className="text-base font-medium">{dashboardData?.total_untagged_vehicles}</div>
+              <div className="text-slate-500 text-xs">Daily Untagged Vehicle</div>
              </div>
             </div>
 
@@ -244,41 +292,111 @@ function Main() {
             
           </div>
              <div>
-             <div className="text-base font-medium">5000</div>
-              <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
+             <div className="text-base font-medium">{dashboardData?.total_tagged_vehicles}</div>
+              <div className="text-slate-500 text-xs">Daily Tagged Vehicle</div>
              </div>
             </div> 
           
-          </div>
+          </div> */}
+
+
+
+<div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
+      <DashboardCard
+        count={dashboardData?.daily_registered_vehicles}
+        label="Daily Registered Vehicles"
+        bgColor="bg-orange-200"
+        iconFill="primary"
+        iconText= 'text-primary'
+      />
+      <DashboardCard
+        count={dashboardData?.daily_untagged_vehicles}
+        label="Daily Untagged Vehicles"
+        bgColor="bg-orange-200"
+        iconFill="orange"
+        iconText= 'text-orange-300'
+      />
+      <DashboardCard
+        count={dashboardData?.daily_tagged_vehicles}
+        label="Daily Tagged Vehicles"
+        bgColor="bg-pink-200"
+        iconFill="pink"
+        iconText='text-pink-600'
+      />
+      <DashboardCard
+        count={dashboardData?.total_registered_vehicles}
+        label="Total Registered Vehicles"
+        bgColor="bg-green-200"
+        iconFill="green"
+        iconText=''
+      />
+      <DashboardCard
+        count={dashboardData?.total_untagged_vehicles}
+        label="Total Untagged Vehicles"
+        bgColor="bg-slate-200"
+        iconFill="quinary"
+        iconText=''
+      />
+      <DashboardCard
+        count={dashboardData?.total_tagged_vehicles}
+        label="Total Tagged Vehicles"
+        bgColor="bg-blue-200"
+        iconFill="blue"
+        iconText=''
+      />
+    </div>
+
+
         </div>
 
         <div className="col-span-12 lg:col-span-4 ">
         <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
 
-          <div className="col-span-12 p-5 cursor-pointer 2xl:col-span-3 box zoom-in flex">
+          <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
 
 
 
 
 
-          <div className={`flex mr-4 rounded-xl  bg-orange-200 `}>
+          <div className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}>
+
             <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
+              icon='Banknote'
+              fill='green'
+              className={`  p-1 w-[40px] h-[38px]   text-green`}
             />
             
           </div>
 <div>
 
-<div className="text-base font-medium">5000</div>
-            <div className="text-slate-500">Daily registered Vehicle</div>
+<div className="text-base font-medium">0</div>
+            <div className="text-slate-500">Daily Registration Fee</div>
 </div>
           </div>
-          <div className="col-span-12 p-5 cursor-pointer  2xl:col-span-3 box zoom-in">
-            <div className="text-base font-medium">21000</div>
-            <div className="text-slate-500">5 Items</div>
-          </div>
+        
+
+          <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
+
+
+
+
+
+<div className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}>
+
+  <Lucide
+    icon='Banknote'
+    fill='green'
+    className={`  p-1 w-[38px] h-[38px]   text-green`}
+  />
+  
+</div>
+<div>
+
+<div className="text-base font-medium">5000</div>
+  <div className="text-slate-500">Daily Registration Fee</div>
+</div>
+</div>
+
           </div>
         </div>
 
