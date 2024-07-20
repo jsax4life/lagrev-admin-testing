@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { useState, useRef, useEffect, useContext } from "react";
-import fakerData from "../../utils/faker";
 import Button from "../../base-components/Button";
 import {
   FormInput,
@@ -14,7 +13,8 @@ import Litepicker from "../../base-components/Litepicker";
 import { UserContext } from "../../stores/UserContext";
 import API from "../../utils/API";
 import DashboardCard from "./DashboardCard";
-
+import Progress from "../../base-components/Progress";
+import { formatCurrency } from "../../utils/utils";
 
 const lagosLGAs = [
   "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -23,48 +23,72 @@ const lagosLGAs = [
   "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"
 ];
 
-
 function Main() {
   const { user } = useContext(UserContext);
 
-  const [newOrderModal, setNewOrderModal] = useState(false);
-  const [addItemModal, setAddItemModal] = useState(false);
-  const createTicketRef = useRef(null);
-  const addItemRef = useRef(null);
-  const [dashboardFilter, setDashboardFilter] = useState<string>();
-  // const { lga } = user.user;
-
+  const [dateRange, setDateRange] = useState<string>('');
+  const [selectedLGA, setSelectedLGA] = useState<string>('');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isInitialMount = useRef(true);
 
-console.log(user);
+if(dateRange){
+  console.log(dateRange);
 
+}
   useEffect(() => {
     if (user?.token) {
       fetchDashboardData();
+    }
+  }, [user?.token,]);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      // console.log('true')
+
+        setDateRange('')
+      return;
 
     }
-  }, [user?.token]);
+
+    
+      fetchDashboardData();
+    
+  }, [dateRange, selectedLGA]);
+
+  // useEffect(() => {
+  //   if (user?.token) {
+  //     fetchDashboardData();
+  //   }
+  // }, [user?.token]);
+
+  // useEffect(() => {
+  
+  //     fetchDashboardData();
+  // }, [  dateRange, selectedLGA ]);
 
 
-
-  const fetchDashboardData =  () => {
-    // setIsLoading(true);
-
+  const fetchDashboardData = () => {
+    const [startDate, endDate] = dateRange?.split(' - ') || [null, null];
 
     setError("");
+
+    const params: any = {};
+    if (selectedLGA) params.lga = selectedLGA;
+    if (startDate && endDate) {
+      params.start_date = startDate.trim();
+      params.end_date = endDate.trim();
+    }
+
     API(
       "get",
       `dashboard-analytics`,
-
-      {lga: 'Alimosho'},
-      // {},
+      params,
       function (dashboardData: any) {
-        console.log(dashboardData);
         setDashboardData(dashboardData);
         setLoading(false);
-
       },
       function (error: any) {
         console.error("Error fetching recent searches:", error);
@@ -74,83 +98,15 @@ console.log(user);
     );
   };
 
-
-
   return (
     <div className="">
-
-{/*    
-      <div className="flex col-span-12 items-center mt-8 intro-y sm:flex-row md:px-[22px] " >
-
-        <div className="flex w-full  text-primary">
-            <div className="relative w-1/4 text-slate-500">
-              <FormInput
-                type="text"
-                className=" pr-10 !box"
-                placeholder="Search database..."
-              />
-              <Lucide
-                icon="Search"
-                className="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3"
-              />
-            </div>
-
-        
-
-            <FormSelect className="w-48 ml-2 xl:w-1/5 !box mr-2">
-              <option>All Parks</option>
-              <option>Active</option>
-              <option>Removed</option>
-            </FormSelect>
-
-            <FormSelect className="w-48  xl:w-1/5 !box mr-4">
-              <option>All LGAs</option>
-              <option>Active</option>
-              <option>Removed</option>
-            </FormSelect>
-
-
-            <div className="relative mt-3 sm:ml-auto sm:mt-0  text-slate-500">
-                <Lucide
-                  icon="Calendar"
-                  className="absolute inset-y-0 left-0 z-10 w-4 h-4 my-auto ml-3"
-                />
-                <Litepicker
-                
-                  value={dashboardFilter}
-                  onChange={setDashboardFilter}
-                  options={{
-                    autoApply: false,
-                    singleMode: false,
-                    numberOfColumns: 2,
-                    numberOfMonths: 2,
-                    showWeekNumbers: true,
-                    dropdowns: {
-                      minYear: 1990,
-                      maxYear: null,
-                      months: true,
-                      years: true,
-                    },
-                  }}
-                  className="pl-10 sm:w-56 !box text-slate-500"
-                />
-              </div>
-
-          </div>
-
-      </div> */}
-
-
       <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y bg-gradient-to-r from-primary via-purple-700 to-primary  px-2 lg:px-[22px] py-8  lg:rounded-t-[1.3rem]">
-
-      <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
-                
-
-      <div className="flex flex-col lg:flex-row w-full   gap-y-2 text-primary">
+        <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
+          <div className="flex flex-col lg:flex-row w-full gap-y-2 text-primary">
             <div className="relative lg:w-1/4 w-full text-slate-500">
               <FormInput
                 type="text"
-                className=" pr-10 !box"
+                className="pr-10 !box"
                 placeholder="Search database..."
               />
               <Lucide
@@ -158,8 +114,6 @@ console.log(user);
                 className="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3"
               />
             </div>
-
-        
 
             <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2">
               <option>All Parks</option>
@@ -167,414 +121,207 @@ console.log(user);
               <option>Removed</option>
             </FormSelect>
 
-            <FormSelect className="w-48  xl:w-1/5 !box mr-4">
-             
-
-
+            <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2" onChange={(e) => setSelectedLGA(e.target.value)}>
               <option value="" disabled>--All LGA--</option>
-        {lagosLGAs.map((lga, index) => (
-          <option key={index} value={lga}>{lga}</option>
-        ))}
+              {lagosLGAs.map((lga, index) => (
+                <option key={index} value={lga}>{lga}</option>
+              ))}
             </FormSelect>
 
+            <div className="relative sm:mt-0 text-slate-500">
+              <Lucide
+                icon="Calendar"
+                className="absolute inset-y-0 left-0 z-10 w-4 h-4 my-auto ml-3"
+              />
+              <Litepicker
+              placeholder="Select a date range"
+                // value={dateRange}
+                onChange={setDateRange}
+                options={{
+                  
+                  startDate: '',
+                  autoApply: false,
+                  singleMode: false,
+                  numberOfColumns: 2,
+                  numberOfMonths: 2,
+                  showWeekNumbers: true,
+                  dropdowns: {
+                    minYear: 2023,
+                    maxYear: null,
+                    months: true,
+                    years: true,
+                  },
+                }}
+                className="pl-10 sm:w-56 !box text-slate-500"
+              />
+            </div>
+          </div>
+        </div>
 
-            <div className="relative   sm:mt-0  text-slate-500">
+        <div className="col-span-12 intro-y lg:col-span-8">
+          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
+            <DashboardCard
+              count={dashboardData?.daily_registered_vehicles}
+              label="Daily Registered Vehicles"
+              bgColor="bg-orange-200"
+              iconFill="primary"
+              iconText='text-primary'
+            />
+            <DashboardCard
+              count={dashboardData?.daily_untagged_vehicles}
+              label="Daily Untagged Vehicles"
+              bgColor="bg-orange-200"
+              iconFill="orange"
+              iconText='text-orange-300'
+            />
+            <DashboardCard
+              count={dashboardData?.daily_tagged_vehicles}
+              label="Daily Tagged Vehicles"
+              bgColor="bg-pink-200"
+              iconFill="pink"
+              iconText='text-pink-600'
+            />
+            <DashboardCard
+              count={dashboardData?.total_registered_vehicles}
+              label="Total Registered Vehicles"
+              bgColor="bg-green-200"
+              iconFill="green"
+              iconText=''
+            />
+            <DashboardCard
+              count={dashboardData?.total_untagged_vehicles}
+              label="Total Untagged Vehicles"
+              bgColor="bg-slate-200"
+              iconFill="quinary"
+              iconText=''
+            />
+            <DashboardCard
+              count={dashboardData?.total_tagged_vehicles}
+              label="Total Tagged Vehicles"
+              bgColor="bg-blue-200"
+              iconFill="blue"
+              iconText=''
+            />
+          </div>
+        </div>
+
+        <div className="col-span-12 lg:col-span-4">
+          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
+            <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
+              <div className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}>
                 <Lucide
-                  icon="Calendar"
-                  className="absolute inset-y-0 left-0 z-10 w-4 h-4 my-auto ml-3"
-                />
-                <Litepicker
-                
-                  value={dashboardFilter}
-                  onChange={setDashboardFilter}
-                  options={{
-                    autoApply: false,
-                    singleMode: false,
-                    numberOfColumns: 2,
-                    numberOfMonths: 2,
-                    showWeekNumbers: true,
-                    dropdowns: {
-                      minYear: 1990,
-                      maxYear: null,
-                      months: true,
-                      years: true,
-                    },
-                  }}
-                  className="pl-10 sm:w-56 !box text-slate-500"
+                  icon='Banknote'
+                  fill='green'
+                  className={`p-1 w-[40px] h-[38px] text-green`}
                 />
               </div>
-
-          </div>
-      </div>
-
-        {/* BEGIN: Item List */}
-        <div className="col-span-12 intro-y lg:col-span-8">
-          {/* <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-            <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box ">
-            <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
-            <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
-            />
-            
-          </div>
-             <div>
-             <div className="text-base font-medium">{dashboardData?.daily_registered_vehicles}</div>
-              <div className="text-slate-500 text-xs">Daily registered Vehicle</div>
-             </div>
-            </div>
-            <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
-            <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
-            />
-            
-          </div>
-             <div>
-             <div className="text-base font-medium">{dashboardData?.daily_untagged_vehicles}</div>
-              <div className="text-slate-500 text-xs">Daily Untagged Vehicle</div>
-             </div>
-            </div>
-            <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
-            <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
-            />
-            
-          </div>
-             <div>
-             <div className="text-base font-medium">{dashboardData?.daily_tagged_vehicles}</div>
-              <div className="text-slate-500 text-xs">Daily Tagged Vehicle</div>
-             </div>
-            </div>
-            <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
-            <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
-            />
-            
-          </div>
-             <div>
-             <div className="text-base font-medium">{dashboardData?.total_registered_vehicles}</div>
-              <div className="text-slate-500 text-xs">Total Registered Vehicles</div>
-             </div>
-            </div>
-            
-            <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
-            <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
-            />
-            
-          </div>
-             <div>
-             <div className="text-base font-medium">{dashboardData?.total_untagged_vehicles}</div>
-              <div className="text-slate-500 text-xs">Daily Untagged Vehicle</div>
-             </div>
+              <div>
+                <div className="text-base font-medium ">N{ formatCurrency (dashboardData?.daily_registered_vehicles * 4500)}</div>
+                <div className="text-slate-500 text-xs">Daily Registration Fee</div>
+              </div>
             </div>
 
-            <div className="col-span-12 p-5 flex  cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className={`flex mr-4 items-center justify-center rounded-md  bg-orange-200  w-10 h-10`}>
-            <Lucide
-              icon='User'
-              fill='primary'
-              className={`  p-1 w-[32px] h-[32px]   text-black`}
-            />
-            
-          </div>
-             <div>
-             <div className="text-base font-medium">{dashboardData?.total_tagged_vehicles}</div>
-              <div className="text-slate-500 text-xs">Daily Tagged Vehicle</div>
-             </div>
-            </div> 
-          
-          </div> */}
-
-
-
-<div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-      <DashboardCard
-        count={dashboardData?.daily_registered_vehicles}
-        label="Daily Registered Vehicles"
-        bgColor="bg-orange-200"
-        iconFill="primary"
-        iconText= 'text-primary'
-      />
-      <DashboardCard
-        count={dashboardData?.daily_untagged_vehicles}
-        label="Daily Untagged Vehicles"
-        bgColor="bg-orange-200"
-        iconFill="orange"
-        iconText= 'text-orange-300'
-      />
-      <DashboardCard
-        count={dashboardData?.daily_tagged_vehicles}
-        label="Daily Tagged Vehicles"
-        bgColor="bg-pink-200"
-        iconFill="pink"
-        iconText='text-pink-600'
-      />
-      <DashboardCard
-        count={dashboardData?.total_registered_vehicles}
-        label="Total Registered Vehicles"
-        bgColor="bg-green-200"
-        iconFill="green"
-        iconText=''
-      />
-      <DashboardCard
-        count={dashboardData?.total_untagged_vehicles}
-        label="Total Untagged Vehicles"
-        bgColor="bg-slate-200"
-        iconFill="quinary"
-        iconText=''
-      />
-      <DashboardCard
-        count={dashboardData?.total_tagged_vehicles}
-        label="Total Tagged Vehicles"
-        bgColor="bg-blue-200"
-        iconFill="blue"
-        iconText=''
-      />
-    </div>
-
-
-        </div>
-
-        <div className="col-span-12 lg:col-span-4 ">
-        <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-
-          <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
-
-
-
-
-
-          <div className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}>
-
-            <Lucide
-              icon='Banknote'
-              fill='green'
-              className={`  p-1 w-[40px] h-[38px]   text-green`}
-            />
-            
-          </div>
-<div>
-
-<div className="text-base font-medium">0</div>
-            <div className="text-slate-500">Daily Registration Fee</div>
-</div>
-          </div>
-        
-
-          <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
-
-
-
-
-
-<div className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}>
-
-  <Lucide
-    icon='Banknote'
-    fill='green'
-    className={`  p-1 w-[38px] h-[38px]   text-green`}
-  />
-  
-</div>
-<div>
-
-<div className="text-base font-medium">5000</div>
-  <div className="text-slate-500">Daily Registration Fee</div>
-</div>
-</div>
-
+            <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
+              <div className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}>
+                <Lucide
+                  icon='Banknote'
+                  fill='green'
+                  className={`p-1 w-[38px] h-[38px] text-green`}
+                />
+              </div>
+              <div>
+                <div className="text-base font-medium">N{formatCurrency(dashboardData?.total_registered_vehicles * 4500)}</div>
+                <div className="text-slate-500 text-xs">Total Registration Fee</div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* END: Ticket */}
       </div>
 
-      <div className="grid grid-cols-12 gap-5 mt-5 intro-y">
-        {/* BEGIN: Item List */}
+      <div className="grid grid-cols-12 gap-5 mt-5 intro-y px-5">
         <div className="col-span-12 intro-y lg:col-span-8">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
             <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
               <div className="text-base font-medium">Soup</div>
               <div className="text-slate-500">5 Items</div>
             </div>
-            <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box bg-primary zoom-in">
-              <div className="text-base font-medium text-white">
-                List of Activities
-              </div>
-              <div className="text-white text-opacity-80 dark:text-slate-500">
-                8 Items
-              </div>
+            <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
+              <div className="text-base font-medium">Soup</div>
+              <div className="text-slate-500">5 Items</div>
             </div>
-       
+            <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
+              <div className="text-base font-medium">Soup</div>
+              <div className="text-slate-500">5 Items</div>
+            </div>
+            <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
+              <div className="text-base font-medium">Soup</div>
+              <div className="text-slate-500">5 Items</div>
+            </div>
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-4 gap-5">
-          <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className="text-base font-medium">Soup</div>
-            <div className="text-slate-500">5 Items</div>
-          </div>
-          <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-            <div className="text-base font-medium">Soup</div>
-            <div className="text-slate-500">5 Items</div>
-          </div>
-         
-        </div>
+        <div className="col-span-12 lg:col-span-4">
+          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
+            <div className="col-span-12 p-4 cursor-pointer  box zoom-in">
 
-        {/* END: Ticket */}
+
+            <div className="">
+                        
+                          <div className="mr-auto text-xs">Project Target</div>
+                         
+                        <div className="flex mt-4">
+                          <div className="mr-auto text-xl font-bold text-purple-500">30,000 <span className="text-slate-700 font-normal text-sm">(50%)</span></div>
+                          <div className="text-xl font-bold">60,000</div>
+                        </div>
+                        <Progress className="h-1 mt-2">
+                          <Progress.Bar
+                            className="w-3/4 bg-primary"
+                            role="progressbar"
+                            aria-valuenow={0}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                          ></Progress.Bar>
+                        </Progress>
+                      </div>
+
+            </div>
+            <div className="col-span-12 p-4 cursor-pointer  box zoom-in">
+
+            <div className="text-base font-medium">Top Performing LGA</div>
+              <div className="text-slate-500">Total vehicles successfully registered on Lagrev</div>
+            <div className="box mt-4">
+                        
+                        <div className="mr-auto text-xs">Ikeja LGA</div>
+                       
+                      <div className="flex mt-2">
+                        <div className="mr-auto text-xl font-bold text-purple-500"> 15,000</div>
+                        <div className="text-xs">55%</div>
+                      </div>
+                      <Progress className="h-1 mt-2">
+                        <Progress.Bar
+                          className="w-3/4 bg-primary"
+                          role="progressbar"
+                          aria-valuenow={0}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                        ></Progress.Bar>
+                      </Progress>
+                    </div>
+
+              
+            </div>
+            {/* <div className="col-span-12 p-4 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
+              <div className="text-base font-medium">Soup</div>
+              <div className="text-slate-500">5 Items</div>
+            </div>
+            <div className="col-span-12 p-4 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
+              <div className="text-base font-medium">Soup</div>
+              <div className="text-slate-500">5 Items</div>
+            </div> */}
+          </div>
+        </div>
       </div>
-      {/* BEGIN: New Order Modal */}
-      <Dialog
-        open={newOrderModal}
-        onClose={() => {
-          setNewOrderModal(false);
-        }}
-        initialFocus={createTicketRef}
-      >
-        <Dialog.Panel>
-          <Dialog.Title>
-            <h2 className="mr-auto text-base font-medium">New Order</h2>
-          </Dialog.Title>
-          <Dialog.Description className="grid grid-cols-12 gap-4 gap-y-3">
-            <div className="col-span-12">
-              <FormLabel htmlFor="pos-form-1">Name</FormLabel>
-              <FormInput
-                id="pos-form-1"
-                type="text"
-                className="flex-1"
-                placeholder="Customer name"
-              />
-            </div>
-            <div className="col-span-12">
-              <FormLabel htmlFor="pos-form-2">Table</FormLabel>
-              <FormInput
-                id="pos-form-2"
-                type="text"
-                className="flex-1"
-                placeholder="Customer table"
-              />
-            </div>
-            <div className="col-span-12">
-              <FormLabel htmlFor="pos-form-3">Number of People</FormLabel>
-              <FormInput
-                id="pos-form-3"
-                type="text"
-                className="flex-1"
-                placeholder="People"
-              />
-            </div>
-          </Dialog.Description>
-          <Dialog.Footer className="text-right">
-            <Button
-              variant="outline-secondary"
-              type="button"
-              onClick={() => {
-                setNewOrderModal(false);
-              }}
-              className="w-32 mr-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              type="button"
-              className="w-32"
-              ref={createTicketRef}
-            >
-              Create Ticket
-            </Button>
-          </Dialog.Footer>
-        </Dialog.Panel>
-      </Dialog>
-      {/* END: New Order Modal */}
-      {/* BEGIN: Add Item Modal */}
-      <Dialog
-        open={addItemModal}
-        onClose={() => {
-          setAddItemModal(false);
-        }}
-        initialFocus={addItemRef}
-      >
-        <Dialog.Panel>
-          <Dialog.Title>
-            <h2 className="mr-auto text-base font-medium">
-              {fakerData[0].foods[0].name}
-            </h2>
-          </Dialog.Title>
-          <Dialog.Description className="grid grid-cols-12 gap-4 gap-y-3">
-            <div className="col-span-12">
-              <FormLabel htmlFor="pos-form-4" className="form-label">
-                Quantity
-              </FormLabel>
-              <div className="flex flex-1">
-                <Button
-                  type="button"
-                  className="w-12 mr-1 border-slate-200 bg-slate-100 dark:bg-darkmode-700 dark:border-darkmode-500 text-slate-500"
-                >
-                  -
-                </Button>
-                <FormInput
-                  id="pos-form-4"
-                  type="text"
-                  className="w-24 text-center"
-                  placeholder="Item quantity"
-                  value="2"
-                  onChange={() => {}}
-                />
-                <Button
-                  type="button"
-                  className="w-12 ml-1 border-slate-200 bg-slate-100 dark:bg-darkmode-700 dark:border-darkmode-500 text-slate-500"
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-            <div className="col-span-12">
-              <FormLabel htmlFor="pos-form-5">Notes</FormLabel>
-              <FormTextarea
-                id="pos-form-5"
-                placeholder="Item notes"
-              ></FormTextarea>
-            </div>
-          </Dialog.Description>
-          <Dialog.Footer className="text-right">
-            <Button
-              variant="outline-secondary"
-              type="button"
-              onClick={() => {
-                setAddItemModal(false);
-              }}
-              className="w-24 mr-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              type="button"
-              className="w-24"
-              ref={addItemRef}
-            >
-              Add Item
-            </Button>
-          </Dialog.Footer>
-        </Dialog.Panel>
-      </Dialog>
-      {/* END: Add Item Modal */}
-      </div>
+    </div>
   );
 }
 

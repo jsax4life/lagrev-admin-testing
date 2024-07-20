@@ -52,7 +52,7 @@ function Main() {
           ])}
         >
           {/* BEGIN: Side Menu */}
-          <nav className="hidden  md:block text-primary w-[105px] xl:w-[220px] px-5 lg:px-0 pt-8 pb-16 overflow-x-hidden">
+          <nav className="hidden  md:block text-primary w-[105px] xl:w-[220px] px-5 lg:px-0 mx-2 pb-16 overflow-x-hidden">
             <ul>
               {/* BEGIN: First Child */}
               {formattedMenu.map((menu, menuKey) =>
@@ -270,11 +270,11 @@ function Menu(props: {
             !props.menu.active && props.level != "first",
           "bg-primary dark:bg-transparent":
             props.menu.active && props.level == "first",
-          "before:content-[''] before:block before:inset-0 before:bg-white/[0.08] before:rounded-lg before:absolute before:border-b-[3px] before:border-solid before:border-black/10 before:dark:border-black/10 before:dark:bg-darkmode-700":
+          "before:content-[''] before:block before:inset-0 before:bg-primary	 before:rounded-lg before:absolute before:border-b-[3px] before:border-solid before:border-black/10 before:dark:border-black/10 before:dark:bg-darkmode-700 text-secondary":
             props.menu.active && props.level == "first",
           "after:content-[''] after:w-[20px] after:h-[80px] after:mr-[-27px] after:bg-no-repeat after:bg-cover after:absolute after:top-0 after:bottom-0 after:right-0 after:my-auto after:bg-menu-active dark:after:bg-menu-active-dark":
             props.menu.active && props.level == "first",
-          "hover:bg-primary/60 hover:dark:bg-transparent hover:before:block hover:before:inset-0 hover:before:bg-white/[0.04] hover:before:rounded-lg hover:before:absolute hover:before:z-[-1] hover:before:dark:bg-darkmode-700":
+          "hover:bg-primary/20 hover:dark:bg-transparent hover:before:block hover:before:inset-0 hover:before:bg-white/[0.04] hover:before:rounded-lg hover:before:absolute hover:before:z-[-1] hover:before:dark:bg-darkmode-700":
             !props.menu.active &&
             !props.menu.activeDropdown &&
             props.level == "first",

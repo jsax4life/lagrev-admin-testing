@@ -19,13 +19,16 @@ const initialState: SideMenuState = {
   menu: [
     {
       icon: "Home",
+      pathname: "/dashboard",
       title: "Dashboard",
+
     
     },
     {
       icon: "Map",
       title: "Vehicles",
-     
+      pathname: "/vehicle",
+
     },
  
     "divider",

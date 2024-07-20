@@ -6,12 +6,12 @@ import TopMenu from "../layouts/TopMenu";
 import PointOfSale from "../pages/PointOfSale";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-
+import Vehicle from "../pages/Vehicles"
 
 function Router() {
   const routes = [
     {
-      path: "/dashboard",
+      path: "/",
       element: <SideMenu />,
       children: [
      
@@ -20,6 +20,10 @@ function Router() {
           element: <PointOfSale />,
         },
        
+        {
+          path: "/vehicle",
+          element: <Vehicle />,
+        },
       
       
       
