@@ -42,6 +42,8 @@ export default function Main() {
     const deleteButtonRef = useRef(null);
     const [dateRange, setDateRange] = useState<string>('');
     const [selectedLGA, setSelectedLGA] = useState<string>('');
+    const [kpiData, setKpiData] = useState(null);
+
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -71,8 +73,7 @@ useEffect(() => {
         }
       }, [user?.token ]);
     
-   
-    
+
     
       const fetchDashboardData = () => {
         const [startDate, endDate] = dateRange?.split(' - ') || [null, null];
@@ -103,6 +104,8 @@ useEffect(() => {
         );
       };
     
+
+     
 
 
   
