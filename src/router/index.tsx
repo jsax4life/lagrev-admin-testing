@@ -7,6 +7,7 @@ import PointOfSale from "../pages/PointOfSale";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Vehicle from "../pages/Vehicles"
+import ProfileDetails from "../pages/Vehicles/VehicleDetails";
 
 function Router() {
   const routes = [
@@ -25,6 +26,8 @@ function Router() {
           element: <Vehicle />,
         },
       
+        { path: "/profile/:id", element: <ProfileDetails />},
+
       
       
       ],

@@ -1,0 +1,536 @@
+/* This example requires Tailwind CSS v2.0+ */
+import { Fragment, JSXElementConstructor, ReactElement, ReactNode, useContext, useEffect } from "react";
+
+// import { Disclosure, Menu, Transition } from '@headlessui/react'
+// import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+
+import _ from "lodash";
+import clsx from "clsx";
+import { useState, useRef } from "react";
+import fakerData from "../../utils/faker";
+
+import { Dialog, Menu, Tab } from "../../base-components/Headless";
+
+import { UserContext } from "../../stores/UserContext";
+import API from "../../utils/API";
+import Tippy from "../../base-components/Tippy";
+import { useParams } from "react-router-dom";
+
+const tagStyle = [
+  "bg-orange-100 text-orange-600",
+  "bg-green-100 text-green-600",
+];
+
+const activity = [
+    {
+      id: 1,
+      type: 'assignment',
+      person: { name: 'Eduardo Benz', href: '#' },
+      // imageUrl:
+      //   'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
+      comment:
+        'Lorem ipsum dolor sit amet, ',
+      date: '6d ago',
+    },
+    {
+      id: 2,
+      type: 'assignment',
+      person: { name: 'Hilary Mahy', href: '#' },
+      assigned: { name: 'Kristin Watson', href: '#' },
+      date: '2d ago',
+    },
+    {
+      id: 3,
+      type: 'tags',
+      person: { name: 'Hilary Mahy', href: '#' },
+      tags: [
+        { name: 'Bug', href: '#', color: 'bg-rose-500' },
+        { name: 'Accessibility', href: '#', color: 'bg-indigo-500' },
+      ],
+      date: '6h ago',
+    },
+    {
+      id: 4,
+      type: 'assignment',
+      person: { name: 'Jason Meyers', href: '#' },
+      // imageUrl:
+      //   'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
+      comment:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
+      date: '2h ago',
+    },
+  ]
+
+export default function ProfileDetails() {
+  const { user } = useContext(UserContext);
+
+  const { id } = useParams<{ id: string }>();
+  const [vehicleDetails, setVehicleDetails] = useState<any>(null);
+
+  const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
+  const deleteButtonRef = useRef(null);
+  const [dateRange, setDateRange] = useState<string>("");
+  const [selectedLGA, setSelectedLGA] = useState<string>("");
+  const [kpiData, setKpiData] = useState(null);
+
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const isInitialMount = useRef(true);
+
+  const vehicle = {
+    tagged: 1,
+  };
+
+  console.log(vehicleDetails);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      // console.log('true')
+
+      setDateRange("");
+      return;
+    }
+
+    fetchDashboardData();
+  }, [dateRange, selectedLGA]);
+
+  useEffect(() => {
+    if (user?.token) {
+      fetchDashboardData();
+    }
+  }, [user?.token]);
+
+  const { rider, owner } = vehicleDetails ?? {};
+
+  const isNull = 'Unavailable';
+
+  const fetchDashboardData = () => {
+
+    setError("");
+
+
+    API(
+      "get",
+
+      `vehicle-details/${id}`, // Make sure your backend API endpoint is correct
+      {},
+
+      // {lga: 'Alimosho'},
+      function (vehicleData: any) {
+        setVehicleDetails(vehicleData);
+        setLoading(false);
+      },
+      function (error: any) {
+        console.error("Error fetching recent searches:", error);
+        setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
+
+
+
+  
+  function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(' ')
+  }
+
+  return (
+    <>
+      <div className="min-h-full">
+        <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
+          <header className="py-5"></header>
+        </div>
+
+        <main className="-mt-32">
+          <div className="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
+            {/* Replace with your content */}
+
+            <div className="bg-white rounded-lg shadow px-2 py-6 sm:px-6">
+              {/* content */}
+
+              <Tab.Group>
+                {/* BEGIN: Profile Info */}
+                <div className=" pt-5  intro-y box">
+                  <div className="flex flex-col pb-5 -mx-5 border-b lg:flex-row border-slate-200/60 dark:border-darkmode-400">
+                    <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
+                      <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
+                        <img
+                          alt="Profile pix"
+                          className="rounded-lg"
+                          src={rider?.profile_picture_url}
+                        />
+                      </div>
+                      <div className="ml-5">
+                        <div
+                          className={`w-1/2 text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
+                            tagStyle[vehicleDetails?.tagged]
+                          }`}
+                        >
+                          {vehicleDetails?.tagged ? "tagged" : "Registered"}
+                        </div>
+                        <div className="w-24 text-lg font-medium truncate sm:w-40 sm:whitespace-normal">
+                          {rider?.first_name} {rider?.last_name}
+                        </div>
+                        <div className="text-slate-500">
+                          <span className="font-semibold text-md">
+                            {" "}
+                            Phone Number:
+                          </span>{" "}
+                          <span>{rider?.phone}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <Tab.List
+                    variant="link-tabs"
+                    className="flex-col justify-center text-center sm:flex-row lg:justify-start"
+                  >
+                    <Tab fullWidth={false}>
+                      <Tab.Button className="flex items-center cursor-pointer">
+                        {/* <Lucide icon="User" className="w-4 h-4 mr-2" />  */}
+                        Driver Overview
+                      </Tab.Button>
+                    </Tab>
+                    <Tab fullWidth={false}>
+                      <Tab.Button className="flex items-center  cursor-pointer">
+                        {/* <Lucide icon="Shield" className="w-4 h-4 mr-2" /> */}
+                        Vehicle Details
+                      </Tab.Button>
+                    </Tab>
+                    <Tab fullWidth={false}>
+                      <Tab.Button className="flex items-center  cursor-pointer">
+                        {/* <Lucide icon="Lock" className="w-4 h-4 mr-2" />  */}
+                        Vehicle Activity
+                      </Tab.Button>
+                    </Tab>
+                  </Tab.List>
+                </div>
+                {/* END: Profile Info */}
+                <Tab.Panels className="mt-5">
+                  <Tab.Panel>
+                    <div className="grid grid-cols-12 gap-6 text-slate-600">
+                      {/* BEGIN: Rider Details */}
+                      <div className="col-span-12 intro-y box ">
+                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
+                          <div className=" items-center mb-5 ">
+                            <div className="font-semibold ">Nin</div>
+                            <div className="font-semibold ">Age:</div>
+                            <div className="font-semibold ">Gender:</div>
+                            <div className="font-semibold ">LGA</div>
+                            <div className="font-semibold ">
+                              Park/Zone
+                            </div>
+                            <div className="font-semibold ">
+                              Home Address
+                            </div>
+                          </div>
+                          <div className=" items-center mb-5 ">
+                            <div className="ml-auto">**************</div>
+
+                            <div className="ml-auto">{rider?.age}</div>
+                            <div className="ml-auto">
+                              {rider?.gender === "f" ? "Female" : "Male"}
+                            </div>
+
+                            <div className="ml-auto">{rider?.lga}</div>
+                            <div className="ml-auto">{rider?.parkzone}</div>
+                            <div className="ml-auto">{rider?.home_address}</div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* END: Rider Details */}
+
+                      {/* BEGIN: Next of Kin  */}
+                      <div className="col-span-12 intro-y box text-md ">
+                        <div className="flex items-center py-4">
+                          <h3 className="intro-y box  font-semibold mr-4 text-sm text-primary">
+                            NEXT OF KIN DETAILS
+                          </h3>
+                          <hr className="flex-grow border-t border-slate-200/" />
+                        </div>
+                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
+                          <div className=" items-center mb-5 ">
+                            <div className="font-semibold ">First Name:</div>
+                            <div className="font-semibold ">Last Name:</div>
+                            <div className="font-semibold ">Relationship:</div>
+                            <div className="font-semibold ">Phone Number:</div>
+
+                            <div className="font-semibold ">Home Address</div>
+                          </div>
+                          <div className=" items-center mb-5 ">
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.first_name}
+                            </div>
+
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.last_name}
+                            </div>
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.relationship}
+                            </div>
+
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.phone}
+                            </div>
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.home_address}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* END: Next of Kin  */}
+
+                      {/* BEGIN: Ownser's  */}
+
+                      <div className="col-span-12 intro-y box text-base ">
+                        <div className="flex items-center py-4">
+                          <h3 className="ntro-y box  font-semibold mr-4 text-sm text-primary">
+                            OWNER's DETAILS
+                          </h3>
+                          <hr className="flex-grow border-t border-slate-200/" />
+                        </div>
+                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
+                          <div className=" items-center mb-5 text-sm">
+                            <div className="font-semibold text-sm">
+                              First Name:
+                            </div>
+                            <div className="font-semibold text-sm">
+                              Last Name:
+                            </div>
+                            <div className="font-semibold text-sm">
+                              Phone Number:
+                            </div>
+
+                            <div className="font-semibold text-sm">
+                              Home Address
+                            </div>
+                          </div>
+                          <div className=" items-center mb-5">
+                            <div className="">{owner?.first_name}</div>
+
+                            <div className="">{owner?.last_name}</div>
+
+                            <div className="">{owner?.phone}</div>
+                            <div className="">{owner?.home_address}</div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* END: Owners Details */}
+                    </div>
+                  </Tab.Panel>
+
+                  <Tab.Panel>
+                    <div className="grid grid-cols-12 gap-6 text-slate-600">
+                      {/* BEGIN: Rider Details */}
+                      <div className="col-span-12 intro-y box ">
+                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
+                          <div className=" items-center mb-5">
+                            <div className="font-semibold lg:mb-4 text-md">
+                              Registration Fee
+                            </div>
+                            <div className="font-semibold lg:mb-4 text-md">
+                              Plate Number:
+                            </div>
+                            <div className="font-semibold lg:mb-4 text-md">VIN:</div>
+                            <div className="font-semibold lg:mb-4 text-md">
+                              Vehicle Type
+                            </div>
+                            <div className="font-semibold lg:mb-4 text-md">
+                              Manufacturer{" "}
+                            </div>
+                            <div className="font-semibold lg:mb-4 text-md">
+                              Vehicle Color{" "}
+                            </div>
+                            <div className="font-semibold lg:mb-4 text-md">
+                              Year of Purchase{" "}
+                            </div>
+                          
+                          </div>
+
+                          <div className=" items-center mb-5">
+                            <div className="ml-auto lg:mb-4">4,500</div>
+
+                            <div className="ml-auto lg:mb-4">{vehicleDetails?.plate_number? vehicleDetails?.plate_number : isNull}</div>
+                            <div className="ml-auto lg:mb-4">
+                              {vehicleDetails?.vin? vehicleDetails?.vin: isNull}
+                            </div>
+
+                            <div className="ml-auto lg:mb-4">{vehicleDetails?.vehicle_type? vehicleDetails?.vehicle_type : isNull}</div>
+                            <div className="ml-auto lg:mb-4">{vehicleDetails?.manufacturer? vehicleDetails?.manufacturer : isNull}</div>
+                            <div className="ml-auto lg:mb-4">{vehicleDetails?.vehicle_color? vehicleDetails?.vehicle_color : isNull}</div>
+                            <div className="ml-auto lg:mb-4">{vehicleDetails?.year_of_purchase? vehicleDetails?.year_of_purchase : isNull}</div>
+
+                          </div>
+                        </div>
+                      </div>
+                      {/* END: Rider Details */}
+
+                      {/* BEGIN: Next of Kin  */}
+                      <div className="col-span-12 intro-y box text-base ">
+                        <div className="flex items-center py-4">
+                          <h3 className="intro-y box  font-semibold mr-4 text-sm">
+                            VEHICLE IMAGES
+                          </h3>
+                          <hr className="flex-grow border-t border-slate-200/" />
+                        </div>
+                        {/* <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
+                          <div className=" items-center mb-5 text-sm">
+                            <div className="font-semibold ">First Name:</div>
+                            <div className="font-semibold ">Last Name:</div>
+                            <div className="font-semibold ">Relationship:</div>
+                            <div className="font-semibold ">Phone Number:</div>
+
+                            <div className="font-semibold ">Home Address</div>
+                          </div>
+                          <div className=" items-center mb-5">
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.first_name}
+                            </div>
+
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.last_name}
+                            </div>
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.relationship}
+                            </div>
+
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.phone}
+                            </div>
+                            <div className="ml-auto">
+                              {rider?.next_of_kin?.home_address}
+                            </div>
+                          </div>
+                        </div> */}
+
+
+
+                        <div className="flex-1 gap-y-4 lg:px-5 pt-5 mt-2 border-t-2 lg:mt-0 lg:border-0 border-slate-200/60 dark:border-darkmode-400 lg:pt-0">
+              <div className="flex justify-start items-center space-x-4 lg:flex-none text-sm lg:font-medium text-center lg:text-left lg:mt-5">
+                <div>
+                  <img alt="Front" className="" src={vehicleDetails?.images?.vehicle_picture1} />
+                </div>
+                <div>
+                  <img alt="Side" className="" src={vehicleDetails?.images?.vehicle_picture2} />
+                </div>
+                <div>
+                  <img alt="Aeriel" className="" src={vehicleDetails?.images?.vehicle_picture3} />
+                </div>
+              </div>
+            </div>
+
+                      </div>
+                      {/* END: Next of Kin  */}
+
+                    
+                    </div>
+                  </Tab.Panel>
+
+                  <Tab.Panel>
+                    <div className="grid grid-cols-12 gap-6 text-slate-600">
+               
+
+                    <div className="flow-root col-span-12 intro-y box">
+<ul role="list" className="-mb-8">
+{activity.map((activityItem: any, activityItemIdx) => (
+<li key={activityItem.id}>
+<div className="relative pb-8">
+{activityItemIdx !== activity.length - 1 ? (
+  <span className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+) : null}
+<div className="relative flex items-start space-x-3">
+  { activityItem.type === 'assignment' ? (
+    <>
+      <div>
+        <div className="relative px-1">
+          <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
+          {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+          </div>
+        </div>
+      </div>
+     
+
+<div className="min-w-0 flex-1">
+        <div>
+          <div className="text-sm">
+            <a href={activityItem.person.href} className="font-medium text-gray-900">
+              {activityItem.person.name}
+            </a>
+          </div>
+          <p className="mt-0.5 text-sm text-gray-500">Commented {activityItem.date}</p>
+        </div>
+        <div className="mt-2 text-sm text-gray-700">
+          <p>{activityItem.comment}</p>
+        </div>
+      </div>
+    </>
+  ) : activityItem.type === 'tags' ? (
+    <>
+      <div>
+      <div className="relative px-1">
+          <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
+          {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+          </div>
+        </div>
+      </div>
+      <div className="min-w-0 flex-1 py-0">
+        <div className="text-sm leading-8 text-gray-500">
+          <span className="mr-0.5">
+            <a href={activityItem.person.href} className="font-medium text-gray-900">
+              {activityItem.person.name}
+            </a>{' '}
+            added tags
+          </span>{' '}
+          <span className="mr-0.5">
+            {activityItem?.tags.map((tag: { name:  ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode>  | undefined; href: string | undefined; color: string; }, index: any) => (
+              <Fragment key={index}>
+                <a
+                  href={tag.href}
+                  className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm"
+                >
+                  <span className="absolute flex-shrink-0 flex items-center justify-center">
+                    <span
+                      className={classNames(tag.color, 'h-1.5 w-1.5 rounded-full')}
+                      aria-hidden="true"
+                    />
+                  </span>
+                  <span className="ml-3.5 font-medium text-gray-900">{tag.name}</span>
+                </a>{' '}
+              </Fragment>
+            ))}
+          </span>
+          <span className="whitespace-nowrap">{activityItem.date}</span>
+        </div>
+      </div>
+    </>
+  ) : null}
+</div>
+</div>
+</li>
+))}
+</ul>
+</div>
+
+                    
+                    </div>
+                  </Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
+
+              {/* end content */}
+
+              {/* <div className="border-4 border-dashed border-gray-200 rounded-lg h-96" /> */}
+            </div>
+            {/* /End replace */}
+          </div>
+        </main>
+      </div>
+    </>
+  );
+}
+
+
+

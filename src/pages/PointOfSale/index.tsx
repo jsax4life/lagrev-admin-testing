@@ -445,21 +445,9 @@ function Main() {
 
 
 
-              {/* <div className="text-base font-medium">Soup</div>
-              <div className="text-slate-500">5 Items</div> */}
+             
             </div>
-            {/* <div className="col-span-12 p-5 cursor-pointer  box zoom-in">
-              <div className="text-base font-medium">Soup</div>
-              <div className="text-slate-500">5 Items</div>
-            </div> */}
-            {/* <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-              <div className="text-base font-medium">Soup</div>
-              <div className="text-slate-500">5 Items</div>
-            </div>
-            <div className="col-span-12 p-5 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
-              <div className="text-base font-medium">Soup</div>
-              <div className="text-slate-500">5 Items</div>
-            </div> */}
+          
           </div>
         </div>
 

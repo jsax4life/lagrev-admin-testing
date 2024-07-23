@@ -18,6 +18,7 @@ import Litepicker from "../../base-components/Litepicker";
 import Tippy from '../../base-components/Tippy';
 import { UserContext } from '../../stores/UserContext';
 import API from '../../utils/API';
+import { useNavigate } from 'react-router-dom';
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -51,6 +52,8 @@ export default function Main() {
 
 console.log(vehicleList)
 
+const navigate = useNavigate();
+
 
 useEffect(() => {
     if (isInitialMount.current) {
@@ -73,6 +76,8 @@ useEffect(() => {
         }
       }, [user?.token ]);
     
+   
+     
 
     
       const fetchDashboardData = () => {
@@ -319,13 +324,14 @@ useEffect(() => {
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] py-0 relative before:block before:w-px before:h-8 before:bg-slate-200 before:absolute before:left-0 before:inset-y-0 before:my-auto before:dark:bg-darkmode-400">
                     <div className="flex items-center justify-center">
-                      <a
+                      <button
                         className="flex items-center mr-5 text-primary whitespace-nowrap"
-                        href="#"
+                        onClick={() => navigate(`/profile/${vehicle.id}`)}
+
                       >
                         <Lucide icon="CheckSquare" className="w-4 h-4 mr-1" />{" "}
                         View Profile
-                      </a>
+                      </button>
                    
                     </div>
                   </Table.Td>
