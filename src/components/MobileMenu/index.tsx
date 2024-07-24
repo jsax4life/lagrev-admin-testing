@@ -5,6 +5,7 @@ import {
   createRef,
   Dispatch,
   SetStateAction,
+  useContext,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toRaw } from "../../utils/helper";
@@ -16,6 +17,9 @@ import Lucide from "../../base-components/Lucide";
 import logoUrl from "../../assets/images/logo.svg";
 import clsx from "clsx";
 import SimpleBar from "simplebar";
+import { UserContext } from "../../stores/UserContext";
+import API from "../../utils/API";
+import LoadingIcon from "../../base-components/LoadingIcon";
 
 function Main() {
   const location = useLocation();
@@ -27,12 +31,36 @@ function Main() {
   const [activeMobileMenu, setActiveMobileMenu] = useState(false);
   const scrollableRef = createRef<HTMLDivElement>();
 
+  const { user, userDispatch } = useContext(UserContext);
+  const history = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
   useEffect(() => {
     if (scrollableRef.current) {
       new SimpleBar(scrollableRef.current);
     }
     setFormattedMenu(mobileMenu());
   }, [sideMenuStore, location.pathname]);
+
+
+  function logout() {
+    setIsLoading(true);
+    API("post", "logout", {}, onSuccess, onFail, user.data && user.token);
+  }
+
+  function onSuccess(data: any) {
+    console.log(data);
+    userDispatch({ type: "SIGNOUT" });
+    setIsLoading(false);
+    history("/login");
+  }
+
+  function onFail(error: string) {
+    console.log(error);
+    setIsLoading(false);
+  }
 
   return (
     <>
@@ -179,9 +207,41 @@ function Main() {
               )
             )}
             {/* END: First Child */}
+
+            <li>
+            <div className=" py-3 lg:flex-row border-slate-200/60 dark:border-darkmode-400 mt-20">
+          {isLoading ? (
+            <div className="flex">
+                            
+                            <div className="flex items-center px-6 gap-x-2  w-full text-orange-200">
+                <LoadingIcon icon="three-dots" className="w-8 h-8 " color="#fff"/>
+                <div className="ext-xs text-center">Loging out...</div>
+              </div>
+
+            </div>
+          ) : (
+            <div className="flex gap-x-4 items-center px-6 cursor-pointer"  onClick={logout}
+            >
+            <div>
+            <Lucide
+              icon="LogOut"
+              className="w-6 h-6 text-red-500 dark:red-500 "
+            />
+          </div>
+            <div className="text-md font-medium text-red-500">Log Out</div>
+            </div>
+          )}
+
+          
+        </div>
+            </li>
+
           </ul>
+          
         </div>
       </div>
+
+      
       {/* END: Mobile Menu */}
     </>
   );

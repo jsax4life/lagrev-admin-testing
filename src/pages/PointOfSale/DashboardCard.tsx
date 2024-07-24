@@ -11,7 +11,7 @@ interface DashboardCardProps {
 
 const DashboardCard: React.FC<DashboardCardProps> = ({ count, label, bgColor, iconFill, iconText }) => {
   return (
-    <div className="col-span-12 p-4 flex cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
+    <div className="col-span-12 p-4 flex cursor-pointer sm:col-span-4  box zoom-in">
       <div className={`flex mr-4 items-center justify-center rounded-md ${bgColor} w-10 h-10`}>
         <Lucide icon='User' fill={iconFill} className={`p-1 w-[32px] h-[32px] ${iconText}`} />
       </div>

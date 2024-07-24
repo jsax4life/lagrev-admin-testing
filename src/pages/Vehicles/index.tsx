@@ -19,6 +19,7 @@ import Tippy from '../../base-components/Tippy';
 import { UserContext } from '../../stores/UserContext';
 import API from '../../utils/API';
 import { useNavigate } from 'react-router-dom';
+import LoadingIcon from '../../base-components/LoadingIcon';
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -50,7 +51,7 @@ export default function Main() {
 
     const isInitialMount = useRef(true);
 
-console.log(vehicleList)
+// console.log(vehicleList)
 
 const navigate = useNavigate();
 
@@ -84,6 +85,7 @@ useEffect(() => {
         const [startDate, endDate] = dateRange?.split(' - ') || [null, null];
     
         setError("");
+        setLoading(true);
         
         const params: any = {};
         if (selectedLGA) params.lga = selectedLGA;
@@ -117,39 +119,32 @@ useEffect(() => {
   return (
     <>
    
+
+
+
       <div className="min-h-full">
-        <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
-         
-          <header className="py-5">
-           
-          </header>
+  <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
+    <header className="py-5">
+      {/* Header content */}
+    </header>
+  </div>
+
+  <main className="-mt-32">
+    <div className="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-lg shadow px-5 py-6 sm:px-6">
+
+        {/* Content Section */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-medium text-black intro-y">Vehicles</h2>
+            <p className="mt-4 text-xs text-black intro-y">View, Edit and Delete Vehicle</p>
+          </div>
+          <Button variant="secondary" className="mr-2 shadow-sm">
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel Document
+          </Button>
         </div>
 
-        <main className="-mt-32">
-          <div className="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
-            {/* Replace with your content */}
-
-
-            <div className="bg-white rounded-lg shadow px-5 py-6 sm:px-6">
-
-{/* content */}
-
-<div className='flex justify-between items-center'>
-<div>
-
-<h2 className=" text-lg font-medium text-black intro-y">Vehicles</h2>
-            <p className="mt-4 text-xs  text-black intro-y">View, Edit and Delete Vehicle</p>
-
-</div>
-          <Button variant="secondary" className="mr-2 shadow-sm">
-              <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF Document
-              
-            </Button>
-</div>
-
-
-      <div className="grid grid-cols-12 gap-6 mt-5">
-        
+        <div className="grid grid-cols-12 gap-6 mt-5">
         <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
           <div className="flex flex-col lg:flex-row w-full gap-y-2 text-primary">
             <div className="relative lg:w-1/4 w-full text-slate-500">
@@ -164,11 +159,7 @@ useEffect(() => {
               />
             </div>
 
-            <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2">
-              <option>All Parks</option>
-              <option>Active</option>
-              <option>Removed</option>
-            </FormSelect>
+        
 
             {/* <FormSelect className="w-48 xl:w-1/5 !box mr-4">
               <option value="" disabled>--All LGA--</option>
@@ -184,12 +175,20 @@ useEffect(() => {
               ))}
             </FormSelect>
 
+            <FormSelect className="w-48  lg:w-1/5 !box mr-2">
+              <option>All Parks</option>
+              <option>Active</option>
+              <option>Removed</option>
+            </FormSelect>
+
             <div className="relative sm:mt-0 text-slate-500">
               <Lucide
                 icon="Calendar"
                 className="absolute inset-y-0 left-0 z-10 w-4 h-4 my-auto ml-3"
               />
               <Litepicker
+              title='testing'
+            
                 value={dateRange}
                 onChange={setDateRange}
                 placeholder='Pick a date range'
@@ -212,10 +211,22 @@ useEffect(() => {
           </div>
         </div>
 
+          {/* Data List or Loading Indicator */}
+          {loading ? (
+            <div className="col-span-12 flex items-center justify-center h-full">
+              <div className="flex flex-col items-center justify-center w-full">
+                <LoadingIcon icon="bars" className="w-8 h-8" />
+                <div className="mt-2 text-xs text-center">Loading data</div>
+              </div>
+            </div>
+          ) : (
+            <div className="col-span-12 overflow-auto intro-y 2xl:overflow-visible">
+              {/* Your table or data list */}
+              {/* Render your vehicleList here */}
 
-        {/* BEGIN: Data List */}
-        <div className="col-span-12 overflow-auto intro-y 2xl:overflow-visible">
-          <Table className="border-spacing-y-[10px] border-separate -mt-2">
+
+
+              <Table className="border-spacing-y-[2px] border-separate -mt-2">
             <Table.Thead>
               <Table.Tr>
                 
@@ -228,32 +239,31 @@ useEffect(() => {
                 <Table.Th className="border-b-0 whitespace-nowrap">
                   PLATE NUMBER
                 </Table.Th>
-                <Table.Th className="text-center border-b-0 whitespace-nowrap">
+                <Table.Th className="border-b-0 whitespace-nowrap">
                 PHONE NUMBER
 
                 </Table.Th>
                 <Table.Th className="border-b-0 whitespace-nowrap">
                     VIN                
                 </Table.Th>
-                <Table.Th className="border-b-0 whitespace-nowrap">
+                <Table.Th className="text-center border-b-0 whitespace-nowrap">
                     STATUS                
                 </Table.Th>
                 {/* <Table.Th className="text-right border-b-0 whitespace-nowrap">
                   <div className="pr-16">TOTAL TRANSACTION</div>
                 </Table.Th> */}
                 <Table.Th className="text-center border-b-0 whitespace-nowrap">
-                  ACTIONS
+                  ACTION
                 </Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
           
-
-
-              {vehicleList.map((vehicle: any, vehicleKey: any | null | undefined) => (
-                <Table.Tr key={vehicleKey} className="intro-x">
+          {
+              vehicleList.map((vehicle: any, vehicleKey: any | null | undefined) => (
+                <Table.Tr key={vehicleKey} className="intro-x text-slate-600">
                  
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 !py-4 bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className=" first:rounded-l-md last:rounded-r-md w-10  bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] ">
                     <a
                       href=""
                       className=" whitespace-nowrap"
@@ -262,7 +272,7 @@ useEffect(() => {
                     </a>
                   </Table.Td>
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md !py-3.5 bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md  bg-white border-b-0 dark:bg-darkmode-600  shadow-[20px_3px_20px_#0000000b]">
                     <div className="flex items-center">
                       <div className="w-9 h-9 image-fit zoom-in">
                         <Tippy
@@ -286,7 +296,7 @@ useEffect(() => {
                   </Table.Td>
 
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                     <a href="" className="font-medium whitespace-nowrap">
 {vehicle?.plate_number? vehicle?.plate_number : '------'}
                     </a>
@@ -294,7 +304,7 @@ useEffect(() => {
                   
                   </Table.Td>
                   
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                    
                       <>
                         <div className="whitespace-nowrap">
@@ -306,14 +316,14 @@ useEffect(() => {
                       </>
                   
                   </Table.Td>
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 text-right bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40  bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                     <div className="pr-16">{vehicle?.vin ? vehicle?.vin : '------'}</div>
                   </Table.Td>
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                     <div
                       className=
- {`items-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
+ {`items-center px-2 lg:py-1 rounded-full text-xs font-medium capitalize ${
     tagStyle[vehicle?.tagged]
   }`}
                          
@@ -322,14 +332,14 @@ useEffect(() => {
                     </div>
                   </Table.Td>
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] py-0 relative before:block before:w-px before:h-8 before:bg-slate-200 before:absolute before:left-0 before:inset-y-0 before:my-auto before:dark:bg-darkmode-400">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] py-0 relative before:block before:w-px before:h-8 before:bg-slate-200 before:absolute before:left-0 before:inset-y-0 before:my-auto before:dark:bg-darkmode-400">
                     <div className="flex items-center justify-center">
                       <button
-                        className="flex items-center mr-5 text-primary whitespace-nowrap"
+                        className="flex items-center  text-primary whitespace-nowrap"
                         onClick={() => navigate(`/profile/${vehicle.id}`)}
 
                       >
-                        <Lucide icon="CheckSquare" className="w-4 h-4 mr-1" />{" "}
+                        {/* <Lucide icon="CheckSquare" className="w-4 h-4 mr-1" />{" "} */}
                         View Profile
                       </button>
                    
@@ -337,13 +347,20 @@ useEffect(() => {
                   </Table.Td>
                 </Table.Tr>
               ))}
+          
+
             </Table.Tbody>
           </Table>
-        </div>
-        {/* END: Data List */}
-        {/* BEGIN: Pagination */}
-        <div className="flex flex-wrap items-center col-span-12 intro-y sm:flex-row sm:flex-nowrap">
-          <Pagination className="w-full sm:w-auto sm:mr-auto">
+
+
+
+            </div>
+          )}
+
+          {/* Pagination */}
+          <div className="flex flex-wrap items-center col-span-12 intro-y sm:flex-row sm:flex-nowrap">
+            {/* Pagination component */}
+            <Pagination className="w-full sm:w-auto sm:mr-auto">
             <Pagination.Link>
               <Lucide icon="ChevronsLeft" className="w-4 h-4" />
             </Pagination.Link>
@@ -368,63 +385,24 @@ useEffect(() => {
             <option>35</option>
             <option>50</option>
           </FormSelect>
+          </div>
+
+          {/* Delete Confirmation Modal */}
+          <Dialog
+            open={deleteConfirmationModal}
+            onClose={() => setDeleteConfirmationModal(false)}
+            initialFocus={deleteButtonRef}
+          >
+            {/* Dialog content */}
+          </Dialog>
         </div>
-        {/* END: Pagination */}
       </div>
-      {/* BEGIN: Delete Confirmation Modal */}
-      <Dialog
-        open={deleteConfirmationModal}
-        onClose={() => {
-          setDeleteConfirmationModal(false);
-        }}
-        initialFocus={deleteButtonRef}
-      >
-        <Dialog.Panel>
-          <div className="p-5 text-center">
-            <Lucide
-              icon="XCircle"
-              className="w-16 h-16 mx-auto mt-3 text-danger"
-            />
-            <div className="mt-5 text-3xl">Are you sure?</div>
-            <div className="mt-2 text-slate-500">
-              Do you really want to delete these records? <br />
-              This process cannot be undone.
-            </div>
-          </div>
-          <div className="px-5 pb-8 text-center">
-            <Button
-              variant="outline-secondary"
-              type="button"
-              onClick={() => {
-                setDeleteConfirmationModal(false);
-              }}
-              className="w-24 mr-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="danger"
-              type="button"
-              className="w-24"
-              ref={deleteButtonRef}
-            >
-              Delete
-            </Button>
-          </div>
-        </Dialog.Panel>
-      </Dialog>
+    </div>
+  </main>
+</div>
 
 
 
-
-
-
-              {/* <div className="border-4 border-dashed border-gray-200 rounded-lg h-96" /> */}
-            </div>
-            {/* /End replace */}
-          </div>
-        </main>
-      </div>
     </>
   )
 }

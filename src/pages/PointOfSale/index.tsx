@@ -203,11 +203,7 @@ function Main() {
               />
             </div>
 
-            <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2">
-              <option>All Parks</option>
-              <option>Active</option>
-              <option>Removed</option>
-            </FormSelect>
+           
 
             <FormSelect
               className="w-48 lg:ml-2 lg:w-1/5 !box mr-2"
@@ -221,6 +217,12 @@ function Main() {
                   {lga}
                 </option>
               ))}
+            </FormSelect>
+
+            <FormSelect className="w-48  lg:w-1/5 !box mr-2">
+              <option>All Parks</option>
+              <option>Active</option>
+              <option>Removed</option>
             </FormSelect>
 
             <div className="relative sm:mt-0 text-slate-500">
@@ -301,7 +303,7 @@ function Main() {
 
         <div className="col-span-12 lg:col-span-4">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-            <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
+            <div className="col-span-12 p-4 cursor-pointer box zoom-in flex">
               <div
                 className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}
               >
@@ -324,7 +326,7 @@ function Main() {
               </div>
             </div>
 
-            <div className="col-span-12 p-4 cursor-pointer 2xl:col-span-3 box zoom-in flex">
+            <div className="col-span-12 p-4 cursor-pointer  box zoom-in flex">
               <div
                 className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}
               >

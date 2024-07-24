@@ -70,7 +70,7 @@ Tab.Button = <C extends React.ElementType = "a">({
   return (
     <Component
       className={twMerge([
-        "cursor-pointer bg-slate-200 block appearance-none px-3 py-2.5 border border-transparent text-slate-700 dark:text-slate-400 ",
+        "cursor-pointer bg-white block appearance-none px-3 py-2.5 border border-transparent text-slate-700 dark:text-slate-400 ",
         tab.selected && "text-slate-800 dark:text-white",
 
         // Default

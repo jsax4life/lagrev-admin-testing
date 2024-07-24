@@ -14,7 +14,9 @@ import { Dialog, Menu, Tab } from "../../base-components/Headless";
 import { UserContext } from "../../stores/UserContext";
 import API from "../../utils/API";
 import Tippy from "../../base-components/Tippy";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Button from "../../base-components/Button";
+import Lucide from "../../base-components/Lucide";
 
 const tagStyle = [
   "bg-orange-100 text-orange-600",
@@ -67,8 +69,6 @@ export default function ProfileDetails() {
   const { id } = useParams<{ id: string }>();
   const [vehicleDetails, setVehicleDetails] = useState<any>(null);
 
-  const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
-  const deleteButtonRef = useRef(null);
   const [dateRange, setDateRange] = useState<string>("");
   const [selectedLGA, setSelectedLGA] = useState<string>("");
   const [kpiData, setKpiData] = useState(null);
@@ -78,9 +78,7 @@ export default function ProfileDetails() {
 
   const isInitialMount = useRef(true);
 
-  const vehicle = {
-    tagged: 1,
-  };
+  const navigate = useNavigate();
 
   console.log(vehicleDetails);
 
@@ -154,8 +152,19 @@ export default function ProfileDetails() {
               <Tab.Group>
                 {/* BEGIN: Profile Info */}
                 <div className=" pt-5  intro-y box">
-                  <div className="flex flex-col pb-5 -mx-5 border-b lg:flex-row border-slate-200/60 dark:border-darkmode-400">
+                  <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
+                  <div className="flex justify-center items-center lg:hidden mb-4">
+
+<Button variant="primary" className="mr-2 shadow-sm px-2" onClick={() => {
+              navigate(`/update-profile/${id}`);
+            }}>Edit</Button>
+
+                      <Button variant="secondary" className="mr-2 shadow-sm">
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel Document
+          </Button>
+</div>
                     <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
+         
                       <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
                         <img
                           alt="Profile pix"
@@ -163,7 +172,7 @@ export default function ProfileDetails() {
                           src={rider?.profile_picture_url}
                         />
                       </div>
-                      <div className="ml-5">
+                      <div className="ml-5 mr-auto">
                         <div
                           className={`w-1/2 text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
                             tagStyle[vehicleDetails?.tagged]
@@ -182,6 +191,16 @@ export default function ProfileDetails() {
                           <span>{rider?.phone}</span>
                         </div>
                       </div>
+<div className="lg:flex hidden ">
+
+<Button variant="primary" className="mr-2 shadow-sm px-4" onClick={() => {
+              navigate(`/update-profile/${id}`);
+            }}>Edit</Button>
+
+                      <Button variant="secondary" className="mr-2 shadow-sm">
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel Document
+          </Button>
+</div>
                     </div>
                   </div>
                   <Tab.List
@@ -215,7 +234,7 @@ export default function ProfileDetails() {
                       {/* BEGIN: Rider Details */}
                       <div className="col-span-12 intro-y box ">
                         <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
-                          <div className=" items-center mb-5 ">
+                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
                             <div className="font-semibold ">Nin</div>
                             <div className="font-semibold ">Age:</div>
                             <div className="font-semibold ">Gender:</div>
@@ -227,17 +246,17 @@ export default function ProfileDetails() {
                               Home Address
                             </div>
                           </div>
-                          <div className=" items-center mb-5 ">
-                            <div className="ml-auto">**************</div>
+                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2 ">
+                            <div className="">**************</div>
 
-                            <div className="ml-auto">{rider?.age}</div>
-                            <div className="ml-auto">
+                            <div className="">{rider?.age}</div>
+                            <div className="">
                               {rider?.gender === "f" ? "Female" : "Male"}
                             </div>
 
-                            <div className="ml-auto">{rider?.lga}</div>
-                            <div className="ml-auto">{rider?.parkzone}</div>
-                            <div className="ml-auto">{rider?.home_address}</div>
+                            <div className="">{rider?.lga}</div>
+                            <div className="">{rider?.parkzone}</div>
+                            <div className="">{rider?.home_address}</div>
                           </div>
                         </div>
                       </div>
@@ -252,7 +271,7 @@ export default function ProfileDetails() {
                           <hr className="flex-grow border-t border-slate-200/" />
                         </div>
                         <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                          <div className=" items-center mb-5 ">
+                          <div className=" flex flex-col no-wrap items-start  space-y-2 mb-5 ">
                             <div className="font-semibold ">First Name:</div>
                             <div className="font-semibold ">Last Name:</div>
                             <div className="font-semibold ">Relationship:</div>
@@ -260,22 +279,22 @@ export default function ProfileDetails() {
 
                             <div className="font-semibold ">Home Address</div>
                           </div>
-                          <div className=" items-center mb-5 ">
-                            <div className="ml-auto">
+                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2 ">
+                            <div className="">
                               {rider?.next_of_kin?.first_name}
                             </div>
 
-                            <div className="ml-auto">
+                            <div className="">
                               {rider?.next_of_kin?.last_name}
                             </div>
-                            <div className="ml-auto">
+                            <div className="">
                               {rider?.next_of_kin?.relationship}
                             </div>
 
-                            <div className="ml-auto">
+                            <div className="">
                               {rider?.next_of_kin?.phone}
                             </div>
-                            <div className="ml-auto">
+                            <div className="">
                               {rider?.next_of_kin?.home_address}
                             </div>
                           </div>
@@ -292,23 +311,23 @@ export default function ProfileDetails() {
                           </h3>
                           <hr className="flex-grow border-t border-slate-200/" />
                         </div>
-                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                          <div className=" items-center mb-5 text-sm">
-                            <div className="font-semibold text-sm">
+                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                            <div className="font-semibold ">
                               First Name:
                             </div>
-                            <div className="font-semibold text-sm">
+                            <div className="font-semibold ">
                               Last Name:
                             </div>
-                            <div className="font-semibold text-sm">
+                            <div className="font-semibold ">
                               Phone Number:
                             </div>
 
-                            <div className="font-semibold text-sm">
+                            <div className="font-semibold ">
                               Home Address
                             </div>
                           </div>
-                          <div className=" items-center mb-5">
+                          <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
                             <div className="">{owner?.first_name}</div>
 
                             <div className="">{owner?.last_name}</div>

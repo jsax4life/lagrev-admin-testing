@@ -1,5 +1,5 @@
 import { Transition } from "react-transition-group";
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, Dispatch, SetStateAction, useContext } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { selectSideMenu } from "../../stores/sideMenuSlice";
 import { useAppSelector } from "../../stores/hooks";
@@ -13,6 +13,10 @@ import MainColorSwitcher from "../../components/MainColorSwitcher";
 import SideMenuTooltip from "../../components/SideMenuTooltip";
 // import { Menu as Menus } from "../../base-components/Headless";
 import Profile from '../../assets/images/fakers/profile-1.jpg';
+import { UserContext } from "../../stores/UserContext";
+import API from "../../utils/API";
+import LoadingIcon from "../../base-components/LoadingIcon";
+import Button from "../../base-components/Button";
 
 
 function Main() {
@@ -23,9 +27,34 @@ function Main() {
   const sideMenuStore = useAppSelector(selectSideMenu);
   const sideMenu = () => nestedMenu(sideMenuStore, location);
 
+  const { user, userDispatch } = useContext(UserContext);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const history = useNavigate();
+
   useEffect(() => {
     setFormattedMenu(sideMenu());
   }, [sideMenuStore, location.pathname]);
+
+
+  function logout() {
+    setIsLoading(true);
+    API("post", "logout", {}, onSuccess, onFail, user.data && user.token);
+  }
+
+  function onSuccess(data: any) {
+    console.log(data);
+    userDispatch({ type: "SIGNOUT" });
+    setIsLoading(false);
+    history("/login");
+  }
+
+  function onFail(error: string) {
+    console.log(error);
+    setIsLoading(false);
+  }
 
   return (
     <div className="pt-2 pb-7 before:content-[''] before:absolute before:inset-0 before:bg-fixed before:bg-no-repeat before:bg-skew-pattern dark:before:bg-skew-pattern-dark">
@@ -169,7 +198,7 @@ function Main() {
 
               <li>
 
-<div className="font-medium flex px-4 text-md">
+<div className="font-medium flex flex-col gap-y-2 xl:flex-row px-4 text-md">
 <img src={Profile} alt="Imge"  className="w-8 h-8 rounded-full mr-2"/>
              
              <div>
@@ -227,9 +256,39 @@ Super Admin        </div>
 
               </li>
 
+              <li>
+           
+              </li>
+
+              
+
             </ul>
 
+            <div className=" py-3 border-b lg:flex-row border-slate-200/60 dark:border-darkmode-400 mt-20">
+          {isLoading ? (
+            <div className="flex">
+                            
+                            <div className="flex flex-col items-center justify-center w-full">
+                <LoadingIcon icon="three-dots" className="w-8 h-8" />
+                <div className="mt-2 text-xs text-center">Loging out...</div>
+              </div>
 
+            </div>
+          ) : (
+            <div className="flex gap-x-4 items-center px-4 cursor-pointer"  onClick={logout}
+            >
+            <div>
+            <Lucide
+              icon="LogOut"
+              className="w-6 h-6 text-red-500 dark:red-500 "
+            />
+          </div>
+            <div className="text-md font-medium text-red-500">Log Out</div>
+            </div>
+          )}
+
+          
+        </div>
           </nav>
 
 

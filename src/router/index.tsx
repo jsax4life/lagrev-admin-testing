@@ -8,6 +8,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Vehicle from "../pages/Vehicles"
 import ProfileDetails from "../pages/Vehicles/VehicleDetails";
+import UpdateVehicleProfile from "../pages/Vehicles/UpdateVehicleProfile";
 
 function Router() {
   const routes = [
@@ -28,7 +29,8 @@ function Router() {
       
         { path: "/profile/:id", element: <ProfileDetails />},
 
-      
+        { path: "/update-profile/:id", element: <UpdateVehicleProfile />},
+
       
       ],
     },
