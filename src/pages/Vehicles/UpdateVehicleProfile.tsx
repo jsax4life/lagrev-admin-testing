@@ -124,7 +124,7 @@ export default function UpdateVehicleProfile() {
 
   const [vehicleDetails, setVehicleDetails] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedLga, setSelectedLga] = useState("");
   const navigate = useNavigate();
 
@@ -165,6 +165,7 @@ export default function UpdateVehicleProfile() {
 
   const fetchVehicleData = () => {
     setError("");
+    setLoading(true);
 
     API(
       "get",

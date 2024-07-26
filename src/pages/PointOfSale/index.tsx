@@ -529,11 +529,11 @@ function Main() {
                       className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block '
                       aria-hidden="true"
                     />
-                                                    <span className="ml-2 text-xs">{activityItem.admin.name}</span>
 
-                                <span className="ml-3.5  text-slate-500">{ formatChanges(activityItem.changes)}</span>
+                                <span className="ml-3  text-slate-500">{ formatChanges(activityItem.changes)}</span>
      
-                         
+                       
+                                                    <span className="mr-2 text-xs">{activityItem.admin.name}</span>
                         </div> 
                       </div>
                     </div>
