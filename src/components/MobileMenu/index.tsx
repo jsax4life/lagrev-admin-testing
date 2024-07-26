@@ -47,7 +47,7 @@ function Main() {
 
   function logout() {
     setIsLoading(true);
-    API("post", "logout", {}, onSuccess, onFail, user.data && user.token);
+    API("post", "logout", {}, onSuccess, onFail, user.token && user.token);
   }
 
   function onSuccess(data: any) {

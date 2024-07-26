@@ -231,7 +231,7 @@ useEffect(() => {
               <Table.Tr>
                 
                 <Table.Th className="border-b-0 whitespace-nowrap">
-                  #
+                  Sn
                 </Table.Th>
                 <Table.Th className="border-b-0 whitespace-nowrap">
                   DRIVER
@@ -264,21 +264,20 @@ useEffect(() => {
                 <Table.Tr key={vehicleKey} className="intro-x text-slate-600">
                  
                   <Table.Td className=" first:rounded-l-md last:rounded-r-md w-10  bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] ">
-                    <a
-                      href=""
+                    <div
                       className=" whitespace-nowrap"
                     >
                       {vehicleKey + 1}
-                    </a>
+                    </div>
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md  bg-white border-b-0 dark:bg-darkmode-600  shadow-[20px_3px_20px_#0000000b]">
-                    <div className="flex items-center">
+                    <div className="flex items-center" onClick={() => navigate(`/profile/${vehicle.id}`)}>
                       <div className="w-9 h-9 image-fit zoom-in">
                         <Tippy
                           as="img"
                           
-                          alt="Profile mg"
+                          alt="Profile"
                           className="border-white rounded-lg shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]"
                           src={vehicle?.rider?.profile_picture_url}
                           content={`Uploaded at ${vehicle.created_at}`}
@@ -297,9 +296,9 @@ useEffect(() => {
 
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
-                    <a href="" className="font-medium whitespace-nowrap">
+                    <span  className="font-medium whitespace-nowrap ">
 {vehicle?.plate_number? vehicle?.plate_number : '------'}
-                    </a>
+                    </span>
                     
                   
                   </Table.Td>
@@ -321,15 +320,15 @@ useEffect(() => {
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
-                    <div
+                    <span
                       className=
  {`items-center px-2 lg:py-1 rounded-full text-xs font-medium capitalize ${
     tagStyle[vehicle?.tagged]
   }`}
                          
                     >
-                            {vehicle?.tagged ? "tagged" : "Registered"}
-                    </div>
+                            {vehicle?.tagged ? "tagged" : "Registered "}
+                    </span>
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] py-0 relative before:block before:w-px before:h-8 before:bg-slate-200 before:absolute before:left-0 before:inset-y-0 before:my-auto before:dark:bg-darkmode-400">

@@ -15,7 +15,22 @@ import { UserContext } from "../../stores/UserContext";
 import API from "../../utils/API";
 import DashboardCard from "./DashboardCard";
 import Progress from "../../base-components/Progress";
-import { formatCurrency } from "../../utils/utils";
+import { formatCurrency, formatDate } from "../../utils/utils";
+import { Link } from "react-router-dom";
+
+
+
+
+interface Change {
+  original: string | number | null;
+  updated: string | number | null;
+}
+
+interface Changes {
+  [section: string]: {
+    [field: string]: Change;
+  };
+}
 
 const lagosLGAs = [
   "Agege",
@@ -41,45 +56,46 @@ const lagosLGAs = [
 ];
 
 
-const activity = [
-  {
-    id: 1,
-    type: 'assignment',
-    person: { name: 'Eduardo Benz', href: '#' },
-    // imageUrl:
-    //   'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-    comment:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam. ',
-    date: '6d ago',
-  },
-  {
-    id: 2,
-    type: 'assignment',
-    person: { name: 'Hilary Mahy', href: '#' },
-    assigned: { name: 'Kristin Watson', href: '#' },
-    date: '2d ago',
-  },
-  {
-    id: 3,
-    type: 'tags',
-    person: { name: 'Hilary Mahy', href: '#' },
-    tags: [
-      { name: 'Bug', href: '#', color: 'bg-rose-500' },
-      { name: 'Accessibility', href: '#', color: 'bg-indigo-500' },
-    ],
-    date: '6h ago',
-  },
-  {
-    id: 4,
-    type: 'assignment',
-    person: { name: 'Jason Meyers', href: '#' },
-    // imageUrl:
-    //   'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-    comment:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam. Scelerisque amet elit non sit ut tincidunt condimentum. Nisl ultrices eu venenatis diam.',
-    date: '2h ago',
-  },
-]
+// const activity = [
+ 
+//   {
+//     id: 2,
+//     type: 'tags',
+//     person: { name: 'Hilary Mahy', href: '#' },
+//     tags: [
+//       { name: 'Updated vehicle registration', href: '#', color: 'bg-rose-500' },
+//       { name: 'Added new vehicle', href: '#', color: 'bg-indigo-500' },
+//       { name: 'Deleted vehicle', href: '#', color: 'bg-green-500' },
+//       { name: 'User logged in', href: '#', color: 'bg-orange-500' },
+//       { name: 'User logged out', href: '#', color: 'bg-blue-500' },
+
+
+//     ],
+//     date: '6h ago',
+//   },
+
+//   {
+//     id: 3,
+//     type: 'tags',
+//     person: { name: 'Hilary Mahy', href: '#' },
+//     tags: [
+//       { name: 'Updated vehicle registration', href: '#', color: 'bg-rose-500' },
+//       { name: 'Added new vehicle', href: '#', color: 'bg-indigo-500' },
+//       { name: 'Deleted vehicle', href: '#', color: 'bg-green-500' },
+//       { name: 'User logged in', href: '#', color: 'bg-orange-500' },
+//       { name: 'User logged out', href: '#', color: 'bg-blue-500' },
+
+
+//     ],
+//     date: '6h ago',
+//   },
+
+// ]
+
+const tags = [
+  { name: 'Updated vehicle registration', href: '#', color: 'bg-rose-500' },
+  { name: 'User logged in', href: '#', color: 'bg-indigo-500' },
+];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -94,6 +110,7 @@ function Main() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [kpiData, setKpiData] = useState<any>(null);
+  const [activitylogs, setActiviyLogs] = useState([]);
 
   const isInitialMount = useRef(true);
 
@@ -121,6 +138,11 @@ function Main() {
     }
   }, [user?.token]);
 
+  useEffect(() => {
+    fetchActivityLogs();
+  }, []);
+
+
   const fetchKPIData = () => {
     setError("");
 
@@ -135,6 +157,32 @@ function Main() {
 
       function (response: any) {
         setKpiData(response);
+
+        console.log(response);
+        setLoading(false);
+      },
+      function (error: any) {
+        console.error("Error fetching recent searches:", error);
+        setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
+
+  const fetchActivityLogs = () => {
+    setError("");
+
+    console.log("hello");
+
+    setLoading(true);
+
+    API(
+      "get",
+      'activity-logs',
+      {},
+
+      function (response: any) {
+        setActiviyLogs(response);
 
         console.log(response);
         setLoading(false);
@@ -185,6 +233,90 @@ function Main() {
       user?.token && user.token
     );
   };
+
+  // const formatChanges = (changes: Changes): string => {
+  //   let formattedChanges = '';
+  
+  //   Object.entries(changes).forEach(([section, fields]) => {
+  //     Object.entries(fields).forEach(([field, values]) => {
+  //       if (field !== 'updated_at') { // Optional: skip 'updated_at' field
+  //         formattedChanges += `${section.toUpperCase()} - ${field}: ${values.original} -> ${values.updated}\n`;
+  //       }
+  //     });
+  //   });
+  
+  //   return formattedChanges;
+  // };
+
+ 
+
+  const formatChanges = (changes: string): JSX.Element => {
+    const changeElements: JSX.Element[] = [];
+  
+    try {
+      // Parse the changes JSON string into an object
+      const parsedChanges: Changes = JSON.parse(changes);
+  
+      // Iterate over the parsed object
+      Object.entries(parsedChanges).forEach(([section, fields]) => {
+        if (fields && typeof fields === 'object') {
+          Object.entries(fields).forEach(([field, values]) => {
+            if (values && typeof values === 'object' && 'original' in values && 'updated' in values) {
+              if (field !== 'updated_at') { // Optional: skip 'updated_at' field
+                changeElements.push(
+                  <div key={`${section}-${field}`} className=" inline-flex items-center   text-xs  truncate">
+                    <span className="">
+                      {section.toUpperCase()} - {field}: {values.original} -{">"} {values.updated}
+                    </span>
+                    <span
+                      className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2'
+                      aria-hidden="true"
+                    />
+                  </div>
+                );
+              }
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error parsing changes:', error);
+    }
+  
+    return <>{changeElements}</>;
+  };
+  
+
+
+  // const formatChanges = (changes: string): JSX.Element => {
+  //   const changeElements: JSX.Element[] = [];
+  
+  //   try {
+  //     const parsedChanges: Changes = JSON.parse(changes);
+  
+  //     Object.entries(parsedChanges).forEach(([section, fields]) => {
+  //       if (fields && typeof fields === 'object') {
+  //         Object.entries(fields).forEach(([field, values]) => {
+  //           if (values && typeof values === 'object' && 'original' in values && 'updated' in values) {
+  //             if (field !== 'updated_at') { // Optional: skip 'updated_at' field
+  //               changeElements.push(
+  //                 <div key={`${section}-${field}`}>
+  //                   {section.toUpperCase()} - {field}: {values.original} 
+  //                   <span className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2' aria-hidden="true" />
+  //                   {values.updated}
+  //                 </div>
+  //               );
+  //             }
+  //           }
+  //         });
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error('Error parsing changes:', error);
+  //   }
+  
+  //   return <>{changeElements}</>;
+  // };
 
   return (
     <div className="">
@@ -360,43 +492,18 @@ function Main() {
 
 
 
-            <div className="flow-root">
+            <div className="flow-root overflow-y-auto h-72">
               <h2 className="text-lg mb-4">Activity Log</h2>
               <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div>
       <ul role="list" className="-mb-8">
-        {activity.map((activityItem: any, activityItemIdx) => (
+        {activitylogs.map((activityItem: any, activityItemIdx) => (
           <li key={activityItem.id}>
             <div className="relative pb-8">
-              {activityItemIdx !== activity.length - 1 ? (
+              {activityItemIdx !== activitylogs.length - 1 ? (
                 <span className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
               ) : null}
               <div className="relative flex items-start space-x-3">
-                { activityItem.type === 'assignment' ? (
-                  <>
-                    <div>
-                      <div className="relative px-1">
-                        <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
-                        {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                        </div>
-                      </div>
-                    </div>
-                   
-
-<div className="min-w-0 flex-1">
-                      <div>
-                        <div className="text-sm">
-                          <a href={activityItem.person.href} className="font-medium text-gray-900">
-                            {activityItem.person.name}
-                          </a>
-                        </div>
-                        <p className="mt-0.5 text-sm text-gray-500">Commented {activityItem.date}</p>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-700">
-                        <p>{activityItem.comment}</p>
-                      </div>
-                    </div>
-                  </>
-                ) : activityItem.type === 'tags' ? (
+                
                   <>
                     <div>
                     <div className="relative px-1">
@@ -406,36 +513,32 @@ function Main() {
                       </div>
                     </div>
                     <div className="min-w-0 flex-1 py-0">
-                      <div className="text-sm leading-8 text-gray-500">
-                        <span className="mr-0.5">
-                          <a href={activityItem.person.href} className="font-medium text-gray-900">
-                            {activityItem.person.name}
-                          </a>{' '}
-                          added tags
-                        </span>{' '}
-                        <span className="mr-0.5">
-                          {activityItem?.tags.map((tag: { name:  ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode>  | undefined; href: string | undefined; color: string; }, index: any) => (
-                            <Fragment key={index}>
-                              <a
-                                href={tag.href}
-                                className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm"
-                              >
-                                <span className="absolute flex-shrink-0 flex items-center justify-center">
-                                  <span
-                                    className={classNames(tag.color, 'h-1.5 w-1.5 rounded-full')}
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                                <span className="ml-3.5 font-medium text-gray-900">{tag.name}</span>
-                              </a>{' '}
-                            </Fragment>
-                          ))}
+                      <div className="text-sm  text-gray-500">
+                        <span className="mr-2">
+                          <Link to={activityItem.admin.id} className="font-medium text-gray-900">
+                            {activityItem.action}
+                          </Link>
                         </span>
-                        <span className="whitespace-nowrap">{activityItem.date}</span>
+                      
+                        <span className="whitespace-nowrap"> {formatDate(activityItem.created_at)}</span>
+
+                            <div className="mr-0.5">
+                            <span className="mr-2">{activityItem.admin.firstName} {activityItem.admin.lastName }</span>
+
+                            <span
+                      className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block '
+                      aria-hidden="true"
+                    />
+                                                    <span className="ml-2 text-xs">{activityItem.admin.name}</span>
+
+                                <span className="ml-3.5  text-slate-500">{ formatChanges(activityItem.changes)}</span>
+     
+                         
+                        </div> 
                       </div>
                     </div>
                   </>
-                ) : null}
+                
               </div>
             </div>
           </li>

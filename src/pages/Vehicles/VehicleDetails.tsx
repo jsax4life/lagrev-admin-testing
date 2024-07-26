@@ -69,9 +69,7 @@ export default function ProfileDetails() {
   const { id } = useParams<{ id: string }>();
   const [vehicleDetails, setVehicleDetails] = useState<any>(null);
 
-  const [dateRange, setDateRange] = useState<string>("");
-  const [selectedLGA, setSelectedLGA] = useState<string>("");
-  const [kpiData, setKpiData] = useState(null);
+  
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,23 +78,12 @@ export default function ProfileDetails() {
 
   const navigate = useNavigate();
 
-  console.log(vehicleDetails);
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      // console.log('true')
-
-      setDateRange("");
-      return;
-    }
-
-    fetchDashboardData();
-  }, [dateRange, selectedLGA]);
+console.log(id);
+  
 
   useEffect(() => {
     if (user?.token) {
-      fetchDashboardData();
+        fetchVehicleData();
     }
   }, [user?.token]);
 
@@ -104,7 +91,7 @@ export default function ProfileDetails() {
 
   const isNull = 'Unavailable';
 
-  const fetchDashboardData = () => {
+  const fetchVehicleData = () => {
 
     setError("");
 
