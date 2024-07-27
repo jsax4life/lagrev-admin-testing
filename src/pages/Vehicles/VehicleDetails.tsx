@@ -78,7 +78,7 @@ export default function ProfileDetails() {
 
   const navigate = useNavigate();
 
-console.log(id);
+console.log(vehicleDetails);
   
 
   useEffect(() => {
@@ -325,6 +325,48 @@ console.log(id);
                         </div>
                       </div>
                       {/* END: Owners Details */}
+
+                        {/* BEGIN: Vehicles  */}
+
+                        {/* <div className="col-span-12 intro-y text-base ">
+                        <div className="flex items-center py-4">
+                          <h3 className="ntro-y box  font-semibold mr-4 text-sm text-primary">
+                            VEHICLE DETAILS
+                          </h3>
+                          <hr className="flex-grow border-t border-slate-200/" />
+                        </div>
+                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                            <div className="font-semibold ">
+                              Registered LGA:
+                            </div>
+                            <div className="font-semibold ">
+                              Vehicle Type:
+                            </div>
+                            <div className="font-semibold ">
+                              Plate Number:
+                            </div>
+
+                            <div className="font-semibold ">
+                              Vehicle Manufacture:
+                            </div>
+                            <div className="font-semibold ">
+                              Date Purchased:
+                            </div>
+                          </div>
+                          <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                            <div className="">{vehicleDetails?.registered_lga? vehicleDetails?.registered_lga : isNull }</div>
+
+                            <div className="">{vehicleDetails?.vehicle_type? vehicleDetails?.vehicle_type : isNull}</div>
+
+                            <div className="">{vehicleDetails?.plate_number ? vehicleDetails?.plate_number : isNull}</div>
+                            <div className="">{vehicleDetails?.manufacturer ? vehicleDetails?.manufacturer : isNull}</div>
+                            <div className="">{vehicleDetails?.date? vehicleDetails?.date : isNull}</div>
+
+                          </div>
+                        </div>
+                      </div> */}
+                      {/* END: Vehicle */}
                     </div>
                   </Tab.Panel>
 

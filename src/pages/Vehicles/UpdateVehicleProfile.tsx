@@ -24,6 +24,7 @@ import TomSelect from "../../base-components/TomSelect";
 import RiderForm from "./FormSections/RiderForm";
 import NOKForm from "./FormSections/NOKForm";
 import OwnerForm from "./FormSections/OwnerForm";
+import Litepicker from "../../base-components/Litepicker";
 
 interface VehicleDetails {
   rider: {
@@ -82,6 +83,14 @@ const validationSchema = yup.object().shape({
     .required("Phone number is required")
     .matches(/^\d{11}$/, "Owner number must be exactly 11 digits"),
   owner_home_address: yup.string().required("Owner address is required"),
+
+  plate_number: yup.string().required('Plate Number is required'),
+  vin: yup.string().required('VIN is required'),
+  vehicle_type: yup.string().required('Vehicle type is required'),
+  manufacturer: yup.string().required('Manufacturer is required'),
+  vehicle_color: yup.string().required('Vehicle Color is required'),
+  // date: yup.string().required('Vehicle Date is required'),
+
 });
 
 const lagosLGAs = [
@@ -127,6 +136,7 @@ export default function UpdateVehicleProfile() {
   const [loading, setLoading] = useState(false);
   const [selectedLga, setSelectedLga] = useState("");
   const navigate = useNavigate();
+  const [date, setDate] = useState('');
 
   useEffect(() => {
     if (user?.token) {
@@ -160,6 +170,16 @@ export default function UpdateVehicleProfile() {
       setValue("owner_last_name", rider.last_name || "");
       setValue("owner_phone", rider.phone || "");
       setValue("owner_home_address", rider.home_address || "");
+
+
+      setValue("vehicle_type", vehicleDetails.vehicle_type || "");
+      setValue("plate_number", vehicleDetails.plate_number || "");
+      setValue("vin", vehicleDetails.vin || "");
+      setValue("vehicle_color", vehicleDetails.vehicle_color || "");
+      setValue("manufacturer", vehicleDetails.manufacturer || "");
+      setValue("date", vehicleDetails.date || "");
+
+
     }
   }, [vehicleDetails, setValue]);
 
@@ -186,6 +206,21 @@ export default function UpdateVehicleProfile() {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
+
+     // Conditionally create the vehicle_details object only if vehicleDetails.tagged is true
+  const vehicleData = vehicleDetails?.tagged
+  ? {
+      vehicle_details: {
+        vehicle_type: data.vehicle_type,
+        plate_number: data.plate_number,
+        vin: data.vin,
+        vehicle_color: data.vehicle_color,
+        manufacturer: data.manufacturer,
+        date: date,
+      },
+    }
+  : {};
+ 
     // Transform the data into a nested object
     const structuredData = {
       rider: {
@@ -213,6 +248,11 @@ export default function UpdateVehicleProfile() {
         phone: data.owner_phone,
         home_address: data.owner_home_address,
       },
+
+     
+
+      ...vehicleData,
+      
     };
 
     API(
@@ -742,17 +782,155 @@ export default function UpdateVehicleProfile() {
                     </div>
                     {/* end Next Of Kin Section */}
 
+                    {/* Vehicle Secxtio */}
+
+                    <div className="mt-5 intro-y text-slate-600 ">
+                      <div className="flex items-center py-4">
+                        <h3 className="intro-y box  font-semibold mr-4 text-sm text-primary">
+                          VEHICLE DETAILS
+                        </h3>
+                        <hr className="flex-grow border-t border-primary/50" />
+                      </div>
+
+                      <div className="py-5">
+                        <div className="grid grid-cols-12 gap-x-5">
+                          <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                            <div>
+                              <FormLabel htmlFor="owner_first_name">
+                                Vehicle Type
+                              </FormLabel>
+                              <select
+                                defaultValue=""
+                                id="vehicle_type"
+                                {...register("vehicle_type")}
+                                className="bg-gray-50 border border-gray-300 text-gray-900  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                              >
+                                <option value="trycycle">
+                                  Trycycle (keke)
+                                </option>
+                              </select>
+                              {errors.vehicle_type && (
+                                <p className="text-red-500">
+                                  {errors.vehicle_type.message?.toString()}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="mt-3">
+                              <FormLabel htmlFor="address">
+                                Vehicle Color
+                              </FormLabel>
+                              <select
+                                defaultValue=""
+                                id="vehicle_color"
+                                {...register("vehicle_color")}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 lg:mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                              >
+                                <option value="">--Vehicle Color--</option>
+                                <option value="yellow">Yellow</option>
+                                <option value="red">Red</option>
+                                <option value="blue">Blue</option>
+                                <option value="green">Green</option>
+                                <option value="black">Black</option>
+                                <option value="white">White</option>
+                              </select>
+                              {errors.vehicle_color && (
+                                <p className="text-red-500">
+                                  {errors.vehicle_color.message?.toString()}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                            <div className="mt-3 xl:mt-0">
+                              <FormLabel htmlFor="owner_last_name">
+                                Plate Number
+                              </FormLabel>
+                              <FormInput
+                                id="plate_number"
+                                type="text"
+                                placeholder="Plate Number"
+                                {...register("plate_number")}
+                                className=""
+                              />
+                              {errors.plate_number && (
+                                <p className="text-red-500">
+                                  {errors.plate_number.message?.toString()}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="mt-3">
+                            <FormLabel htmlFor="modal-datepicker-1">Year of Purchase</FormLabel>
+            <Litepicker
+              className=""
+              value={date}
+              onChange={setDate}
+              id="modal-datepicker-1"
+              options={{
+                autoApply: true,
+                showWeekNumbers: true,
+                dropdowns: {
+                  minYear: 1990,
+                  maxYear: null,
+                  months: true,
+                  years: true,
+                  
+                },
+              }}
+            />
+                            </div>
+                          </div>
+
+                          <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                            <div className="mt-3 xl:mt-0">
+                              <FormLabel htmlFor="owner_phone">VIN</FormLabel>
+                              <FormInput
+                                id="vin"
+                                type="text"
+                                placeholder="Vehicle Identification Number"
+                                {...register("vin")}
+                                className=""
+                              />
+                              {errors.vin && (
+                                <p className="text-red-500">
+                                  {errors.vin.message?.toString()}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="mt-3 ">
+                              <FormLabel htmlFor="owner_phone">Manufacturer</FormLabel>
+                              <select defaultValue="" id="manufacturer" {...register('manufacturer')} className="bg-gray-50 border border-gray-300 text-gray-900 lg:mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ">
+              <option value="">--Manufacturer--</option>
+              <option value="Bajaj">Bajaj</option>
+              <option value="⁠TVS">⁠TVS</option>
+              <option value="⁠Innoson">⁠Innoson</option>
+              <option value="⁠Others">⁠Others</option>
+
+            </select>
+            {errors.manufacturer && <p className="text-red-500">{errors.manufacturer.message?.toString()}</p>}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* end vehicle section */}
+
                     <div className="flex justify-end mt-4">
-                      <Button type="submit" className="btn-primary" disabled = {loading}>
+                      <Button
+                        type="submit"
+                        className="btn-primary"
+                        disabled={loading}
+                      >
                         {loading ? (
                           <div className="flex items-center space-x-2 justify-end">
                             <LoadingIcon
                               icon="spinning-circles"
                               className="w-6 h-6"
                             />
-                            <div className=" text-xs text-center">
-                              Updating
-                            </div>
+                            <div className=" text-xs text-center">Updating</div>
                           </div>
                         ) : (
                           "Update Profile"

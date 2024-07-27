@@ -250,8 +250,50 @@ function Main() {
 
  
 
-  const formatChanges = (changes: string): JSX.Element => {
+  // const formatChanges = (changes: string): JSX.Element => {
+  //   const changeElements: JSX.Element[] = [];
+  
+  //   try {
+  //     // Parse the changes JSON string into an object
+  //     const parsedChanges: Changes = JSON.parse(changes);
+  
+  //     // Iterate over the parsed object
+  //     Object.entries(parsedChanges).forEach(([section, fields]) => {
+  //       if (fields && typeof fields === 'object') {
+  //         Object.entries(fields).forEach(([field, values]) => {
+  //           if (values && typeof values === 'object' && 'original' in values && 'updated' in values) {
+  //             if (field !== 'updated_at') { // Optional: skip 'updated_at' field
+  //               changeElements.push(
+  //                 <div key={`${section}-${field}`} className=" inline-flex items-center   text-xs  truncate">
+  //                   <span className="">
+  //                     {section.toUpperCase()} - {field}: {values.original} -{">"} {values.updated}
+  //                   </span>
+  //                   <span
+  //                     className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2'
+  //                     aria-hidden="true"
+  //                   />
+  //                 </div>
+  //               );
+  //             }
+  //           }
+  //         });
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error('Error parsing changes:', error);
+  //   }
+  
+  //   return <>{changeElements}</>;
+  // };
+  
+  const formatChanges = (changes: string | null | undefined): JSX.Element => {
     const changeElements: JSX.Element[] = [];
+  
+    // Check if changes is a valid non-empty string
+    if (typeof changes !== 'string' || changes.trim() === '') {
+      console.error('Invalid changes input: The input is not a valid string.');
+      return <>{changeElements}</>; // Return empty if input is invalid
+    }
   
     try {
       // Parse the changes JSON string into an object
@@ -261,18 +303,27 @@ function Main() {
       Object.entries(parsedChanges).forEach(([section, fields]) => {
         if (fields && typeof fields === 'object') {
           Object.entries(fields).forEach(([field, values]) => {
-            if (values && typeof values === 'object' && 'original' in values && 'updated' in values) {
-              if (field !== 'updated_at') { // Optional: skip 'updated_at' field
+            if (
+              values &&
+              typeof values === 'object' &&
+              'original' in values &&
+              'updated' in values
+            ) {
+              if (field !== 'updated_at') {
+                // Optional: skip 'updated_at' field
                 changeElements.push(
                   <div key={`${section}-${field}`} className=" inline-flex items-center   text-xs  truncate">
-                    <span className="">
-                      {section.toUpperCase()} - {field}: {values.original} -{">"} {values.updated}
-                    </span>
-                    <span
-                      className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2'
-                      aria-hidden="true"
-                    />
-                  </div>
+                  <span className="">
+                    {section.toUpperCase()} - {field}: {values.original} -{">"} {values.updated}
+                  </span>
+                  <span
+                    className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2'
+                    aria-hidden="true"
+                  />
+                </div>
+                  
+
+                  
                 );
               }
             }
@@ -285,8 +336,6 @@ function Main() {
   
     return <>{changeElements}</>;
   };
-  
-
 
   // const formatChanges = (changes: string): JSX.Element => {
   //   const changeElements: JSX.Element[] = [];
