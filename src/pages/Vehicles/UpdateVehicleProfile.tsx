@@ -138,6 +138,9 @@ export default function UpdateVehicleProfile() {
   const navigate = useNavigate();
   const [date, setDate] = useState('');
 
+
+  console.log(loading)
+
   useEffect(() => {
     if (user?.token) {
       fetchVehicleData();
@@ -279,17 +282,16 @@ export default function UpdateVehicleProfile() {
     // Call API to update vehicle details with form data
     //   await API("put", `vehicle-details/${id}`, data, null, null, user?.token);
 
-    setLoading(false);
     //   navigate("/vehicle-list");
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <LoadingIcon className="w-8 h-8" />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <LoadingIcon className="w-8 h-8" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
