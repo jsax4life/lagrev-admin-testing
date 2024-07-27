@@ -14,54 +14,75 @@ import { Dialog, Menu, Tab } from "../../base-components/Headless";
 import { UserContext } from "../../stores/UserContext";
 import API from "../../utils/API";
 import Tippy from "../../base-components/Tippy";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Button from "../../base-components/Button";
 import Lucide from "../../base-components/Lucide";
+import { formatDate } from "../../utils/utils";
 
 const tagStyle = [
   "bg-orange-100 text-orange-600",
   "bg-green-100 text-green-600",
 ];
 
-const activity = [
-    {
-      id: 1,
-      type: 'assignment',
-      person: { name: 'Eduardo Benz', href: '#' },
-      // imageUrl:
-      //   'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-      comment:
-        'Lorem ipsum dolor sit amet, ',
-      date: '6d ago',
-    },
-    {
-      id: 2,
-      type: 'assignment',
-      person: { name: 'Hilary Mahy', href: '#' },
-      assigned: { name: 'Kristin Watson', href: '#' },
-      date: '2d ago',
-    },
-    {
-      id: 3,
-      type: 'tags',
-      person: { name: 'Hilary Mahy', href: '#' },
-      tags: [
-        { name: 'Bug', href: '#', color: 'bg-rose-500' },
-        { name: 'Accessibility', href: '#', color: 'bg-indigo-500' },
-      ],
-      date: '6h ago',
-    },
-    {
-      id: 4,
-      type: 'assignment',
-      person: { name: 'Jason Meyers', href: '#' },
-      // imageUrl:
-      //   'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-      comment:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
-      date: '2h ago',
-    },
-  ]
+
+
+type UserRoleKey = 'registration_officer' | 'attachment_officer' | 'operation_officer';
+
+interface ActivityItem {
+  user_role: UserRoleKey;
+  // other fields...
+}
+
+const userRole: Record<UserRoleKey, any> = {
+  registration_officer: 'Registration Officer',
+  attachment_officer: 'Attachment Officer',
+  operation_officer: 'Operation Officer',
+};
+
+const activityItem: ActivityItem = {
+  user_role: 'registration_officer',
+  // other fields...
+};
+
+// const activity = [
+//     {
+//       id: 1,
+//       type: 'assignment',
+//       person: { name: 'Eduardo Benz', href: '#' },
+//       // imageUrl:
+//       //   'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
+//       comment:
+//         'Lorem ipsum dolor sit amet, ',
+//       date: '6d ago',
+//     },
+//     {
+//       id: 2,
+//       type: 'assignment',
+//       person: { name: 'Hilary Mahy', href: '#' },
+//       assigned: { name: 'Kristin Watson', href: '#' },
+//       date: '2d ago',
+//     },
+//     {
+//       id: 3,
+//       type: 'tags',
+//       person: { name: 'Hilary Mahy', href: '#' },
+//       tags: [
+//         { name: 'Bug', href: '#', color: 'bg-rose-500' },
+//         { name: 'Accessibility', href: '#', color: 'bg-indigo-500' },
+//       ],
+//       date: '6h ago',
+//     },
+//     {
+//       id: 4,
+//       type: 'assignment',
+//       person: { name: 'Jason Meyers', href: '#' },
+//       // imageUrl:
+//       //   'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
+//       comment:
+//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
+//       date: '2h ago',
+//     },
+//   ]
 
 export default function ProfileDetails() {
   const { user } = useContext(UserContext);
@@ -87,7 +108,9 @@ console.log(vehicleDetails);
     }
   }, [user?.token]);
 
-  const { rider, owner } = vehicleDetails ?? {};
+  const { rider, owner, user_activity_logs } = vehicleDetails ?? {};
+
+  // const user_activity_logs: any[] =[];
 
   const isNull = 'Unavailable';
 
@@ -219,7 +242,7 @@ console.log(vehicleDetails);
                   <Tab.Panel>
                     <div className="grid grid-cols-12 gap-6 text-slate-600">
                       {/* BEGIN: Rider Details */}
-                      <div className="col-span-12 intro-y box ">
+                      <div className="col-span-12 intro-y  ">
                         <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
                           <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
                             <div className="font-semibold ">Nin</div>
@@ -250,7 +273,7 @@ console.log(vehicleDetails);
                       {/* END: Rider Details */}
 
                       {/* BEGIN: Next of Kin  */}
-                      <div className="col-span-12 intro-y box text-md ">
+                      <div className="col-span-12 intro-y  text-md ">
                         <div className="flex items-center py-4">
                           <h3 className="intro-y box  font-semibold mr-4 text-sm text-primary">
                             NEXT OF KIN DETAILS
@@ -291,7 +314,7 @@ console.log(vehicleDetails);
 
                       {/* BEGIN: Ownser's  */}
 
-                      <div className="col-span-12 intro-y box text-base ">
+                      <div className="col-span-12 intro-y text-base ">
                         <div className="flex items-center py-4">
                           <h3 className="ntro-y box  font-semibold mr-4 text-sm text-primary">
                             OWNER's DETAILS
@@ -373,7 +396,7 @@ console.log(vehicleDetails);
                   <Tab.Panel>
                     <div className="grid grid-cols-12 gap-6 text-slate-600">
                       {/* BEGIN: Rider Details */}
-                      <div className="col-span-12 intro-y box ">
+                      <div className="col-span-12 intro-y  ">
                         <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
                           <div className=" items-center mb-5">
                             <div className="font-semibold lg:mb-4 text-md">
@@ -481,86 +504,66 @@ console.log(vehicleDetails);
                     <div className="grid grid-cols-12 gap-6 text-slate-600">
                
 
-                    <div className="flow-root col-span-12 intro-y box">
-<ul role="list" className="-mb-8">
-{activity.map((activityItem: any, activityItemIdx) => (
-<li key={activityItem.id}>
-<div className="relative pb-8">
-{activityItemIdx !== activity.length - 1 ? (
-  <span className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
-) : null}
-<div className="relative flex items-start space-x-3">
-  { activityItem.type === 'assignment' ? (
-    <>
-      <div>
-        <div className="relative px-1">
-          <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
-          {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-          </div>
-        </div>
-      </div>
      
 
-<div className="min-w-0 flex-1">
-        <div>
-          <div className="text-sm">
-            <a href={activityItem.person.href} className="font-medium text-gray-900">
-              {activityItem.person.name}
-            </a>
-          </div>
-          <p className="mt-0.5 text-sm text-gray-500">Commented {activityItem.date}</p>
-        </div>
-        <div className="mt-2 text-sm text-gray-700">
-          <p>{activityItem.comment}</p>
-        </div>
-      </div>
-    </>
-  ) : activityItem.type === 'tags' ? (
-    <>
-      <div>
-      <div className="relative px-1">
-          <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
-          {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-          </div>
-        </div>
-      </div>
-      <div className="min-w-0 flex-1 py-0">
-        <div className="text-sm leading-8 text-gray-500">
-          <span className="mr-0.5">
-            <a href={activityItem.person.href} className="font-medium text-gray-900">
-              {activityItem.person.name}
-            </a>{' '}
-            added tags
-          </span>{' '}
-          <span className="mr-0.5">
-            {activityItem?.tags.map((tag: { name:  ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode>  | undefined; href: string | undefined; color: string; }, index: any) => (
-              <Fragment key={index}>
-                <a
-                  href={tag.href}
-                  className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm"
-                >
-                  <span className="absolute flex-shrink-0 flex items-center justify-center">
-                    <span
-                      className={classNames(tag.color, 'h-1.5 w-1.5 rounded-full')}
+    <div className="flow-root col-span-12 intro-y overflow-y-auto h-72">
+              <h2 className="text-lg mb-4">Activity Log</h2>
+              <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div>
+      <ul role="list" className="-mb-8">
+        {user_activity_logs?.map((activityItem: any , activityItemIdx: number) => (
+          <li key={activityItem.id}>
+            <div className="relative pb-8">
+              {activityItemIdx !== user_activity_logs.length - 1 ? (
+                <span className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+              ) : null}
+              <div className="relative flex items-start space-x-3">
+                
+                  <>
+                    <div>
+                    <div className="relative px-1">
+                        <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
+                        {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1 py-0">
+                      <div className="text-sm  text-gray-500">
+                        <span className="mr-2">
+                          <Link to={activityItem.id} className="font-medium text-gray-900">
+                            {activityItem.action}
+                          </Link>
+                        </span>
+                      
+                        <span className="whitespace-nowrap"> {formatDate(activityItem.created_at)}</span>
+
+                            <div className="mr-0.5">
+                            <span className=""> {activityItem.user.name }</span>
+
+                            <span
+                      className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block mx-2 '
                       aria-hidden="true"
                     />
-                  </span>
-                  <span className="ml-3.5 font-medium text-gray-900">{tag.name}</span>
-                </a>{' '}
-              </Fragment>
-            ))}
-          </span>
-          <span className="whitespace-nowrap">{activityItem.date}</span>
-        </div>
-      </div>
-    </>
-  ) : null}
-</div>
-</div>
-</li>
-))}
-</ul>
-</div>
+
+                                {/* <span className="ml-3  text-slate-500">{ formatChanges(activityItem.changes)}</span> */}
+                                <span className=" text-xs">{activityItem.type}</span>
+
+                                <span
+                      className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block  mx-2'
+                      aria-hidden="true"
+                    />
+
+                                                    <span className="mr-2 text-xs">{ activityItem.type}</span>
+                        </div> 
+                      </div>
+                    </div>
+                  </>
+                
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
 
                     
                     </div>
