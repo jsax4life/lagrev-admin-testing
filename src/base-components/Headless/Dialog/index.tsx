@@ -90,9 +90,16 @@ Dialog.Panel = ({
         enterFrom="opacity-0 -mt-16"
         enterTo="opacity-100 mt-16"
         leave="ease-in-out duration-[400ms]"
-        leaveFrom="opacity-100 mt-16"
-        leaveTo="opacity-0 -mt-16"
+        leaveFrom="opacity-100 "
+        leaveTo="opacity-0 "
         className="fixed inset-0"
+        // enter="ease-out duration-300"
+            // enterFrom="opacity-0"
+            // enterTo="opacity-100"
+            // leave="ease-in duration-200"
+            // leaveFrom="opacity-100"
+            // leaveTo="opacity-0"
+            // className='insert-0 fixed'
       >
         <HeadlessDialog.Panel
           as={as}

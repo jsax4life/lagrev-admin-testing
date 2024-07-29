@@ -57,7 +57,7 @@ function Main() {
   }
 
   return (
-    <div className="pt-2 pb-7 before:content-[''] before:absolute before:inset-0 before:bg-fixed before:bg-no-repeat before:bg-skew-pattern dark:before:bg-skew-pattern-dark">
+    <div className="pt-2  pb-7 before:content-[''] before:absolute before:inset-0 before:bg-fixed before:bg-no-repeat before:bg-skew-pattern dark:before:bg-skew-pattern-dark ">
       {/* <DarkModeSwitcher /> */}
       {/* <MainColorSwitcher /> */}
       <MobileMenu />
@@ -65,7 +65,7 @@ function Main() {
       <div
         className={clsx([
           "relative",
-          "before:content-[''] before:w-[95%] before:z-[-1] before:rounded-[1.3rem] before:bg-white/10 before:h-full before:-mt-4 before:absolute before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/50",
+          "before:content-[''] bg-white  before:w-[95%] before:z-[-1] before:rounded-[1.3rem] before:bg-white/10 before:h-full before:-mt-4 before:absolute before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/50",
 
           // Animation
           "before:translate-y-[35px] text-primary before:opacity-0 before:animate-[0.4s_ease-in-out_0.1s_intro-wrapper] before:animate-fill-mode-forwards",
@@ -73,7 +73,7 @@ function Main() {
       >
         <div
           className={clsx([
-            "translate-y-0 bg-secondary flex rounded-[1.3rem] -mt-[7px] md:mt-0 dark:bg-darkmode-400",
+            "translate-y-0  flex  -mt-[7px] md:mt-0 dark:bg-darkmode-400",
             "before:block before:absolute before:inset-0 text-primary before:rounded-[1.3rem] before:z-[-1]",
 
             // Animation
@@ -294,7 +294,7 @@ Super Admin        </div>
 
           {/* END: Side Menu */}
           {/* BEGIN: Content */}
-          <div className="px-2  md:px-0 max-w-full md:max-w-auto rounded-[1.3rem] flex-1 min-w-0 min-h-screen pb-10 shadow-sm bg-slate-100 dark:bg-darkmode-700 before:content-[''] before:w-full before:h-px before:block">
+          <div className="px-2  md:px-0 max-w-full md:max-w-auto rounded-[1.3rem] lg:rounded-none flex-1 min-w-0 min-h-screen pb-10 shadow-sm bg-secondary dark:bg-darkmode-700 before:content-[''] before:w-full before:h-px before:block">
             <Outlet />
           </div>
           {/* END: Content */}
@@ -329,7 +329,7 @@ function Menu(props: {
             !props.menu.active && props.level != "first",
           "bg-primary dark:bg-transparent":
             props.menu.active && props.level == "first",
-          "before:content-[''] before:block before:inset-0 before:bg-primary	 before:rounded-lg before:absolute before:border-b-[3px] before:border-solid before:border-black/10 before:dark:border-black/10 before:dark:bg-darkmode-700 text-secondary":
+          "before:content-[''] before:block before:inset-0 before:bg-customColor	 before:rounded-lg before:absolute before:border-b-[3px] before:border-solid before:border-black/10 before:dark:border-black/10 before:dark:bg-darkmode-700 text-secondary":
             props.menu.active && props.level == "first",
           "after:content-[''] after:w-[20px] after:h-[80px] after:mr-[-27px] after:bg-no-repeat after:bg-cover after:absolute after:top-0 after:bottom-0 after:right-0 after:my-auto after:bg-menu-active dark:after:bg-menu-active-dark":
             props.menu.active && props.level == "first",

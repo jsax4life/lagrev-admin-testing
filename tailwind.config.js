@@ -28,6 +28,7 @@ module.exports = {
         danger: "rgb(var(--color-danger) / <alpha-value>)",
         light: "rgb(var(--color-light) / <alpha-value>)",
         dark: "rgb(var(--color-dark) / <alpha-value>)",
+        customColor: "#6b4eff",
         darkmode: {
           50: "rgb(var(--color-darkmode-50) / <alpha-value>)",
           100: "rgb(var(--color-darkmode-100) / <alpha-value>)",

@@ -17,6 +17,9 @@ import DashboardCard from "./DashboardCard";
 import Progress from "../../base-components/Progress";
 import { formatCurrency, formatDate } from "../../utils/utils";
 import { Link } from "react-router-dom";
+import Chip from "../../components/Chip";
+import FilterChips from "../../components/FilterChips";
+import { date } from "yup";
 
 
 
@@ -105,14 +108,22 @@ function Main() {
   const { user } = useContext(UserContext);
 
   const [dateRange, setDateRange] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
   const [selectedLGA, setSelectedLGA] = useState<string>("");
+  const [selectedPark, setSelectedPark] = useState<string>('');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [kpiData, setKpiData] = useState<any>(null);
   const [activitylogs, setActiviyLogs] = useState([]);
-
+  const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
+  const cancelButtonRef = useRef(null);
+  const [showLgaSubMenu, setShowLgaSubMenu] = useState(false);
+  const [showParkSubMenu, setShowParkSubMenu] = useState(false);
   const isInitialMount = useRef(true);
+
 
   useEffect(() => {
     if (user?.token) {
@@ -121,13 +132,12 @@ function Main() {
   }, [user?.token]);
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      // console.log('true')
+    // if (isInitialMount.current) {
+    //   isInitialMount.current = false;
 
-      setDateRange("");
-      return;
-    }
+    //   setDateRange("");
+    //   return;
+    // }
 
     fetchDashboardData();
   }, [dateRange, selectedLGA]);
@@ -142,6 +152,94 @@ function Main() {
     fetchActivityLogs();
   }, []);
 
+
+  console.log(startDate, endDate)
+
+  // const handleAddFilter = (filter: string, value: string) => {
+  //   if (filter === 'LGA') setSelectedLGA(value);
+  //   else if (filter === 'Park') setSelectedPark(value);
+  //   else if (filter === 'Date') setDateRange(value);
+
+  //   onFilterChange({
+  //     lga: filter === 'LGA' ? value : selectedLGA,
+  //     park: filter === 'Park' ? value : selectedPark,
+  //     date: filter === 'Date' ? value : dateRange,
+  //   });
+  // };
+
+  // const handleRemoveFilter = (filter: string) => {
+  //   if (filter === 'LGA') setSelectedLGA('');
+  //   else if (filter === 'Park') setSelectedPark('');
+  //   else if (filter === 'Date') setDateRange('');
+
+  //   onFilterChange({
+  //     lga: filter === 'LGA' ? '' : selectedLGA,
+  //     park: filter === 'Park' ? '' : selectedPark,
+  //     date: filter === 'Date' ? '' : dateRange,
+  //   });
+  // };
+
+    // Function to handle adding filters
+    // const handleAddFilter = (filter: string, value: string) => {
+    //   if (filter === 'LGA') {
+    //     setSelectedLGA(value);
+    //   } else if (filter === 'Park') {
+    //     setSelectedPark(value);
+    //   } else if (filter === 'Date') {
+    //     setDateRange(value);
+    //   }
+  
+    //   // Here you can add any logic to fetch or update data based on the new filters
+    //   // For example, if you are fetching data, call your API here
+    // };
+  
+    // Function to handle removing filters
+    const handleRemoveFilter = (filter: string) => {
+      if (filter === 'LGA') {
+        setSelectedLGA('');
+      } else if (filter === 'Park') {
+        setSelectedPark('');
+      } else if (filter === 'Date') {
+        setDateRange('');
+      }
+  
+      // Optionally update your data based on the filters being removed
+    };
+  
+  // const handleFilterChange = (filters: { lga: string; park: string; date: string }) => {
+  //   // Handle filter logic here
+  //   setSelectedLGA(filters.lga);
+  //   setSelectedPark(filters.park);
+  //   setDateRange(filters.date);
+  //   // Optionally fetch and update dashboard data based on filters
+  // };
+
+
+
+  // Function to handle filter changes
+  const handleFilterChange = (filter: string, value: string) => {
+    const newFilters = {
+      lga: selectedLGA,
+      park: selectedPark,
+      date: dateRange,
+    };
+
+    if (filter === 'LGA') {
+      setSelectedLGA(value);
+      newFilters.lga = value;
+    } else if (filter === 'Park') {
+      setSelectedPark(value);
+      newFilters.park = value;
+    } else if (filter === 'Date') {
+      setDateRange(value);
+      newFilters.date = value;
+    }
+
+    // Call any logic to update data based on the new filters
+    console.log('New Filters:', newFilters);
+
+    // Update your data or perform actions here
+  };
 
   const fetchKPIData = () => {
     setError("");
@@ -368,9 +466,230 @@ function Main() {
   // };
 
   return (
-    <div className="">
-      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y bg-gradient-to-r from-primary via-purple-700 to-primary  px-2 lg:px-[22px] py-8  lg:rounded-t-[1.3rem]">
-        <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
+    <div className="bg-secondary">
+      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y   px-2 lg:px-[22px] py-8  ">
+
+      <div className="col-span-12 justify-start items-center flex  intro-y sm:flex">
+              
+
+
+
+
+
+
+
+ <Dialog
+                      open={datepickerModalPreview}
+                      onClose={() => {
+                        setDatepickerModalPreview(false);
+                      }}
+                      initialFocus={cancelButtonRef}
+                      className="flex place-self-center lg:items-center lg:justify-center  "
+
+                    >
+                      <Dialog.Panel className='  ">
+'>
+                        {/* BEGIN: Modal Header */}
+                        <Dialog.Title>
+                       
+                       <div className="flex justify-center items-center">
+<div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-1.5">
+<Lucide icon="Calendar" className="w-6 h-6 " />
+
+</div>
+<div className="">
+<h2 className="mr-auto text-slate-600 font-bold">
+   Date Range
+ </h2>
+ <p className="text-xs">Choose a date range to filter</p>
+</div>
+                       </div>
+                        
+                         
+                        </Dialog.Title>
+                        {/* END: Modal Header */}
+                        {/* BEGIN: Modal Body */}
+                        <Dialog.Description className="grid grid-cols-12 gap-x gap-y-6">
+                          <div className="col-span-12 relative">
+                            <FormLabel htmlFor="modal-datepicker-1">
+                              Start Date
+                            </FormLabel>
+                            <Litepicker
+                              id="modal-datepicker-1"
+                              value={startDate}
+                              onChange={setStartDate}
+                              options={{
+                                autoApply: false,
+                                showWeekNumbers: true,
+                                dropdowns: {
+                                  minYear: 1990,
+                                  maxYear: null,
+                                  months: true,
+                                  years: true,
+                                },
+                              }}
+                            />
+                           <div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
+        <Lucide icon="Calendar" className="w-4 h-4" />
+    </div>
+                          </div>
+                          <div className="col-span-12 relative ">
+                            <FormLabel htmlFor="modal-datepicker-2">
+                              End Date
+                            </FormLabel>
+                            <Litepicker
+                              id="modal-datepicker-2"
+                              value={endDate}
+                              onChange={setEndDate}
+                              options={{
+                                autoApply: false,
+                                showWeekNumbers: true,
+                                dropdowns: {
+                                  minYear: 1990,
+                                  maxYear: null,
+                                  months: true,
+                                  years: true,
+                                },
+                              }}
+                            />
+
+<div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
+        <Lucide icon="Calendar" className="w-4 h-4" />
+    </div>
+                          </div>
+                        </Dialog.Description>
+                        {/* END: Modal Body */}
+                        {/* BEGIN: Modal Footer */}
+                        <Dialog.Footer className="text-right">
+                          <Button
+                            variant="outline-secondary"
+                            type="button"
+                            onClick={() => {
+                              setDatepickerModalPreview(false);
+                            }}
+                            className="w-20 mr-1"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            // variant="primary"
+                            type="button"
+                            className="w-autos bg-customColor text-secondary"
+                            ref={cancelButtonRef}
+                            onClick={() => {
+                              setDateRange(`${startDate}-${endDate}`)
+                              // const dateString = date.toString(); // Convert date object to string
+                              // handleAddFilter('Date', dateString);
+                              handleFilterChange('Date', `${startDate} - ${endDate}`);
+                              setDatepickerModalPreview(false);
+
+            
+                            }}
+
+                          >
+                            Apply Filter
+                          </Button>
+                        </Dialog.Footer>
+                        {/* END: Modal Footer */}
+                      </Dialog.Panel>
+                    </Dialog>
+
+<Menu className="text-xs mr-2">
+    <Menu.Button as={Button} className="bg-customColor text-secondary" >
+    <Lucide icon="Filter" className="w-4 h-4 mr-2" />
+
+        Filter
+        <Lucide icon="ChevronDown" className="w-4 h-4 ml-2" />
+    </Menu.Button>
+    <Menu.Items className="w-40 text-xs">
+    <Menu.Header className="">Filter Categories</Menu.Header>
+
+        {/* <Menu.Item>
+            <Lucide icon="Home" className="w-4 h-4 mr-2" />
+            LGA
+
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item> */}
+
+<Menu.Item
+              onClick={() => setShowLgaSubMenu(!showLgaSubMenu)}
+
+>
+           
+              <Lucide icon="Home" className="w-4 h-4 mr-2" />
+              LGA
+              <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+        </Menu.Item> 
+
+            {/* LGA Submenu */}
+            {showLgaSubMenu && (
+                        <Menu.Items className="lg:w-60 w-40 overflow-y-scroll h-72" placement="right-start">
+
+              {lagosLGAs.map((lga, index) => (
+              <Menu.Item key={index}>
+                {({ active }) => (
+                  <div
+                    className={`flex items-center px-8 cursor-pointer ${
+                      active ? "bg-gray-100" : ""
+                    }`}
+                  >
+                    {lga}
+                  </div>
+                )}
+              </Menu.Item>
+            ))}
+
+
+
+            </Menu.Items >
+        )}
+
+
+        <Menu.Item>
+            <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
+            Park
+
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item>
+        <Menu.Item
+         onClick={(event: React.MouseEvent) => {
+          event.preventDefault();
+          setDatepickerModalPreview(true);
+        }}
+        >
+            <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
+            Date
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item>
+       
+    </Menu.Items>
+</Menu>
+
+<FilterChips
+          lagosLGAs={lagosLGAs}
+          selectedLGA={selectedLGA}
+          selectedPark={selectedPark}
+          dateRange={dateRange}
+          onRemoveFilter={handleRemoveFilter}
+        />
+                
+              </div>
+
+        {/* <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
+
+
+        <FilterChips
+          lagosLGAs={lagosLGAs}
+          selectedLGA={selectedLGA}
+          selectedPark={selectedPark}
+          dateRange={dateRange}
+          onRemoveFilter={handleRemoveFilter}
+        />
+        
+
           <div className="flex flex-col lg:flex-row w-full gap-y-2 text-primary">
             <div className="relative lg:w-1/4 w-full text-slate-500">
               <FormInput
@@ -385,10 +704,23 @@ function Main() {
             </div>
 
            
+          
 
             <FormSelect
               className="w-48 lg:ml-2 lg:w-1/5 !box mr-2"
-              onChange={(e) => setSelectedLGA(e.target.value)}
+              // onChange={(e) => setSelectedLGA(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // handleAddFilter('LGA', value);
+                handleFilterChange('LGA', value);
+
+              }}
+              value={selectedLGA}
+              // onChange={(e) => {
+              //   const value = e.target.value;
+              //   setSelectedLGA(value);
+              //   handleFilterChange({ lga: value, park: selectedPark, date: dateRange });
+              // }}
             >
               <option value="" disabled>
                 --All LGA--
@@ -400,7 +732,15 @@ function Main() {
               ))}
             </FormSelect>
 
-            <FormSelect className="w-48  lg:w-1/5 !box mr-2">
+            <FormSelect className="w-48  lg:w-1/5 !box mr-2"
+             onChange={(e) => {
+              const value = e.target.value;
+              // handleAddFilter('Park', value);
+              handleFilterChange('Park', value);
+
+            }}
+            value={selectedPark}
+            >
               <option>All Parks</option>
               <option>Active</option>
               <option>Removed</option>
@@ -414,7 +754,15 @@ function Main() {
               <Litepicker
                 placeholder="Select a date range"
                 // value={dateRange}
-                onChange={setDateRange}
+                // onChange={setDateRange}
+                onChange={(date) => {
+                  setDateRange
+                  const dateString = date.toString(); // Convert date object to string
+                  // handleAddFilter('Date', dateString);
+                  handleFilterChange('Date', dateString);
+
+                }}
+
                 options={{
                   startDate: "",
                   autoApply: false,
@@ -433,7 +781,7 @@ function Main() {
               />
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="col-span-12 intro-y lg:col-span-8">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
