@@ -466,10 +466,10 @@ function Main() {
   // };
 
   return (
-    <div className="bg-secondary">
-      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y   px-2 lg:px-[22px] py-8  ">
+    <>
+      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y  lg:py-0 py-8  ">
 
-      <div className="col-span-12 justify-start items-center flex  intro-y sm:flex">
+      <div className="col-span-12 justify-end items-center flex  intro-y sm:flex">
               
 
 
@@ -594,7 +594,17 @@ function Main() {
                       </Dialog.Panel>
                     </Dialog>
 
-<Menu className="text-xs mr-2">
+
+                    <FilterChips
+          lagosLGAs={lagosLGAs}
+          selectedLGA={selectedLGA}
+          selectedPark={selectedPark}
+          dateRange={dateRange}
+          onRemoveFilter={handleRemoveFilter}
+        />
+
+
+<Menu className="text-xs ml-2">
     <Menu.Button as={Button} className="bg-customColor text-secondary" >
     <Lucide icon="Filter" className="w-4 h-4 mr-2" />
 
@@ -668,13 +678,7 @@ function Main() {
     </Menu.Items>
 </Menu>
 
-<FilterChips
-          lagosLGAs={lagosLGAs}
-          selectedLGA={selectedLGA}
-          selectedPark={selectedPark}
-          dateRange={dateRange}
-          onRemoveFilter={handleRemoveFilter}
-        />
+
                 
               </div>
 
@@ -881,7 +885,7 @@ function Main() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-5 mt-5 intro-y px-5">
+      <div className="grid grid-cols-12 gap-5 mt-5 intro-y">
         <div className="col-span-12 intro-y lg:col-span-8">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
             <div className="col-span-12 p-5 cursor-pointer  box">
@@ -1031,7 +1035,7 @@ style={{ width: `${kpiData?.lga_contribution_percentage}%` }}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

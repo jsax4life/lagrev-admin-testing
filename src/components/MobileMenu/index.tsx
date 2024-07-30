@@ -67,7 +67,7 @@ function Main() {
       {/* BEGIN: Mobile Menu */}
       <div
         className={clsx([
-          "w-full fixed bg-primary/90 z-[60] border-b border-white/[0.08] -mt-5 -mx-3 sm:-mx-8 mb-6 dark:bg-darkmode-800/90 md:hidden",
+          "w-full fixed bg-customColor z-[60] border-b border-white/[0.08] -mt-5 -mx-3 sm:-mx-8 mb-6 dark:bg-darkmode-800/90 md:hidden",
           "before:content-[''] before:w-full before:h-screen before:z-10 before:fixed before:inset-x-0 before:bg-black/90 before:transition-opacity before:duration-200 before:ease-in-out",
           !activeMobileMenu && "before:invisible before:opacity-0",
           activeMobileMenu && "before:visible before:opacity-100",

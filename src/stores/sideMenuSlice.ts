@@ -18,47 +18,47 @@ export interface SideMenuState {
 const initialState: SideMenuState = {
   menu: [
     {
-      icon: "Home",
+      icon: "LayoutDashboard",
       pathname: "/dashboard",
       title: "Dashboard",
 
     
     },
     {
-      icon: "Map",
+      icon: "MapPin",
       title: "Vehicles",
       pathname: "/vehicle",
 
     },
  
-    "divider",
+    // "divider",
  
     {
       icon: "Users",
       title: "Users",
       subMenu: [
         {
-          icon: "Users",
+          icon: "User",
           pathname: "/users-layout-1",
           title: "All Users",
         },
         {
-          icon: "Users",
+          icon: "User",
           pathname: "/users-layout-2",
           title: "Add new User",
         },
         {
-          icon: "Users",
+          icon: "User",
           pathname: "/users-layout-3",
           title: "Attendance",
         },
         {
-          icon: "Users",
+          icon: "User",
           pathname: "/users-layout-3",
           title: "Performance",
         },
         {
-          icon: "Users",
+          icon: "User",
           pathname: "/users-layout-3",
           title: "Role Management",
         },
