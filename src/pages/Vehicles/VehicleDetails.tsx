@@ -552,7 +552,7 @@ console.log(vehicleDetails);
                       aria-hidden="true"
                     />
 
-                                                    <span className="mr-2 text-xs">{ activityItem.type}</span>
+                                                    <span className="mr-2 text-xs">{ activityItem.user.lga}</span>
                         </div> 
                       </div>
                     </div>
