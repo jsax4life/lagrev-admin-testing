@@ -233,7 +233,7 @@ Super Admin        </div>
         {/* BEGIN: Content */}
         <div
           className={clsx([
-            "max-w-full md:max-w-none rounded-[30px] md:rounded-none px-4 md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700",
+            `max-w-full md:max-w-none  rounded-[30px] md:rounded-none px-4 md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700`,
             "before:content-[''] before:w-full before:h-px before:block",
           ])}
         >

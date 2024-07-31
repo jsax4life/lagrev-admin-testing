@@ -9,7 +9,7 @@ import { useState, useRef } from "react";
 import fakerData from "../../utils/faker";
 import Button from "../../base-components/Button";
 import Pagination from "../../base-components/Pagination";
-import { FormCheck, FormInput, FormSelect } from "../../base-components/Form";
+import { FormCheck, FormInput, FormLabel, FormSelect } from "../../base-components/Form";
 import Lucide from "../../base-components/Lucide";
 import { Dialog, Menu } from "../../base-components/Headless";
 import Table from "../../base-components/Table";
@@ -20,6 +20,7 @@ import { UserContext } from '../../stores/UserContext';
 import API from '../../utils/API';
 import { useNavigate } from 'react-router-dom';
 import LoadingIcon from '../../base-components/LoadingIcon';
+import FilterChips from '../../components/FilterChips';
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -43,12 +44,17 @@ export default function Main() {
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
     const deleteButtonRef = useRef(null);
     const [dateRange, setDateRange] = useState<string>('');
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+
     const [selectedLGA, setSelectedLGA] = useState<string>('');
     const [kpiData, setKpiData] = useState(null);
+    const [selectedPark, setSelectedPark] = useState<string>('');
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
+    const cancelButtonRef = useRef(null);
     const isInitialMount = useRef(true);
 
 // console.log(vehicleList)
@@ -112,6 +118,47 @@ useEffect(() => {
       };
     
 
+
+          // Function to handle removing filters
+    const handleRemoveFilter = (filter: string) => {
+      if (filter === 'LGA') {
+        setSelectedLGA('');
+      } else if (filter === 'Park') {
+        setSelectedPark('');
+      } else if (filter === 'Date') {
+        setDateRange('');
+      }
+  
+      // Optionally update your data based on the filters being removed
+    };
+  
+ 
+
+
+  // Function to handle filter changes
+  const handleFilterChange = (filter: string, value: string) => {
+    const newFilters = {
+      lga: selectedLGA,
+      park: selectedPark,
+      date: dateRange,
+    };
+
+    if (filter === 'LGA') {
+      setSelectedLGA(value);
+      newFilters.lga = value;
+    } else if (filter === 'Park') {
+      setSelectedPark(value);
+      newFilters.park = value;
+    } else if (filter === 'Date') {
+      setDateRange(value);
+      newFilters.date = value;
+    }
+
+    // Call any logic to update data based on the new filters
+    console.log('New Filters:', newFilters);
+
+    // Update your data or perform actions here
+  };
      
 
 
@@ -122,15 +169,14 @@ useEffect(() => {
 
 
 
-      <div className="min-h-full">
-  <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
+      <div className="min-h-full ">
+  {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
     <header className="py-5">
-      {/* Header content */}
     </header>
-  </div>
+  </div> */}
 
-  <main className="-mt-32">
-    <div className="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
+  <main className="">
+    <div className="max-w-7xl mx-auto pb-12 px-4 lg:px-0 lg:mx-0 ">
       <div className="bg-white rounded-lg shadow px-5 py-6 sm:px-6">
 
         {/* Content Section */}
@@ -145,12 +191,136 @@ useEffect(() => {
         </div>
 
         <div className="grid grid-cols-12 gap-6 mt-5">
-        <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
-          <div className="flex flex-col lg:flex-row w-full gap-y-2 text-primary">
+        <div className="col-span-12 intro-y text-black mb-8 bg-white p-2 lg:px-0">
+          <div className="flex flex-col lg:flex-row w-full gap-y-2 text-primary items-center space-x-3">
+
+
+
+          <Dialog
+                      open={datepickerModalPreview}
+                      onClose={() => {
+                        setDatepickerModalPreview(false);
+                      }}
+                      initialFocus={cancelButtonRef}
+                      className="flex place-self-center lg:items-center lg:justify-center  "
+
+                    >
+                      <Dialog.Panel className='  ">
+'>
+                        {/* BEGIN: Modal Header */}
+                        <Dialog.Title>
+                       
+                       <div className="flex justify-center items-center">
+<div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-1.5">
+<Lucide icon="Calendar" className="w-6 h-6 " />
+
+</div>
+<div className="">
+<h2 className="mr-auto text-slate-600 font-bold">
+   Date Range
+ </h2>
+ <p className="text-xs">Choose a date range to filter</p>
+</div>
+                       </div>
+                        
+                         
+                        </Dialog.Title>
+                        {/* END: Modal Header */}
+                        {/* BEGIN: Modal Body */}
+                        <Dialog.Description className="grid grid-cols-12 gap-x gap-y-6">
+                          <div className="col-span-12 relative">
+                            <FormLabel htmlFor="modal-datepicker-1">
+                              Start Date
+                            </FormLabel>
+                            <Litepicker
+                              id="modal-datepicker-1"
+                              value={startDate}
+                              onChange={setStartDate}
+                              options={{
+                                autoApply: false,
+                                showWeekNumbers: true,
+                                dropdowns: {
+                                  minYear: 1990,
+                                  maxYear: null,
+                                  months: true,
+                                  years: true,
+                                },
+                              }}
+                            />
+                           <div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
+        <Lucide icon="Calendar" className="w-4 h-4" />
+    </div>
+                          </div>
+                          <div className="col-span-12 relative ">
+                            <FormLabel htmlFor="modal-datepicker-2">
+                              End Date
+                            </FormLabel>
+                            <Litepicker
+                              id="modal-datepicker-2"
+                              value={endDate}
+                              onChange={setEndDate}
+                              options={{
+                                autoApply: false,
+                                showWeekNumbers: true,
+                                dropdowns: {
+                                  minYear: 1990,
+                                  maxYear: null,
+                                  months: true,
+                                  years: true,
+                                },
+                              }}
+                            />
+
+<div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
+        <Lucide icon="Calendar" className="w-4 h-4" />
+    </div>
+                          </div>
+                        </Dialog.Description>
+                        {/* END: Modal Body */}
+                        {/* BEGIN: Modal Footer */}
+                        <Dialog.Footer className="text-right">
+                          <Button
+                            variant="outline-secondary"
+                            type="button"
+                            onClick={() => {
+                              setDatepickerModalPreview(false);
+                            }}
+                            className="w-20 mr-1"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            // variant="primary"
+                            type="button"
+                            className="w-autos bg-customColor text-secondary"
+                            ref={cancelButtonRef}
+                            onClick={() => {
+                              setDateRange(`${startDate}-${endDate}`)
+                              // const dateString = date.toString(); // Convert date object to string
+                              // handleAddFilter('Date', dateString);
+                              handleFilterChange('Date', `${startDate} - ${endDate}`);
+                              setDatepickerModalPreview(false);
+
+            
+                            }}
+
+                          >
+                            Apply Filter
+                          </Button>
+                        </Dialog.Footer>
+                        {/* END: Modal Footer */}
+                      </Dialog.Panel>
+                    </Dialog>
+
+
+       
+
+
             <div className="relative lg:w-1/4 w-full text-slate-500">
               <FormInput
+              
                 type="text"
-                className="pr-10 !box"
+                className="pr-10 box border-1 border-slate-200"
                 placeholder="Search database..."
               />
               <Lucide
@@ -159,8 +329,88 @@ useEffect(() => {
               />
             </div>
 
-        
 
+            <Menu className="text-xs ml-2">
+    <Menu.Button as={Button} className="bg-customColor text-secondary" >
+    <Lucide icon="Filter" className="w-4 h-4 mr-2" />
+
+        Filter
+        <Lucide icon="ChevronDown" className="w-4 h-4 ml-2" />
+    </Menu.Button>
+    <Menu.Items className="w-40 text-xs">
+    <Menu.Header className="">Filter Categories</Menu.Header>
+
+        {/* <Menu.Item>
+            <Lucide icon="Home" className="w-4 h-4 mr-2" />
+            LGA
+
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item> */}
+
+<Menu.Item
+              onClick={()=>{}}
+
+>
+           
+              <Lucide icon="Home" className="w-4 h-4 mr-2" />
+              LGA
+              <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+        </Menu.Item> 
+
+            {/* LGA Submenu */}
+            {/* {showLgaSubMenu && (
+                        <Menu.Items className="lg:w-60 w-40 overflow-y-scroll h-72" placement="right-start">
+
+              {lagosLGAs.map((lga, index) => (
+              <Menu.Item key={index}>
+                {({ active }) => (
+                  <div
+                    className={`flex items-center px-8 cursor-pointer ${
+                      active ? "bg-gray-100" : ""
+                    }`}
+                  >
+                    {lga}
+                  </div>
+                )}
+              </Menu.Item>
+            ))}
+
+
+
+            </Menu.Items >
+        )} */}
+
+
+        <Menu.Item>
+            <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
+            Park
+
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item>
+        <Menu.Item
+         onClick={(event: React.MouseEvent) => {
+          event.preventDefault();
+          setDatepickerModalPreview(true);
+        }}
+        >
+            <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
+            Date
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item>
+       
+    </Menu.Items>
+</Menu>
+        
+<FilterChips
+          lagosLGAs={lagosLGAs}
+          selectedLGA={selectedLGA}
+          selectedPark={selectedPark}
+          dateRange={dateRange}
+          onRemoveFilter={handleRemoveFilter}
+        />
             {/* <FormSelect className="w-48 xl:w-1/5 !box mr-4">
               <option value="" disabled>--All LGA--</option>
               {lagosLGAs.map((lga, index) => (
@@ -168,7 +418,7 @@ useEffect(() => {
               ))}
             </FormSelect> */}
 
-            <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2" onChange={(e) => setSelectedLGA(e.target.value)}>
+            {/* <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2" onChange={(e) => setSelectedLGA(e.target.value)}>
               <option value="" disabled>--All LGA--</option>
               {lagosLGAs.map((lga, index) => (
                 <option key={index} value={lga}>{lga}</option>
@@ -207,7 +457,7 @@ useEffect(() => {
                 }}
                 className="pl-10 sm:w-56 !box text-slate-500"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 

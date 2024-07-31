@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect, useContext, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useCallback } from "react";
 import Lucide from "../../base-components/Lucide";
 import LagoslogoUrl from "../../assets/images/logo.png";
 import { Link } from "react-router-dom";
@@ -9,9 +9,130 @@ import fakerData from "../../utils/faker";
 import _ from "lodash";
 import clsx from "clsx";
 import { Transition } from "@headlessui/react";
+import API from "../../utils/API";
+import { UserContext } from "../../stores/UserContext";
+import { SearchResultContext } from "../../stores/SearchDataContext";
+import { debounce } from '../../utils/debounce'; // Import the debounce function
+
+
+interface SearchResult {
+  vehicles: Array<any>;
+  riders: Array<any>;
+  owners: Array<any>;
+  users: Array<any>;
+}
 
 function Main() {
   const [searchDropdown, setSearchDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { user } = useContext(UserContext);
+  // const [recentSearches, setRecentSearches] = useState<any[]>([]);
+  // const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult>({
+    vehicles: [],
+    riders: [],
+    owners: [],
+    users: [],
+  });
+
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Load recent searches from local storage when the component mounts
+    const storedRecentSearches = localStorage.getItem('recentSearches');
+    if (storedRecentSearches) {
+      setRecentSearches(JSON.parse(storedRecentSearches));
+    }
+  }, []);
+
+
+
+  const performSearch = async (searchQuery: string) => {
+    API(
+      "get",
+      `search`,
+
+      {query: searchQuery},
+      function (searchResultData: any) {
+        console.log(searchResultData)
+        setIsLoading(false);
+        
+        setResults(searchResultData);
+         // Update recent searches
+      updateRecentSearches(searchQuery);
+
+        // if(recentData.length >  0) {
+        //   SetIsRecentSearch(true)
+        // }
+      },
+      function (error: any) {
+        console.error("Error fetching recent searches:", error);
+        setRecentSearches([]);
+        setIsLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
+
+  // Use useCallback to memoize the debounced function
+  const debouncedSearch = useCallback(
+    debounce((searchQuery: string) => {
+      if (searchQuery.length > 2) {
+        performSearch(searchQuery);
+      } else {
+        setResults({
+          vehicles: [],
+          riders: [],
+          owners: [],
+          users: [],
+        });
+      }
+    }, 500), // 500ms delay
+    []
+  );
+
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchQuery = event.target.value;
+    setQuery(searchQuery);
+
+    // Use the debounced search function
+    debouncedSearch(searchQuery);
+  };
+
+  // console.log(recentSearches);
+
+
+
+
+
+  const updateRecentSearches = (newSearch: string) => {
+    // Add the new search term to the recent searches array
+    const updatedSearches = [newSearch, ...recentSearches.filter(search => search !== newSearch)];
+
+    // Keep only the first 3 most recent searches
+    if (updatedSearches.length > 3) {
+      updatedSearches.pop();
+    }
+
+    setRecentSearches(updatedSearches);
+
+    // Save updated recent searches to local storage
+    localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+  };
+
+
+
+  const handleRecentSearchClick = (searchTerm: string) => {
+    setQuery(searchTerm);
+
+    if (searchTerm.length > 2) {
+      performSearch(searchTerm);
+    }
+  };
+
   const showSearchDropdown = () => {
     setSearchDropdown(true);
   };
@@ -19,13 +140,46 @@ function Main() {
     setSearchDropdown(false);
   };
 
+
+  // useEffect(() => {
+  //   fetchRecentSearches();
+  // }, []);
+
+  // const fetchRecentSearches = async () => {
+  //   if (isLoading) return;
+  //   setIsLoading(true);
+
+  //   setError("");
+  //   API(
+  //     "get",
+  //     "recent-searches",
+
+  //     {},
+  //     function (recentData: any) {
+  //       console.log(recentData)
+  //       setIsLoading(false);
+  //       // console.log(recentData);
+  //       setRecentSearches(recentData);
+  //       // if(recentData.length >  0) {
+  //       //   SetIsRecentSearch(true)
+  //       // }
+  //     },
+  //     function (error: any) {
+  //       console.error("Error fetching recent searches:", error);
+  //       setRecentSearches([]);
+  //       setIsLoading(false);
+  //     },
+  //     user?.token && user.token
+  //   );
+  // };
+
   return (
     <>
       {/* BEGIN: Top Bar */}
       <div className="top-bar-boxed h-[50px] z-[51] text-primary  relative border-b border-white/[0.08]   -mx-3 sm:-mx-8 px-3 sm:px-8 md:pt-0 bg-slate-50 lg:mb-0 ">
-        <div className="flex items-center ml-5 h-full">
+        <div className="flex items-center ml-5 h-full gap-x-48">
           {/* BEGIN: Logo */}
-          <Link to="/" className="hidden -intro-x md:flex mr-auto">
+          <Link to="/" className="hidden -intro-x md:flex ">
             <img
               alt="Icewall Tailwind HTML Admin Template"
               className="w-6"
@@ -33,6 +187,213 @@ function Main() {
             />
             <span className="ml-3 text-lg text-primary"> Lagrev </span>
           </Link>
+
+
+
+{/* searches */}
+ <div className="relative mr-3 intro-x sm:mr-6">
+            <div className="hidden search sm:block">
+              <FormInput
+                type="text"
+                className="border-transparent w-56 border-slate-300 shadow-none rounded-lg bg-white pr-8 transition-[width] duration-300 ease-in-out focus:border-transparent focus:w-72 dark:bg-darkmode-400/70 h-8"
+                placeholder="Search..."
+                onFocus={showSearchDropdown}
+                onBlur={hideSearchDropdown}
+                value={query}
+                onChange={handleSearch}
+              />
+              <Lucide
+                icon="Search"
+                className="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3 text-slate-600 dark:text-slate-500"
+              />
+            </div>
+            <a className="relative text-white/70 sm:hidden" href="">
+              <Lucide icon="Search" className="w-5 h-5 dark:text-slate-500" />
+            </a>
+
+
+            {(query.length > 2 || recentSearches) && (
+
+            <Transition
+              as={Fragment}
+              show={searchDropdown}
+              enter="transition-all ease-linear duration-150"
+              enterFrom="mt-5 invisible opacity-0 translate-y-1"
+              enterTo="mt-[3px] visible opacity-100 translate-y-0"
+              leave="transition-all ease-linear duration-150"
+              leaveFrom="mt-[3px] visible opacity-100 translate-y-0"
+              leaveTo="mt-5 invisible opacity-0 translate-y-1"
+            >
+
+              <div className="absolute right-0 z-10 mt-[3px] overflow-y-scroll h-72">
+                <div className="w-[450px] p-5 box">
+
+
+     
+
+                {results.vehicles.length > 0 && (
+                  <>
+                  <div className="mb-2 font-medium">Vehicles</div>
+
+                  <div className="mb-5">
+                    
+                    
+                  
+                    <ul>
+                {results.vehicles.map(vehicle => (
+                  <li key={vehicle.id}>
+
+                    <a href="" className="flex items-center mt-2">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/20 dark:bg-success/10 text-success">
+                        <Lucide icon="Inbox" className="w-4 h-4" />
+                      </div>
+                      <div className="ml-3"> {vehicle.plate_number} - {vehicle.manufacturer} - {vehicle.vin}</div>
+
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+                  </div>
+                  </>
+)}         
+
+
+ {results.riders.length > 0 && (
+<>
+                  <div className="mb-2 text-customColor">Riders</div>
+                  
+                  <div className="mb-5 font-medium border-b border-slate-200 pb-4">
+                  <ul>
+                {results.riders.map(rider => (
+                  <li                       key={rider.id}
+                  >
+                      <a
+                        href=""
+                        className="flex items-center mt-2"
+                      >
+                        <div className="w-8 h-8 image-fit">
+                          <img
+                            alt="Midone Tailwind HTML Admin Template"
+                            className="rounded-full"
+                            src={rider?.profile_picture_url}
+                          />
+                        </div>
+                        <div className="ml-3">{rider?.first_name} {rider?.last_name}</div>
+                        <div className="w-48 ml-auto text-xs text-right truncate text-slate-500">
+                        {rider?.phone}
+                        </div>
+                      </a>
+                    
+                  </li>
+                ))}
+              </ul>
+                   
+                  </div>
+
+</>
+)}
+
+{/* Owner Display */}
+{results.owners.length > 0 && (
+  <>
+                  <div className="mb-2 font-medium text-customColor">Owners</div>
+
+                  <div className="mb-5 font-medium border-b border-slate-200 pb-4">
+
+                  <ul className=" ">
+                {results.owners.map(owner => (
+                  <li key={owner.id}  >
+
+<a
+                      href=""
+                      className="flex items-center mt-2"
+                    >
+                      <div className="w-8 h-8 image-fit">
+                        <img
+                          alt="Midone Tailwind HTML Admin Template"
+                          className="rounded-full"
+                          src={owner?.profile_picture_url}
+                        />
+                      </div>
+                      <div className="ml-3">{owner.first_name} {owner.last_name}</div>
+                      <div className="w-48 ml-auto text-xs text-right truncate text-slate-500">
+                      {owner.phone}
+
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+</div>
+</>
+)}
+
+{/* Users Display */}
+{results.users.length > 0 && (
+  <>
+                  <div className="mb-2 font-medium">Users</div>
+                  <div className="mb-5 font-medium border-b border-slate-200 pb-4">
+
+                  <ul>
+                {results.users.map(user => (
+                  <li                       key={user.id}                  >
+
+<a
+                      href=""
+                      className="flex items-center mt-2"
+                    >
+                      <div className="w-8 h-8 image-fit">
+                        <img
+                          alt="Midone Tailwind HTML Admin Template"
+                          className="rounded-full"
+                          src={user?.profile_picture_url}
+                        />
+                      </div>
+                      <div className="ml-3">{user?.name}</div>
+                      <div className="ml-3 text-slate-500"> - {user?.lga}</div>
+
+                      <div className="w-48 ml-auto text-xs text-right truncate text-slate-500">
+                      {user.email}
+
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+</div>
+</>
+)}
+
+
+
+{recentSearches && (
+        <div className="mt-4">
+          <h4>Recent Searches</h4>
+          <ul>
+            {recentSearches.map((search, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => handleRecentSearchClick(search)}
+                  className="text-blue-500 underline"
+                >
+                  {search}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+
+                </div>
+              </div>
+
+            </Transition>
+
+            )}
+          </div>
+
           {/* END: Logo */}
           {/* BEGIN: Breadcrumb */}
           {/* <Breadcrumb
