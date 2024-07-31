@@ -66,9 +66,9 @@ function Main() {
       {/* <MainColorSwitcher /> */}
       <MobileMenu />
       <TopBar />
-      <div className="flex overflow-hidden">
+      <div className="flex overflow-hidden ">
         {/* BEGIN: Side Menu */}
-        <nav className="w-[105px] bg-white xl:w-[270px] px-5 pb-16 overflow-x-hidden z-50 pt-10 -mt-4 hidden md:block">
+        <nav className="w-[105px] lg:shadow-md shadow-slate-400 bg-white xl:w-[270px] px-5 pb-16 overflow-x-hidden z-50 pt-10 -mt-4 hidden md:block">
           <ul>
             {/* BEGIN: First Child */}
             {formattedMenu.map((menu, menuKey) =>
@@ -233,7 +233,7 @@ Super Admin        </div>
         {/* BEGIN: Content */}
         <div
           className={clsx([
-            `max-w-full md:max-w-none  rounded-[30px] md:rounded-none px-4 md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700`,
+            `max-w-full md:max-w-none  rounded-[30px] md:rounded-none  md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700`,
             "before:content-[''] before:w-full before:h-px before:block",
           ])}
         >

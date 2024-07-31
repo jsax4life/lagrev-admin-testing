@@ -296,13 +296,11 @@ export default function UpdateVehicleProfile() {
   return (
     <>
       <div className="min-h-full">
-        <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
-          <header className="py-5">{/* Header content */}</header>
-        </div>
+      
 
-        <main className="-mt-32">
-          <div className="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
-            <div className="bg-white rounded-lg shadow px-5 py-6 sm:px-6">
+        <main className="lg:-mt-9 lg:-mx-6">
+          <div className="max-w-7xl mx-auto pb-12 lg:pb-0  lg:px-0">
+            <div className="bg-white   px-5 py-6 sm:px-6">
               {/* Content Section */}
 
               <div className="flex items-center intro-y gap-x-2">

@@ -175,9 +175,9 @@ useEffect(() => {
     </header>
   </div> */}
 
-  <main className="">
-    <div className="max-w-7xl mx-auto pb-12 px-4 lg:px-0 lg:mx-0 ">
-      <div className="bg-white rounded-lg shadow px-5 py-6 sm:px-6">
+  <main className="lg:-mt-9 lg:-mx-6  ">
+    <div className="max-w-7xl mx-auto pb-12 lg:pb-0  lg:px-0 lg:mx-0 ">
+      <div className="bg-white   px-5 py-6 sm:px-6">
 
         {/* Content Section */}
         <div className="flex justify-between items-center">
@@ -477,7 +477,7 @@ useEffect(() => {
 
 
               <Table className="border-spacing-y-[2px] border-separate -mt-2">
-            <Table.Thead>
+            <Table.Thead className='bg-customColor/5 lg:h-11'>
               <Table.Tr>
                 
                 <Table.Th className="border-b-0 whitespace-nowrap">
@@ -507,13 +507,15 @@ useEffect(() => {
                 </Table.Th>
               </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>
+            <Table.Tbody
+            // className='overflow-y-scroll h-10'
+            >
           
           {
               vehicleList.map((vehicle: any, vehicleKey: any | null | undefined) => (
                 <Table.Tr key={vehicleKey} className="intro-x text-slate-600">
                  
-                  <Table.Td className=" first:rounded-l-md last:rounded-r-md w-10  bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] ">
+                  <Table.Td className=" first:rounded-l-md last:rounded-r-md w-10  bg-white  dark:bg-darkmode-600 border-slate-200 border-b ">
                     <div
                       className=" whitespace-nowrap"
                     >
@@ -521,7 +523,7 @@ useEffect(() => {
                     </div>
                   </Table.Td>
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md  bg-white border-b-0 dark:bg-darkmode-600  shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md  bg-white border-b-0 dark:bg-darkmode-600  border-slate-200 border-b">
                     <div className="flex items-center" onClick={() => navigate(`/profile/${vehicle.id}`)}>
                       <div className="w-9 h-9 image-fit zoom-in">
                         <Tippy
@@ -545,7 +547,7 @@ useEffect(() => {
                   </Table.Td>
 
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span  className="font-medium whitespace-nowrap ">
 {vehicle?.plate_number? vehicle?.plate_number : '------'}
                     </span>
@@ -553,7 +555,7 @@ useEffect(() => {
                   
                   </Table.Td>
                   
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                    
                       <>
                         <div className="whitespace-nowrap">
@@ -565,11 +567,11 @@ useEffect(() => {
                       </>
                   
                   </Table.Td>
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40  bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md w-40  bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <div className="pr-16">{vehicle?.vin ? vehicle?.vin : '------'}</div>
                   </Table.Td>
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span
                       className=
  {`items-center px-2 lg:py-1 rounded-full text-xs font-medium capitalize ${
@@ -584,7 +586,7 @@ useEffect(() => {
                   <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] py-0 relative before:block before:w-px before:h-8 before:bg-slate-200 before:absolute before:left-0 before:inset-y-0 before:my-auto before:dark:bg-darkmode-400">
                     <div className="flex items-center justify-center">
                       <button
-                        className="flex items-center  text-primary whitespace-nowrap"
+                        className="flex items-center  text-customColor whitespace-nowrap"
                         onClick={() => navigate(`/profile/${vehicle.id}`)}
 
                       >

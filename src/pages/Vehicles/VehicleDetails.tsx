@@ -148,15 +148,15 @@ console.log(vehicleDetails);
   return (
     <>
       <div className="min-h-full">
-        <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
+        {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
           <header className="py-5"></header>
-        </div>
+        </div> */}
 
-        <main className="-mt-32">
-          <div className="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
+        <main className="lg:-mt-9 lg:-mx-6 shadow">
+          <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
             {/* Replace with your content */}
 
-            <div className="bg-white rounded-lg shadow px-2 py-6 sm:px-6">
+            <div className="bg-white   px-2 py-6 sm:px-6">
               {/* content */}
 
               <Tab.Group>
@@ -165,7 +165,7 @@ console.log(vehicleDetails);
                   <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
                   <div className="flex justify-center items-center lg:hidden mb-4">
 
-<Button variant="primary" className="mr-2 shadow-sm px-2" onClick={() => {
+<Button variant="primary" className="mr-2 shadow-sm px-2 bg-customColor" onClick={() => {
               navigate(`/update-profile/${id}`);
             }}>Edit</Button>
 
@@ -203,7 +203,7 @@ console.log(vehicleDetails);
                       </div>
 <div className="lg:flex hidden ">
 
-<Button variant="primary" className="mr-2 shadow-sm px-4" onClick={() => {
+<Button variant="primary" className="mr-2  px-4 bg-customColor" onClick={() => {
               navigate(`/update-profile/${id}`);
             }}>Edit</Button>
 
