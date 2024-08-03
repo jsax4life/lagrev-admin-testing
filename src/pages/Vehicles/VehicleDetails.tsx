@@ -147,21 +147,19 @@ console.log(vehicleDetails);
 
   return (
     <>
-      <div className="min-h-full">
         {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
           <header className="py-5"></header>
         </div> */}
 
-        <main className="lg:-mt-9 lg:-mx-6 shadow">
           <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
             {/* Replace with your content */}
 
-            <div className="bg-white   px-2 py-6 sm:px-6">
+            <div className="bg-white   px-2 py-6 sm:px-6 sm:py-2">
               {/* content */}
 
               <Tab.Group>
                 {/* BEGIN: Profile Info */}
-                <div className=" pt-5  intro-y box">
+                <div className=" pt-5 lg:pt-2  intro-y ">
                   <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
                   <div className="flex justify-center items-center lg:hidden mb-4">
 
@@ -218,7 +216,7 @@ console.log(vehicleDetails);
                     className="flex-col justify-center text-center sm:flex-row lg:justify-start"
                   >
                     <Tab fullWidth={false}>
-                      <Tab.Button className="flex items-center cursor-pointer">
+                      <Tab.Button className="flex items-center cursor-pointer ">
                         {/* <Lucide icon="User" className="w-4 h-4 mr-2" />  */}
                         Driver Overview
                       </Tab.Button>
@@ -507,8 +505,8 @@ console.log(vehicleDetails);
      
 
     <div className="flow-root col-span-12 intro-y overflow-y-auto h-72">
-              <h2 className="text-lg mb-4">Activity Log</h2>
-              <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div>
+              <h2 className="text-lg mb-4">Activity Logs</h2>
+              {/* <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div> */}
       <ul role="list" className="-mb-8">
         {user_activity_logs?.map((activityItem: any , activityItemIdx: number) => (
           <li key={activityItem.id}>
@@ -521,9 +519,9 @@ console.log(vehicleDetails);
                   <>
                     <div>
                     <div className="relative px-1">
-                        <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
-                        {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                        </div>
+                    <div className="h-2 w-2  bg-customColor rounded-full ring-4 ring-customColor/20 flex items-center justify-center">
+                                  {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                </div>
                       </div>
                     </div>
                     <div className="min-w-0 flex-1 py-0">
@@ -577,8 +575,6 @@ console.log(vehicleDetails);
             </div>
             {/* /End replace */}
           </div>
-        </main>
-      </div>
     </>
   );
 }

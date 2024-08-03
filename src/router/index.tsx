@@ -12,9 +12,10 @@ import UpdateVehicleProfile from "../pages/Vehicles/UpdateVehicleProfile";
 
 function Router() {
   const routes = [
+
     {
       path: "/",
-      element: <SideMenu />,
+      element: <SideMenu isDashboard = {true} />,
       children: [
      
         {
@@ -22,7 +23,19 @@ function Router() {
           element: <PointOfSale />,
         },
        
+     
+      
+      ],
+    },
+
+    {
+      path: "/",
+      element: <SideMenu isDashboard = {false} />,
+      children: [
+     
+       
         {
+ 
           path: "/vehicle",
           element: <Vehicle />,
         },

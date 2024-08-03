@@ -12,6 +12,8 @@ import MobileMenu from "../../components/MobileMenu";
 import DarkModeSwitcher from "../../components/DarkModeSwitcher";
 import MainColorSwitcher from "../../components/MainColorSwitcher";
 
+
+
 function Main() {
   const location = useLocation();
   const [formattedMenu, setFormattedMenu] = useState<

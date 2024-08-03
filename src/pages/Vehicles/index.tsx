@@ -21,12 +21,22 @@ import API from '../../utils/API';
 import { useNavigate } from 'react-router-dom';
 import LoadingIcon from '../../base-components/LoadingIcon';
 import FilterChips from '../../components/FilterChips';
+import FilterModal from '../PointOfSale/filterModal';
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
     "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye",
     "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland",
     "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"
+  ];
+
+  const lagosParks = [
+    "Agege Park",
+    "Alimosho Park",
+    "Apapa Park",
+    "Badagry Park",
+    "Epe Park",
+
   ];
 
   const tagStyle = [
@@ -38,6 +48,7 @@ export default function Main() {
 
     const { user } = useContext(UserContext);
 
+    const [openModal, setOpenModal] = useState(false);
 
     const [vehicleList, setVehicleList] = useState<any[]>([]);
 
@@ -54,6 +65,9 @@ export default function Main() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
+    const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park">(
+      "LGA"
+    );
     const cancelButtonRef = useRef(null);
     const isInitialMount = useRef(true);
 
@@ -166,16 +180,24 @@ useEffect(() => {
   return (
     <>
    
-
-
-
-      <div className="min-h-full ">
-  {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
-    <header className="py-5">
-    </header>
-  </div> */}
-
-  <main className="lg:-mt-9 lg:-mx-6  ">
+   <FilterModal
+        open={openModal}
+        setOpen={setOpenModal}
+        handleFilterChange={handleFilterChange}
+        lagosLGAs={lagosLGAs}
+        carParks={lagosParks}
+        selectedLGA={selectedLGA}
+        setSelectedLGA={setSelectedLGA}
+        selectedCarPark={selectedPark}
+        setSelectedCarPark={setSelectedPark}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+      />
+  
     <div className="max-w-7xl mx-auto pb-12 lg:pb-0  lg:px-0 lg:mx-0 ">
       <div className="bg-white   px-5 py-6 sm:px-6">
 
@@ -349,8 +371,7 @@ useEffect(() => {
         </Menu.Item> */}
 
 <Menu.Item
-              onClick={()=>{}}
-
+onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 >
            
               <Lucide icon="Home" className="w-4 h-4 mr-2" />
@@ -358,31 +379,10 @@ useEffect(() => {
               <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
         </Menu.Item> 
 
-            {/* LGA Submenu */}
-            {/* {showLgaSubMenu && (
-                        <Menu.Items className="lg:w-60 w-40 overflow-y-scroll h-72" placement="right-start">
-
-              {lagosLGAs.map((lga, index) => (
-              <Menu.Item key={index}>
-                {({ active }) => (
-                  <div
-                    className={`flex items-center px-8 cursor-pointer ${
-                      active ? "bg-gray-100" : ""
-                    }`}
-                  >
-                    {lga}
-                  </div>
-                )}
-              </Menu.Item>
-            ))}
-
-
-
-            </Menu.Items >
-        )} */}
-
-
-        <Menu.Item>
+        
+        <Menu.Item
+        onClick={() => { setOpenModal(true); setActiveFilter("Park"); }}
+        >
             <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
             Park
 
@@ -390,10 +390,9 @@ useEffect(() => {
 
         </Menu.Item>
         <Menu.Item
-         onClick={(event: React.MouseEvent) => {
-          event.preventDefault();
-          setDatepickerModalPreview(true);
-        }}
+      
+
+        onClick={(event: React.MouseEvent ) => {  event.preventDefault(); setOpenModal(true); setActiveFilter("Date"); }}
         >
             <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
             Date
@@ -649,8 +648,6 @@ useEffect(() => {
         </div>
       </div>
     </div>
-  </main>
-</div>
 
 
 

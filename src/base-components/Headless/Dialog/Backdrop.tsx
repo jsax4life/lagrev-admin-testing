@@ -120,7 +120,7 @@ Dialog.Panel = ({
         <HeadlessDialog.Panel
           as={as}
           className={twMerge([
-            "w-[90%] mx-auto bg-white relative rounded-md shadow-md transition-transform dark:bg-darkmode-600",
+            "w-[90=%] mx-auto bg-white relative rounded-md shadow-md transition-transform dark:bg-darkmode-600",
 
             // "w-[30%] mx-auto my-auto relative   transition-transform ",
             dialog.size == "md" && "sm:w-[300px]",

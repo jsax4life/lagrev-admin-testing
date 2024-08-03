@@ -1,4 +1,9 @@
-import { Fragment, JSXElementConstructor, ReactElement, ReactNode } from "react";
+import {
+  Fragment,
+  JSXElementConstructor,
+  ReactElement,
+  ReactNode,
+} from "react";
 import _ from "lodash";
 import { useState, useRef, useEffect, useContext, Key } from "react";
 import Button from "../../base-components/Button";
@@ -20,9 +25,8 @@ import { Link } from "react-router-dom";
 import Chip from "../../components/Chip";
 import FilterChips from "../../components/FilterChips";
 import { date } from "yup";
-
-
-
+import FilterModal from "./filterModal";
+import LoadingIcon from "../../base-components/LoadingIcon";
 
 interface Change {
   original: string | number | null;
@@ -58,72 +62,46 @@ const lagosLGAs = [
   "Surulere",
 ];
 
-
-// const activity = [
- 
-//   {
-//     id: 2,
-//     type: 'tags',
-//     person: { name: 'Hilary Mahy', href: '#' },
-//     tags: [
-//       { name: 'Updated vehicle registration', href: '#', color: 'bg-rose-500' },
-//       { name: 'Added new vehicle', href: '#', color: 'bg-indigo-500' },
-//       { name: 'Deleted vehicle', href: '#', color: 'bg-green-500' },
-//       { name: 'User logged in', href: '#', color: 'bg-orange-500' },
-//       { name: 'User logged out', href: '#', color: 'bg-blue-500' },
-
-
-//     ],
-//     date: '6h ago',
-//   },
-
-//   {
-//     id: 3,
-//     type: 'tags',
-//     person: { name: 'Hilary Mahy', href: '#' },
-//     tags: [
-//       { name: 'Updated vehicle registration', href: '#', color: 'bg-rose-500' },
-//       { name: 'Added new vehicle', href: '#', color: 'bg-indigo-500' },
-//       { name: 'Deleted vehicle', href: '#', color: 'bg-green-500' },
-//       { name: 'User logged in', href: '#', color: 'bg-orange-500' },
-//       { name: 'User logged out', href: '#', color: 'bg-blue-500' },
-
-
-//     ],
-//     date: '6h ago',
-//   },
-
-// ]
+const parks = ["Agege Park", "Alimosho Park"];
 
 const tags = [
-  { name: 'Updated vehicle registration', href: '#', color: 'bg-rose-500' },
-  { name: 'User logged in', href: '#', color: 'bg-indigo-500' },
+  { name: "Updated vehicle registration", href: "#", color: "bg-rose-500" },
+  { name: "User logged in", href: "#", color: "bg-indigo-500" },
 ];
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 function Main() {
   const { user } = useContext(UserContext);
+  const [openModal, setOpenModal] = useState(false);
 
   const [dateRange, setDateRange] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
   const [selectedLGA, setSelectedLGA] = useState<string>("");
-  const [selectedPark, setSelectedPark] = useState<string>('');
+  const [selectedPark, setSelectedPark] = useState<string>("");
   const [dashboardData, setDashboardData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingKpiData, setLoadingKpiData] = useState(true);
+  const [loadingActivityData, setLoadingActivityData] = useState(true);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [kpiData, setKpiData] = useState<any>(null);
   const [activitylogs, setActiviyLogs] = useState([]);
   const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
+  const [lgaModal, setLGAModal] = useState(false);
+  const [tempSelectedLGA, setTempSelectedLGA] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park">(
+    "LGA"
+  );
+
   const cancelButtonRef = useRef(null);
   const [showLgaSubMenu, setShowLgaSubMenu] = useState(false);
-  const [showParkSubMenu, setShowParkSubMenu] = useState(false);
-  const isInitialMount = useRef(true);
 
+  const sendButtonRef = useRef(null);
 
   useEffect(() => {
     if (user?.token) {
@@ -152,8 +130,7 @@ function Main() {
     fetchActivityLogs();
   }, []);
 
-
-  console.log(startDate, endDate)
+  console.log(startDate, endDate);
 
   // const handleAddFilter = (filter: string, value: string) => {
   //   if (filter === 'LGA') setSelectedLGA(value);
@@ -179,64 +156,57 @@ function Main() {
   //   });
   // };
 
-    // Function to handle adding filters
-    // const handleAddFilter = (filter: string, value: string) => {
-    //   if (filter === 'LGA') {
-    //     setSelectedLGA(value);
-    //   } else if (filter === 'Park') {
-    //     setSelectedPark(value);
-    //   } else if (filter === 'Date') {
-    //     setDateRange(value);
-    //   }
-  
-    //   // Here you can add any logic to fetch or update data based on the new filters
-    //   // For example, if you are fetching data, call your API here
-    // };
-  
-    // Function to handle removing filters
-    const handleRemoveFilter = (filter: string) => {
-      if (filter === 'LGA') {
-        setSelectedLGA('');
-      } else if (filter === 'Park') {
-        setSelectedPark('');
-      } else if (filter === 'Date') {
-        setDateRange('');
-      }
-  
-      // Optionally update your data based on the filters being removed
-    };
-  
-  // const handleFilterChange = (filters: { lga: string; park: string; date: string }) => {
-  //   // Handle filter logic here
-  //   setSelectedLGA(filters.lga);
-  //   setSelectedPark(filters.park);
-  //   setDateRange(filters.date);
-  //   // Optionally fetch and update dashboard data based on filters
+  // Function to handle adding filters
+  // const handleAddFilter = (filter: string, value: string) => {
+  //   if (filter === 'LGA') {
+  //     setSelectedLGA(value);
+  //   } else if (filter === 'Park') {
+  //     setSelectedPark(value);
+  //   } else if (filter === 'Date') {
+  //     setDateRange(value);
+  //   }
+
+  //   // Here you can add any logic to fetch or update data based on the new filters
+  //   // For example, if you are fetching data, call your API here
   // };
 
+  // Function to handle removing filters
+  const handleRemoveFilter = (filter: string) => {
+    if (filter === "LGA") {
+      setSelectedLGA("");
+    } else if (filter === "Park") {
+      setSelectedPark("");
+    } else if (filter === "Date") {
+      setDateRange("");
+    }
 
+    // Optionally update your data based on the filters being removed
+  };
 
+  
   // Function to handle filter changes
   const handleFilterChange = (filter: string, value: string) => {
+    console.log(`Filter Type: ${filter}, Value: ${value}`);
+
     const newFilters = {
       lga: selectedLGA,
       park: selectedPark,
       date: dateRange,
     };
 
-    if (filter === 'LGA') {
+    if (filter === "LGA") {
       setSelectedLGA(value);
       newFilters.lga = value;
-    } else if (filter === 'Park') {
+    } else if (filter === "Park") {
       setSelectedPark(value);
       newFilters.park = value;
-    } else if (filter === 'Date') {
+    } else if (filter === "Date") {
       setDateRange(value);
       newFilters.date = value;
     }
 
     // Call any logic to update data based on the new filters
-    console.log('New Filters:', newFilters);
+    console.log("New Filters:", newFilters);
 
     // Update your data or perform actions here
   };
@@ -244,9 +214,7 @@ function Main() {
   const fetchKPIData = () => {
     setError("");
 
-    console.log("hello");
-
-    setLoading(true);
+    setLoadingKpiData(true);
 
     API(
       "get",
@@ -257,11 +225,11 @@ function Main() {
         setKpiData(response);
 
         console.log(response);
-        setLoading(false);
+        setLoadingKpiData(false);
       },
       function (error: any) {
         console.error("Error fetching recent searches:", error);
-        setLoading(false);
+        setLoadingKpiData(false);
       },
       user?.token && user.token
     );
@@ -272,22 +240,22 @@ function Main() {
 
     console.log("hello");
 
-    setLoading(true);
+    setLoadingActivityData(true);
 
     API(
       "get",
-      'activity-logs',
+      "activity-logs",
       {},
 
       function (response: any) {
         setActiviyLogs(response);
 
         console.log(response);
-        setLoading(false);
+        setLoadingActivityData(false);
       },
       function (error: any) {
         console.error("Error fetching recent searches:", error);
-        setLoading(false);
+        setLoadingActivityData(false);
       },
       user?.token && user.token
     );
@@ -305,6 +273,7 @@ function Main() {
   // }, [  dateRange, selectedLGA ]);
 
   const fetchDashboardData = () => {
+    setLoadingAnalytics(true);
     const [startDate, endDate] = dateRange?.split(" - ") || [null, null];
 
     setError("");
@@ -322,11 +291,11 @@ function Main() {
       params,
       function (dashboardData: any) {
         setDashboardData(dashboardData);
-        setLoading(false);
+        setLoadingAnalytics(false);
       },
       function (error: any) {
         console.error("Error fetching recent searches:", error);
-        setLoading(false);
+        setLoadingAnalytics(false);
       },
       user?.token && user.token
     );
@@ -334,7 +303,7 @@ function Main() {
 
   // const formatChanges = (changes: Changes): string => {
   //   let formattedChanges = '';
-  
+
   //   Object.entries(changes).forEach(([section, fields]) => {
   //     Object.entries(fields).forEach(([field, values]) => {
   //       if (field !== 'updated_at') { // Optional: skip 'updated_at' field
@@ -342,19 +311,17 @@ function Main() {
   //       }
   //     });
   //   });
-  
+
   //   return formattedChanges;
   // };
 
- 
-
   // const formatChanges = (changes: string): JSX.Element => {
   //   const changeElements: JSX.Element[] = [];
-  
+
   //   try {
   //     // Parse the changes JSON string into an object
   //     const parsedChanges: Changes = JSON.parse(changes);
-  
+
   //     // Iterate over the parsed object
   //     Object.entries(parsedChanges).forEach(([section, fields]) => {
   //       if (fields && typeof fields === 'object') {
@@ -380,48 +347,49 @@ function Main() {
   //   } catch (error) {
   //     console.error('Error parsing changes:', error);
   //   }
-  
+
   //   return <>{changeElements}</>;
   // };
-  
+
   const formatChanges = (changes: string | null | undefined): JSX.Element => {
     const changeElements: JSX.Element[] = [];
-  
+
     // Check if changes is a valid non-empty string
-    if (typeof changes !== 'string' || changes.trim() === '') {
-      console.error('Invalid changes input: The input is not a valid string.');
+    if (typeof changes !== "string" || changes.trim() === "") {
+      console.error("Invalid changes input: The input is not a valid string.");
       return <>{changeElements}</>; // Return empty if input is invalid
     }
-  
+
     try {
       // Parse the changes JSON string into an object
       const parsedChanges: Changes = JSON.parse(changes);
-  
+
       // Iterate over the parsed object
       Object.entries(parsedChanges).forEach(([section, fields]) => {
-        if (fields && typeof fields === 'object') {
+        if (fields && typeof fields === "object") {
           Object.entries(fields).forEach(([field, values]) => {
             if (
               values &&
-              typeof values === 'object' &&
-              'original' in values &&
-              'updated' in values
+              typeof values === "object" &&
+              "original" in values &&
+              "updated" in values
             ) {
-              if (field !== 'updated_at') {
+              if (field !== "updated_at") {
                 // Optional: skip 'updated_at' field
                 changeElements.push(
-                  <div key={`${section}-${field}`} className=" inline-flex items-center   text-xs  truncate">
-                  <span className="">
-                    {section.toUpperCase()} - {field}: {values.original} -{">"} {values.updated}
-                  </span>
-                  <span
-                    className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2'
-                    aria-hidden="true"
-                  />
-                </div>
-                  
-
-                  
+                  <div
+                    key={`${section}-${field}`}
+                    className=" inline-flex items-center   text-xs  truncate"
+                  >
+                    <span className="">
+                      {section.toUpperCase()} - {field}: {values.original} -
+                      {">"} {values.updated}
+                    </span>
+                    <span
+                      className="bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2"
+                      aria-hidden="true"
+                    />
+                  </div>
                 );
               }
             }
@@ -429,18 +397,18 @@ function Main() {
         }
       });
     } catch (error) {
-      console.error('Error parsing changes:', error);
+      console.error("Error parsing changes:", error);
     }
-  
+
     return <>{changeElements}</>;
   };
 
   // const formatChanges = (changes: string): JSX.Element => {
   //   const changeElements: JSX.Element[] = [];
-  
+
   //   try {
   //     const parsedChanges: Changes = JSON.parse(changes);
-  
+
   //     Object.entries(parsedChanges).forEach(([section, fields]) => {
   //       if (fields && typeof fields === 'object') {
   //         Object.entries(fields).forEach(([field, values]) => {
@@ -448,7 +416,7 @@ function Main() {
   //             if (field !== 'updated_at') { // Optional: skip 'updated_at' field
   //               changeElements.push(
   //                 <div key={`${section}-${field}`}>
-  //                   {section.toUpperCase()} - {field}: {values.original} 
+  //                   {section.toUpperCase()} - {field}: {values.original}
   //                   <span className='bg-orange-600 h-1.5 w-1.5 rounded-full inline-block mx-2' aria-hidden="true" />
   //                   {values.updated}
   //                 </div>
@@ -461,160 +429,54 @@ function Main() {
   //   } catch (error) {
   //     console.error('Error parsing changes:', error);
   //   }
-  
+
   //   return <>{changeElements}</>;
   // };
 
   return (
     <>
-      <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 intro-y  lg:py-0 py-8  ">
-
-      <div className="col-span-12 justify-end items-center flex  intro-y sm:flex">
-              
-
-
-
-
-
-
-
- <Dialog
-                      open={datepickerModalPreview}
-                      onClose={() => {
-                        setDatepickerModalPreview(false);
-                      }}
-                      initialFocus={cancelButtonRef}
-                      className="flex place-self-center lg:items-center lg:justify-center  "
-
-                    >
-                      <Dialog.Panel className='  ">
-'>
-                        {/* BEGIN: Modal Header */}
-                        <Dialog.Title>
-                       
-                       <div className="flex justify-center items-center">
-<div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-1.5">
-<Lucide icon="Calendar" className="w-6 h-6 " />
-
-</div>
-<div className="">
-<h2 className="mr-auto text-slate-600 font-bold">
-   Date Range
- </h2>
- <p className="text-xs">Choose a date range to filter</p>
-</div>
-                       </div>
-                        
-                         
-                        </Dialog.Title>
-                        {/* END: Modal Header */}
-                        {/* BEGIN: Modal Body */}
-                        <Dialog.Description className="grid grid-cols-12 gap-x gap-y-6">
-                          <div className="col-span-12 relative">
-                            <FormLabel htmlFor="modal-datepicker-1">
-                              Start Date
-                            </FormLabel>
-                            <Litepicker
-                              id="modal-datepicker-1"
-                              value={startDate}
-                              onChange={setStartDate}
-                              options={{
-                                autoApply: false,
-                                showWeekNumbers: true,
-                                dropdowns: {
-                                  minYear: 1990,
-                                  maxYear: null,
-                                  months: true,
-                                  years: true,
-                                },
-                              }}
-                            />
-                           <div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
-        <Lucide icon="Calendar" className="w-4 h-4" />
-    </div>
-                          </div>
-                          <div className="col-span-12 relative ">
-                            <FormLabel htmlFor="modal-datepicker-2">
-                              End Date
-                            </FormLabel>
-                            <Litepicker
-                              id="modal-datepicker-2"
-                              value={endDate}
-                              onChange={setEndDate}
-                              options={{
-                                autoApply: false,
-                                showWeekNumbers: true,
-                                dropdowns: {
-                                  minYear: 1990,
-                                  maxYear: null,
-                                  months: true,
-                                  years: true,
-                                },
-                              }}
-                            />
-
-<div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
-        <Lucide icon="Calendar" className="w-4 h-4" />
-    </div>
-                          </div>
-                        </Dialog.Description>
-                        {/* END: Modal Body */}
-                        {/* BEGIN: Modal Footer */}
-                        <Dialog.Footer className="text-right">
-                          <Button
-                            variant="outline-secondary"
-                            type="button"
-                            onClick={() => {
-                              setDatepickerModalPreview(false);
-                            }}
-                            className="w-20 mr-1"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            // variant="primary"
-                            type="button"
-                            className="w-autos bg-customColor text-secondary"
-                            ref={cancelButtonRef}
-                            onClick={() => {
-                              setDateRange(`${startDate}-${endDate}`)
-                              // const dateString = date.toString(); // Convert date object to string
-                              // handleAddFilter('Date', dateString);
-                              handleFilterChange('Date', `${startDate} - ${endDate}`);
-                              setDatepickerModalPreview(false);
-
-            
-                            }}
-
-                          >
-                            Apply Filter
-                          </Button>
-                        </Dialog.Footer>
-                        {/* END: Modal Footer */}
-                      </Dialog.Panel>
-                    </Dialog>
+      <FilterModal
+        open={openModal}
+        setOpen={setOpenModal}
+        handleFilterChange={handleFilterChange}
+        lagosLGAs={lagosLGAs}
+        carParks={parks}
+        selectedLGA={selectedLGA}
+        setSelectedLGA={setSelectedLGA}
+        selectedCarPark={selectedPark}
+        setSelectedCarPark={setSelectedPark}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+      />
 
 
-                    <FilterChips
-          lagosLGAs={lagosLGAs}
-          selectedLGA={selectedLGA}
-          selectedPark={selectedPark}
-          dateRange={dateRange}
-          onRemoveFilter={handleRemoveFilter}
-        />
 
+      <div className="grid grid-cols-12 gap-5 lg:gap-7 mt-5 lg:mt-0 intro-y  lg:py-0 py-8  ">
+        <div className="col-span-12 justify-end items-center flex  intro-y sm:flex">
+       
 
-<Menu className="text-xs ml-2">
-    <Menu.Button as={Button} className="bg-customColor text-secondary" >
-    <Lucide icon="Filter" className="w-4 h-4 mr-2" />
+          <FilterChips
+            lagosLGAs={lagosLGAs}
+            selectedLGA={selectedLGA}
+            selectedPark={selectedPark}
+            dateRange={dateRange}
+            onRemoveFilter={handleRemoveFilter}
+          />
 
-        Filter
-        <Lucide icon="ChevronDown" className="w-4 h-4 ml-2" />
-    </Menu.Button>
-    <Menu.Items className="w-40 text-xs">
-    <Menu.Header className="">Filter Categories</Menu.Header>
+          <Menu className="text-xs ml-2">
+            <Menu.Button as={Button} className="bg-customColor text-secondary">
+              <Lucide icon="Filter" className="w-4 h-4 mr-2" />
+              Filter
+              <Lucide icon="ChevronDown" className="w-4 h-4 ml-2" />
+            </Menu.Button>
+            <Menu.Items className="w-40 text-xs">
+              <Menu.Header className="">Filter Categories</Menu.Header>
 
-        {/* <Menu.Item>
+              {/* <Menu.Item>
             <Lucide icon="Home" className="w-4 h-4 mr-2" />
             LGA
 
@@ -622,65 +484,68 @@ function Main() {
 
         </Menu.Item> */}
 
-<Menu.Item
-              onClick={() => setShowLgaSubMenu(!showLgaSubMenu)}
+              <Menu.Item
+                onClick={(event: React.MouseEvent) => {
+                  // event.preventDefault();
+                  // setLGAModal(true);
 
->
-           
-              <Lucide icon="Home" className="w-4 h-4 mr-2" />
-              LGA
-              <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
-        </Menu.Item> 
-
-            {/* LGA Submenu */}
-            {showLgaSubMenu && (
-                        <Menu.Items className="lg:w-60 w-40 overflow-y-scroll h-72" placement="right-start">
-
-              {lagosLGAs.map((lga, index) => (
-              <Menu.Item key={index}>
-                {({ active }) => (
-                  <div
-                    className={`flex items-center px-8 cursor-pointer ${
-                      active ? "bg-gray-100" : ""
-                    }`}
-                  >
-                    {lga}
-                  </div>
-                )}
+                  setActiveFilter("LGA");
+                  setOpenModal(true);
+                }}
+              >
+                <Lucide icon="Home" className="w-4 h-4 mr-2" />
+                LGA
+                <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
               </Menu.Item>
-            ))}
 
+              {/* LGA Submenu */}
+              {showLgaSubMenu && (
+                <Menu.Items
+                  className="lg:w-60 w-40 overflow-y-scroll h-72"
+                  placement="right-start"
+                >
+                  {lagosLGAs.map((lga, index) => (
+                    <Menu.Item key={index}>
+                      {({ active }) => (
+                        <div
+                          className={`flex items-center px-8 cursor-pointer ${
+                            active ? "bg-gray-100" : ""
+                          }`}
+                        >
+                          {lga}
+                        </div>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </Menu.Items>
+              )}
 
-
-            </Menu.Items >
-        )}
-
-
-        <Menu.Item>
-            <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
-            Park
-
-            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
-
-        </Menu.Item>
-        <Menu.Item
-         onClick={(event: React.MouseEvent) => {
-          event.preventDefault();
-          setDatepickerModalPreview(true);
-        }}
-        >
-            <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
-            Date
-            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
-
-        </Menu.Item>
-       
-    </Menu.Items>
-</Menu>
-
-
-                
-              </div>
+              <Menu.Item
+                // onClick={() => setShowLgaSubMenu(!showLgaSubMenu)}
+                onClick={() => {
+                  setOpenModal(true);
+                  setActiveFilter("Park");
+                }}
+              >
+                <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
+                Park
+                <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+              </Menu.Item>
+              <Menu.Item
+                onClick={(event: React.MouseEvent) => {
+                  event.preventDefault();
+                  // setDatepickerModalPreview(true);
+                  setActiveFilter("Date");
+                  setOpenModal(true);
+                }}
+              >
+                <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
+                Date
+                <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        </div>
 
         {/* <div className="col-span-12 intro-y text-black mb-8 bg-secondary p-2">
 
@@ -788,13 +653,14 @@ function Main() {
         </div> */}
 
         <div className="col-span-12 intro-y lg:col-span-8">
-          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
+          <div className="grid grid-cols-12 gap-6 mt-5 lg:mt-0">
             <DashboardCard
               count={dashboardData?.daily_registered_vehicles}
               label="Daily Registered Vehicles"
               bgColor="bg-orange-200"
               iconFill="primary"
               iconText="text-primary"
+              laadingCount={loadingAnalytics}
             />
             <DashboardCard
               count={dashboardData?.daily_untagged_vehicles}
@@ -802,6 +668,7 @@ function Main() {
               bgColor="bg-orange-200"
               iconFill="orange"
               iconText="text-orange-300"
+              laadingCount={loadingAnalytics}
             />
             <DashboardCard
               count={dashboardData?.daily_tagged_vehicles}
@@ -809,13 +676,15 @@ function Main() {
               bgColor="bg-pink-200"
               iconFill="pink"
               iconText="text-pink-600"
+              laadingCount={loadingAnalytics}
             />
             <DashboardCard
               count={dashboardData?.total_registered_vehicles}
               label="Total Registered Vehicles"
               bgColor="bg-green-200"
               iconFill="green"
-              iconText=""
+              iconText="green-500"
+              laadingCount={loadingAnalytics}
             />
             <DashboardCard
               count={dashboardData?.total_untagged_vehicles}
@@ -823,6 +692,7 @@ function Main() {
               bgColor="bg-slate-200"
               iconFill="quinary"
               iconText=""
+              laadingCount={loadingAnalytics}
             />
             <DashboardCard
               count={dashboardData?.total_tagged_vehicles}
@@ -830,27 +700,35 @@ function Main() {
               bgColor="bg-blue-200"
               iconFill="blue"
               iconText=""
+              laadingCount={loadingAnalytics}
             />
           </div>
         </div>
 
         <div className="col-span-12 lg:col-span-4">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-            <div className="col-span-12 p-4 cursor-pointer box zoom-in flex">
+            <div className="col-span-12 p-4 cursor-pointer  shadow-lg rounded-xl bg-white py-5 zoom-in flex">
               <div
-                className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}
+                className={`flex mr-4 items-center justify-center rounded-md  bg-green-200 w-10 h-10`}
               >
                 <Lucide
                   icon="Banknote"
                   fill="green"
-                  className={`p-1 w-[40px] h-[38px] text-green`}
+                  className={`p-1 w-[40px] h-[38px] text-green-300`}
                 />
               </div>
               <div>
                 <div className="text-base font-medium ">
-                  N
-                  {formatCurrency(
-                    dashboardData?.daily_registered_vehicles * 4500
+                
+
+{loadingAnalytics ? (
+                    <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>
+                  ) : (
+                    `N ${formatCurrency(
+                      dashboardData?.daily_registered_vehicles * 4500
+                      )}`
                   )}
                 </div>
                 <div className="text-slate-500 text-xs">
@@ -859,21 +737,26 @@ function Main() {
               </div>
             </div>
 
-            <div className="col-span-12 p-4 cursor-pointer  box zoom-in flex">
+            <div className="col-span-12 cursor-pointer shadow-lg rounded-xl bg-white p-5 zoom-in flex">
               <div
                 className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}
               >
                 <Lucide
                   icon="Banknote"
                   fill="green"
-                  className={`p-1 w-[38px] h-[38px] text-green`}
+                  className={`p-1 w-[40px] h-[38px] text-green-300`}
                 />
               </div>
               <div>
                 <div className="text-base font-medium">
-                  N
-                  {formatCurrency(
-                    dashboardData?.total_registered_vehicles * 4500
+                  {loadingAnalytics ? (
+                    <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>
+                  ) : (
+                    `N ${formatCurrency(
+                      dashboardData?.total_registered_vehicles * 4500
+                    )}`
                   )}
                 </div>
                 <div className="text-slate-500 text-xs">
@@ -885,75 +768,87 @@ function Main() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-5 mt-5 intro-y">
+      <div className="grid grid-cols-12 gap-5 lg:gap-7 mt-5 intro-y">
         <div className="col-span-12 intro-y lg:col-span-8">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
             <div className="col-span-12 p-5 cursor-pointer  box">
+              <div className="flow-root overflow-y-auto h-72">
+                <h2 className="text-lg mb-4">Activity Log</h2>
 
-
-
-
-            <div className="flow-root overflow-y-auto h-72">
-              <h2 className="text-lg mb-4">Activity Log</h2>
-              <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div>
-      <ul role="list" className="-mb-8">
-        {activitylogs.map((activityItem: any, activityItemIdx) => (
-          <li key={activityItem.id}>
-            <div className="relative pb-8">
-              {activityItemIdx !== activitylogs.length - 1 ? (
-                <span className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
-              ) : null}
-              <div className="relative flex items-start space-x-3">
-                
-                  <>
-                    <div>
-                    <div className="relative px-1">
-                        <div className="h-2 w-2  bg-purple-800 rounded-full ring-4 ring-white flex items-center justify-center">
-                        {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="min-w-0 flex-1 py-0">
-                      <div className="text-sm  text-gray-500">
-                        <span className="mr-2">
-                          <Link to={activityItem.admin.id} className="font-medium text-gray-900">
-                            {activityItem.action}
-                          </Link>
-                        </span>
-                      
-                        <span className="whitespace-nowrap"> {formatDate(activityItem.created_at)}</span>
-
-                            <div className="mr-0.5">
-                            <span className="mr-2">{activityItem.admin.firstName} {activityItem.admin.lastName }</span>
-
-                            <span
-                      className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block '
-                      aria-hidden="true"
-                    />
-
-                                <span className="ml-3  text-slate-500">{ formatChanges(activityItem.changes)}</span>
-     
-                       
-                                                    <span className="mr-2 text-xs">{activityItem.admin.name}</span>
-                        </div> 
-                      </div>
-                    </div>
-                  </>
-                
+                {loadingActivityData ? (
+            <div className="col-span-12 flex items-center justify-center h-full">
+              <div className="flex flex-col items-center justify-center w-full">
+                <LoadingIcon icon="puff" className="w-8 h-8" />
+                <div className="mt-2 text-xs text-center">Loading data</div>
               </div>
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+          ) : 
+                /* <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500"></p> </div> */
+                <ul role="list" className="-mb-8">
+                  {activitylogs.map((activityItem: any, activityItemIdx) => (
+                    <li key={activityItem.id}>
+                      <div className="relative pb-8">
+                        {activityItemIdx !== activitylogs.length - 1 ? (
+                          <span
+                            className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200"
+                            aria-hidden="true"
+                          />
+                        ) : null}
+                        <div className="relative flex items-start space-x-3">
+                          <>
+                            <div>
+                              <div className="relative px-1">
+                                <div className="h-2 w-2  bg-customColor rounded-full ring-4 ring-customColor/20 flex items-center justify-center">
+                                  {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="min-w-0 flex-1 py-0">
+                              <div className="text-sm  text-gray-500">
+                                <span className="mr-2">
+                                  <Link
+                                    to={activityItem.admin.id}
+                                    className="font-medium text-gray-900"
+                                  >
+                                    {activityItem.action}
+                                  </Link>
+                                </span>
 
+                                <span className="whitespace-nowrap">
+                                  {" "}
+                                  {formatDate(activityItem.created_at)}
+                                </span>
 
+                                <div className="mr-0.5">
+                                  <span className="mr-2">
+                                    {activityItem.admin.firstName}{" "}
+                                    {activityItem.admin.lastName}
+                                  </span>
 
+                                  <span
+                                    className="bg-slate-400 h-1.5 w-1.5 rounded-full inline-block "
+                                    aria-hidden="true"
+                                  />
 
+                                  <span className="ml-3  text-slate-500">
+                                    {formatChanges(activityItem.changes)}
+                                  </span>
 
-             
+                                  <span className="mr-2 text-xs">
+                                    {activityItem.admin.name}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+}
+              </div>
             </div>
-          
           </div>
         </div>
 
@@ -961,30 +856,42 @@ function Main() {
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
             <div className="col-span-12 p-4 cursor-pointer  box zoom-in">
               <div className="">
-                <div className="mr-auto text-xs">Project Target</div>
-
+                <div className="flex space-x-2 justify-start items-center">
+                  <div
+                    className={`flex items-center justify-center rounded-md bg-customColor/20 w-7 h-7`}
+                  >
+                    <Lucide
+                      icon="Target"
+                      fill="white"
+                      className={`p-1 w-[22px] h-[32px] text-customColor  `}
+                    />
+                  </div>
+                  <div className="mr-auto text-xs">Project Target</div>
+                </div>
                 <div className="flex mt-4">
-                  <div className="mr-auto text-xl font-bold text-purple-500">
+                  <div className="mr-auto text-xl font-bold text-customColor">
                     {kpiData?.total_registrations}
                     <span className="text-slate-700 font-normal text-sm">
-                      {` (${kpiData?.percentage_achieved}%)`}
+                      {loadingKpiData? <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>: 
+                      ` (${(kpiData?.percentage_achieved).toFixed(2)}%)`
+                      }
                     </span>
                   </div>
                   <div className="text-xl font-bold">60,000</div>
                 </div>
-              
 
-<Progress className="h-1 mt-2">
-        <Progress.Bar
-          className="bg-purple-500"
-          role="progressbar"
-          aria-valuenow={kpiData?.percentage_achieved}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          style={{ width: `${kpiData?.percentage_achieved}%` }}
-        ></Progress.Bar>
-      </Progress>
-                
+                <Progress className="h-1 mt-2">
+                  <Progress.Bar
+                    className="bg-customColor"
+                    role="progressbar"
+                    aria-valuenow={kpiData?.percentage_achieved}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    style={{ width: `${kpiData?.percentage_achieved}%` }}
+                  ></Progress.Bar>
+                </Progress>
               </div>
             </div>
             <div className="col-span-12 p-4 cursor-pointer  box zoom-in">
@@ -992,37 +899,37 @@ function Main() {
               <div className="text-slate-500">
                 Total vehicles successfully registered on Lagrev
               </div>
-{kpiData?.top_performing_lgas.map((top_performing_lga: any, index: Key | null | undefined) => (
+              {kpiData?.top_performing_lgas.map(
+                (top_performing_lga: any, index: Key | null | undefined) => (
+                  <div className="box mt-4 p-4" key={index}>
+                    <div className="mr-auto text-xs">
+                      {top_performing_lga.registered_lga} LGA
+                    </div>
 
-<div className="box mt-4 p-4" key={index}>
-<div className="mr-auto text-xs">{top_performing_lga.registered_lga} LGA</div>
+                    <div className="flex mt-2">
+                      <div className="mr-auto text-xl font-bold text-slate-500">
+                        {top_performing_lga?.total}
+                      </div>
+                      <div className="text-xs">
+                        {` (${(top_performing_lga?.percentage).toFixed(2)}%)`}
+                      </div>
+                    </div>
 
-<div className="flex mt-2">
-  <div className="mr-auto text-xl font-bold text-slate-500">
-    {top_performing_lga?.total}
-  </div>
-  <div className="text-xs">
-  {` (${top_performing_lga?.percentage}%)`}
-  
-  </div>
-</div>
-
-  <Progress className="h-1 mt-2">
-<Progress.Bar
-className="bg-purple-500"
-role="progressbar"
-aria-valuenow={kpiData?.lga_contribution_percentage}
-aria-valuemin={0}
-aria-valuemax={100}
-style={{ width: `${kpiData?.lga_contribution_percentage}%` }}
-></Progress.Bar>
-</Progress>
-</div>
-
-
-))}
-
-            
+                    <Progress className="h-1 mt-2">
+                      <Progress.Bar
+                        className="bg-customColor"
+                        role="progressbar"
+                        aria-valuenow={kpiData?.lga_contribution_percentage}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        style={{
+                          width: `${kpiData?.lga_contribution_percentage}%`,
+                        }}
+                      ></Progress.Bar>
+                    </Progress>
+                  </div>
+                )
+              )}
             </div>
             {/* <div className="col-span-12 p-4 cursor-pointer sm:col-span-4 2xl:col-span-3 box zoom-in">
               <div className="text-base font-medium">Soup</div>

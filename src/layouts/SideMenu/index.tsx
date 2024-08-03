@@ -17,7 +17,52 @@ import API from "../../utils/API";
 import LoadingIcon from "../../base-components/LoadingIcon";
 import Button from "../../base-components/Button";
 
-function Main() {
+interface LayoutProps {
+  isDashboard: boolean;
+}
+
+// const DashbooardContent = () => {
+//       return ( <div
+//         className={clsx([
+//           `max-w-full md:max-w-none  rounded-[30px] md:rounded-none  md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700`,
+//           "before:content-[''] before:w-full before:h-px before:block",
+//         ])}
+//         >
+//         <Outlet />
+//         </div>)
+// } 
+
+
+
+
+const Content = ({ dashboard }: { dashboard: boolean }) => {
+  return dashboard ? (
+    <div
+      className={clsx([
+        `max-w-full md:max-w-none  rounded-[30px] md:rounded-none  md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700`,
+        "before:content-[''] before:w-full before:h-px before:block",
+      ])}
+    >
+      <Outlet />
+    </div>
+  ) : (
+    <div
+      // className={clsx([
+      //   `max-w-full md:max-w-none rounded-[30px] md:rounded-none md:px-[22px] min-w-0 min-h-screen bg-white flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-800`,
+      //   "before:content-[''] before:w-full before:h-px before:block",
+      // ])}
+      className={clsx([
+        "max-w-full md:max-w-none rounded-[30px] md:rounded-none px-4 md:px-[22px] min-w-0 min-h-screen bg-white flex-1 md:pt-4 pb-10 mt-5 md:mt-0 relative dark:bg-darkmode-700",
+        "before:content-[''] before:w-full before:h-px before:block",
+      ])}
+    >
+      <Outlet />
+    </div>
+  );
+
+};
+
+const Main: React.FC<LayoutProps> = ({isDashboard}) => {
   const location = useLocation();
   const [formattedMenu, setFormattedMenu] = useState<
     Array<FormattedMenu | "divider">
@@ -231,14 +276,18 @@ Super Admin        </div>
 
         {/* END: Side Menu */}
         {/* BEGIN: Content */}
-        <div
+        {
+          // Content(isDashboard)
+          <Content dashboard = {isDashboard}/>
+        }
+        {/* <div
           className={clsx([
             `max-w-full md:max-w-none  rounded-[30px] md:rounded-none  md:px-[22px] min-w-0 min-h-screen bg-secondary flex-1 md:pt-8 pb-10 mt-5 md:mt-1 relative dark:bg-darkmode-700`,
             "before:content-[''] before:w-full before:h-px before:block",
           ])}
         >
           <Outlet />
-        </div>
+        </div> */}
         {/* END: Content */}
       </div>
     </div>

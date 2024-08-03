@@ -283,7 +283,7 @@ function Main() {
             {/* BEGIN: Failed Notification Content */}
             <Notification
               id="failed-notification-content"
-              className="flex hidden"
+              className="flex "
             >
               <Lucide icon="XCircle" className="text-danger" />
               <div className="ml-4 mr-4">

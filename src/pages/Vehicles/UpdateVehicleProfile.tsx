@@ -25,6 +25,9 @@ import RiderForm from "./FormSections/RiderForm";
 import NOKForm from "./FormSections/NOKForm";
 import OwnerForm from "./FormSections/OwnerForm";
 import Litepicker from "../../base-components/Litepicker";
+import Toastify from "toastify-js";
+import Notification from "../../base-components/Notification";
+
 
 interface VehicleDetails {
   rider: {
@@ -137,7 +140,7 @@ export default function UpdateVehicleProfile() {
   const [selectedLga, setSelectedLga] = useState("");
   const navigate = useNavigate();
   const [date, setDate] = useState('');
-
+const [errorMessage, setErrorMessage] = useState('');
 
   console.log(loading)
 
@@ -265,11 +268,40 @@ export default function UpdateVehicleProfile() {
       function (responseData: any) {
         //   setVehicleDetails(vehicleData);
         setLoading(false);
-        console.log(responseData);
+        const successEl = document
+        .querySelectorAll("#success-notification-content")[0]
+        .cloneNode(true) as HTMLElement;
+  
+      successEl.classList.remove("hidden");
+      Toastify({
+        node: successEl,
+        duration: 8000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+      }).showToast();
+        // console.log(responseData);
       },
       function (error: any) {
         console.error("Error fetching vehicle data:", error);
         setLoading(false);
+        setErrorMessage(error);
+        const failedEl = document
+        .querySelectorAll("#failed-notification-content")[0]
+        .cloneNode(true) as HTMLElement;
+      failedEl.classList.remove("hidden");
+      Toastify({
+        node: failedEl,
+        duration: 8000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+      }).showToast();
+
       },
       user?.token && user.token
     );
@@ -295,12 +327,10 @@ export default function UpdateVehicleProfile() {
 
   return (
     <>
-      <div className="min-h-full">
       
 
-        <main className="lg:-mt-9 lg:-mx-6">
           <div className="max-w-7xl mx-auto pb-12 lg:pb-0  lg:px-0">
-            <div className="bg-white   px-5 py-6 sm:px-6">
+            <div className="bg-white   px-5 py-6 sm:px-6 sm:py-4">
               {/* Content Section */}
 
               <div className="flex items-center intro-y gap-x-2">
@@ -938,12 +968,39 @@ export default function UpdateVehicleProfile() {
                       </Button>
                     </div>
                   </form>
+
+
+                <Notification
+              id="success-notification-content"
+              className="flex"
+            >
+              <Lucide icon="CheckCircle" className="text-success" />
+              <div className="ml-4 mr-4">
+                <div className="font-medium">Update Successful</div>
+                <div className="mt-1 text-slate-500">
+                  Profile Successfully Updated
+                </div>
+              </div>
+            </Notification>
+            {/* END: Success Notification Content */}
+            {/* BEGIN: Failed Notification Content */}
+            <Notification
+              id="failed-notification-content"
+              className="flex"
+            >
+              <Lucide icon="XCircle" className="text-danger" />
+              <div className="ml-4 mr-4">
+                <div className="font-medium">Update Failed!</div>
+                <div className="mt-1 text-slate-500">
+                  {errorMessage}
+                </div>
+              </div>
+            </Notification>
                 </div>
               </div>
             </div>
           </div>
-        </main>
-      </div>
+       
     </>
   );
 }

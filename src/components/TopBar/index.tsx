@@ -176,7 +176,7 @@ function Main() {
   return (
     <>
       {/* BEGIN: Top Bar */}
-      <div className="top-bar-boxed h-[50px] z-[51] text-primary  relative border-b border-white/[0.08]   -mx-3 sm:-mx-8 px-3 sm:px-8 md:pt-0 bg-slate-50 lg:mb-0 ">
+      <div className="top-bar-boxed h-[50px] z-[51] text-primary  relative border-b border-white/[0.08]   -mx-3 sm:-mx-8 px-3 sm:px-8 md:pt-0 bg-white/90 lg:mb-0 lg:shadow-md shadow-slate-400 ">
         <div className="flex items-center ml-5 h-full gap-x-48">
           {/* BEGIN: Logo */}
           <Link to="/" className="hidden -intro-x md:flex ">
@@ -225,8 +225,8 @@ function Main() {
               leaveTo="mt-5 invisible opacity-0 translate-y-1"
             >
 
-              <div className="absolute right-0 z-10 mt-[3px] overflow-y-scroll h-72">
-                <div className="w-[450px] p-5 box">
+              <div className="absolute left-0 z-10 mt-[3px] overflow-y-scroll h-72 ">
+                <div className="w-[450px] p-5 box bg-slate-100">
 
 
      

@@ -92,7 +92,7 @@ Dialog.Panel = ({
         leave="ease-in-out duration-[400ms]"
         leaveFrom="opacity-100 "
         leaveTo="opacity-0 "
-        className="fixed inset-0"
+        className="fixed  lg:inset-40 inset-8"
         // enter="ease-out duration-300"
             // enterFrom="opacity-0"
             // enterTo="opacity-100"
@@ -131,7 +131,7 @@ Dialog.Title = ({
     <HeadlessDialog.Title
       as={as}
       className={twMerge([
-        "flex items-center px-5 py-3 border-b border-slate-200/60 dark:border-darkmode-400",
+        "flex items-center px-5 py-5 border-b border-slate-200/60 dark:border-darkmode-400",
         className,
       ])}
       {...props}
