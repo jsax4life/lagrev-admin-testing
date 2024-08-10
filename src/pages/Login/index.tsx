@@ -269,7 +269,7 @@ function Main() {
 
                 <Notification
               id="success-notification-content"
-              className="flex hidden"
+              className=" hidden"
             >
               <Lucide icon="CheckCircle" className="text-success" />
               <div className="ml-4 mr-4">
@@ -283,7 +283,7 @@ function Main() {
             {/* BEGIN: Failed Notification Content */}
             <Notification
               id="failed-notification-content"
-              className="flex "
+              className=" hidden"
             >
               <Lucide icon="XCircle" className="text-danger" />
               <div className="ml-4 mr-4">

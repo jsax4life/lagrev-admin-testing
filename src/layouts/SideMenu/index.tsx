@@ -105,6 +105,8 @@ const Main: React.FC<LayoutProps> = ({isDashboard}) => {
   }
 
 
+  console.log(user)
+
   return (
     <div className="py-5 md:py-0">
       {/* <DarkModeSwitcher /> */}
@@ -229,20 +231,20 @@ const Main: React.FC<LayoutProps> = ({isDashboard}) => {
 
 
 
-          <div className="font-medium flex flex-col gap-y-2 xl:flex-row px-4 text-md">
+          <div                         onClick={() => history(`/admin-profile`)}  className="font-medium flex flex-col gap-y-2 xl:flex-row px-4 text-md cursor-pointer">
 <img src={Profile} alt="Imge"  className="w-8 h-8 rounded-full mr-2"/>
              
              <div>
              <div className="font-medium">
-          {/* {fakerData[0].users[0].name} */}
-Muhmmed Mustpha          </div>
+          {user?.data?.firstName}           {user?.data?.lastName}
+
+</div>
         <div className="text-xs  mt-0.5 dark:text-slate-500">
-          {/* {fakerData[0].jobs[0]} */}
 Super Admin        </div>
              </div>
 </div>
 
-          <div className=" py-3 border-b lg:flex-row border-slate-200/60 dark:border-darkmode-400 mt-20">
+          <div className="  py-3 border-b flex border-slate-200/60 dark:border-darkmode-400 mt-20">
           {isLoading ? (
             <div className="flex">
                             
@@ -253,7 +255,7 @@ Super Admin        </div>
 
             </div>
           ) : (
-            <div className="flex gap-x-4 items-center px-4 cursor-pointer"  onClick={logout}
+            <div className="flex gap-x-4 items-center lg:px-4 cursor-pointer"  onClick={logout}
             >
             <div>
             <Lucide
