@@ -11,6 +11,8 @@ import ProfileDetails from "../pages/Vehicles/VehicleDetails";
 import UpdateVehicleProfile from "../pages/Vehicles/UpdateVehicleProfile";
 import AdminProfile from "../pages/Profile";
 import EditAdminProfile from "../pages/Profile/EditProfile"
+import AllUsers from "../pages/Users"
+import UserProfileDetails from "../pages/Users/UserDetails";
 
 function Router() {
   const routes = [
@@ -49,6 +51,8 @@ function Router() {
         { path: "/admin-profile", element: <AdminProfile />},
 
         { path: "/edit-admin-profile", element: <EditAdminProfile />},
+        { path: "/users", element: <AllUsers />},
+        { path: "/user-profile/:id", element: <UserProfileDetails />},
 
       
       ],

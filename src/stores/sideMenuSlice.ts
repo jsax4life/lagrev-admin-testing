@@ -39,7 +39,7 @@ const initialState: SideMenuState = {
       subMenu: [
         {
           icon: "User",
-          pathname: "/users-layout-1",
+          pathname: "/users",
           title: "All Users",
         },
         {

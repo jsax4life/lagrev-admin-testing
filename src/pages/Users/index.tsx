@@ -4,9 +4,7 @@ import { Fragment, Key, useContext, useEffect } from 'react'
 // import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 
 import _ from "lodash";
-import clsx from "clsx";
 import { useState, useRef } from "react";
-import fakerData from "../../utils/faker";
 import Button from "../../base-components/Button";
 import Pagination from "../../base-components/Pagination";
 import { FormCheck, FormInput, FormLabel, FormSelect } from "../../base-components/Form";
@@ -21,7 +19,8 @@ import API from '../../utils/API';
 import { useNavigate } from 'react-router-dom';
 import LoadingIcon from '../../base-components/LoadingIcon';
 import FilterChips from '../../components/FilterChips';
-import FilterModal from '../PointOfSale/filterModal';
+import FilterModal from './filterModal';
+import profile from "../../assets/images/profile.png"
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -39,6 +38,12 @@ const lagosLGAs = [
 
   ];
 
+  const usersStatus = [
+    "Inactive",
+    "Active",
+    "Deactivated",
+  ]
+
   const tagStyle = [
     "bg-orange-100 text-orange-600",
     "bg-green-100 text-green-600",
@@ -50,7 +55,7 @@ export default function Main() {
 
     const [openModal, setOpenModal] = useState(false);
 
-    const [vehicleList, setVehicleList] = useState<any[]>([]);
+    const [userList, setUserList] = useState<any[]>([]);
 
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
     const deleteButtonRef = useRef(null);
@@ -65,7 +70,7 @@ export default function Main() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
-    const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park">(
+    const [activeFilter, setActiveFilter] = useState<"Role"| "LGA" | "Status">(
       "LGA"
     );
     const cancelButtonRef = useRef(null);
@@ -116,11 +121,13 @@ useEffect(() => {
     
         API(
           "get",
-          `vehicle-data`,
-          params,
+          `all-users`,
+          // params,
+          {},
           // {lga: 'Alimosho'},
-          function (vehicleListData: any) {
-            setVehicleList(vehicleListData.registered_vehicles);
+          function (allUserData: any) {
+            console.log(allUserData?.data)
+            setUserList(allUserData?.data);
             setLoading(false);
           },
           function (error: any) {
@@ -202,13 +209,16 @@ useEffect(() => {
       <div className="bg-white   px-5 py-6 sm:px-6">
 
         {/* Content Section */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-lg font-medium text-black intro-y">Vehicles</h2>
-            <p className="mt-4 text-xs text-black intro-y">View, Edit and Delete Vehicle</p>
+        <div className="flex justify-start items-center">
+          <div className='mr-auto'>
+            <h2 className="text-lg font-medium text-black intro-y ">Users</h2>
+            <p className="mt-4 text-xs text-black intro-y">View, Edit and Delete users</p>
           </div>
+          <Button variant="primary" className="mr-2 shadow-sm bg-customColor">
+            <Lucide icon="Plus" className="w-4 h-4 mr-2" /> Add New User
+          </Button>
           <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel Document
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF
           </Button>
         </div>
 
@@ -336,7 +346,7 @@ useEffect(() => {
 
 
        
-
+{/* search */}
 
             <div className="relative lg:w-1/4 w-full text-slate-500">
               <FormInput
@@ -371,6 +381,15 @@ useEffect(() => {
         </Menu.Item> */}
 
 <Menu.Item
+onClick={() => { setOpenModal(true); setActiveFilter("Role"); }}
+>
+           
+              <Lucide icon="Home" className="w-4 h-4 mr-2" />
+              Role
+              <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+        </Menu.Item> 
+
+<Menu.Item
 onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 >
            
@@ -381,24 +400,24 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 
         
         <Menu.Item
-        onClick={() => { setOpenModal(true); setActiveFilter("Park"); }}
+        onClick={() => { setOpenModal(true); setActiveFilter("Status"); }}
         >
             <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
-            Park
+            Status
 
             <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
 
         </Menu.Item>
-        <Menu.Item
+        {/* <Menu.Item
       
 
-        onClick={(event: React.MouseEvent ) => {  event.preventDefault(); setOpenModal(true); setActiveFilter("Date"); }}
+        onClick={(event: React.MouseEvent ) => {  event.preventDefault(); setOpenModal(true); setActiveFilter("Status"); }}
         >
             <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
             Date
             <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
 
-        </Menu.Item>
+        </Menu.Item> */}
        
     </Menu.Items>
 </Menu>
@@ -483,24 +502,19 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                   S/N
                 </Table.Th>
                 <Table.Th className="border-b-0 whitespace-nowrap">
-                  DRIVER
+                  USER'S NAME
                 </Table.Th>
                 <Table.Th className="border-b-0 whitespace-nowrap">
-                  PLATE NUMBER
+                  ROLE
                 </Table.Th>
+               
                 <Table.Th className="border-b-0 whitespace-nowrap">
-                PHONE NUMBER
-
-                </Table.Th>
-                <Table.Th className="border-b-0 whitespace-nowrap">
-                    VIN                
+                    LGA                
                 </Table.Th>
                 <Table.Th className="text-center border-b-0 whitespace-nowrap">
                     STATUS                
                 </Table.Th>
-                {/* <Table.Th className="text-right border-b-0 whitespace-nowrap">
-                  <div className="pr-16">TOTAL TRANSACTION</div>
-                </Table.Th> */}
+              
                 <Table.Th className="text-center border-b-0 whitespace-nowrap">
                   ACTION
                 </Table.Th>
@@ -511,32 +525,32 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
             >
           
           {
-              vehicleList.map((vehicle: any, vehicleKey: any | null | undefined) => (
-                <Table.Tr key={vehicleKey} className="intro-x text-slate-600">
+              userList.map((user: any, userKey: any | null | undefined) => (
+                <Table.Tr key={userKey} className="intro-x text-slate-600">
                  
                   <Table.Td className=" first:rounded-l-md last:rounded-r-md w-10  bg-white  dark:bg-darkmode-600 border-slate-200 border-b ">
                     <div
                       className=" whitespace-nowrap"
                     >
-                      {vehicleKey + 1}
+                      {userKey + 1}
                     </div>
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md  bg-white border-b-0 dark:bg-darkmode-600  border-slate-200 border-b">
-                    <div className="flex items-center" onClick={() => navigate(`/profile/${vehicle.id}`)}>
+                    <div className="flex items-center" onClick={() => navigate(`/profile/${user?.id}`)}>
                       <div className="w-9 h-9 image-fit zoom-in">
                         <Tippy
                           as="img"
                           
                           alt="Profile"
                           className="border-white rounded-lg shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]"
-                          src={vehicle?.rider?.profile_picture_url}
-                          content={`Uploaded at ${vehicle.created_at}`}
+                          src={profile}
+                          content={`Uploaded at ${user?.created_at}`}
                         />
                       </div>
                       <div className="ml-4">
                         <a href="" className="font-medium whitespace-nowrap">
-                          {vehicle?.rider?.first_name} {vehicle?.rider?.last_name }
+                          {user?.name}
                         </a>
                         {/* <div className="text-slate-500 text-xs whitespace-nowrap mt-0.5">
                           {vehicle?.rider?.phone}
@@ -548,37 +562,26 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span  className="font-medium whitespace-nowrap ">
-{vehicle?.plate_number? vehicle?.plate_number : '------'}
+{user?.role === 'registration_officer'? 'Registration Officer' : user?.role === 'attachment_officer'? 'Attachment Officer'  : user?.role === 'operation_officer'? 'Operation Officer' : '------'}
                     </span>
                     
                   
                   </Table.Td>
                   
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
-                   
-                      <>
-                        <div className="whitespace-nowrap">
-
-
-                        {vehicle?.rider?.phone}
-</div>
-                       
-                      </>
-                  
-                  </Table.Td>
+           
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40  bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
-                    <div className="pr-16">{vehicle?.vin ? vehicle?.vin : '------'}</div>
+                    <div className="pr-16">{user?.lga ? user?.lga : '------'}</div>
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span
                       className=
  {`items-center px-2 lg:py-1 rounded-full text-xs font-medium capitalize ${
-    tagStyle[vehicle?.tagged]
+    tagStyle[user?.status]
   }`}
                          
                     >
-                            {vehicle?.tagged ? "tagged" : "Registered "}
+                            {usersStatus[user?.status]}
                     </span>
                   </Table.Td>
 
@@ -586,7 +589,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                     <div className="flex items-center justify-center">
                       <button
                         className="flex items-center  text-customColor whitespace-nowrap"
-                        onClick={() => navigate(`/profile/${vehicle.id}`)}
+                        onClick={() => navigate(`/user-profile/${user?.id}`)}
 
                       >
                         {/* <Lucide icon="CheckSquare" className="w-4 h-4 mr-1" />{" "} */}
