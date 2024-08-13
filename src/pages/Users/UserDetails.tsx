@@ -23,6 +23,8 @@ import profile from "../../assets/images/profile.png"
 const tagStyle = [
   "bg-orange-100 text-orange-600",
   "bg-green-100 text-green-600",
+  "bg-red-200 text-green-white",
+
 ];
 
 
@@ -45,45 +47,7 @@ const activityItem: ActivityItem = {
   // other fields...
 };
 
-// const activity = [
-//     {
-//       id: 1,
-//       type: 'assignment',
-//       person: { name: 'Eduardo Benz', href: '#' },
-//       // imageUrl:
-//       //   'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-//       comment:
-//         'Lorem ipsum dolor sit amet, ',
-//       date: '6d ago',
-//     },
-//     {
-//       id: 2,
-//       type: 'assignment',
-//       person: { name: 'Hilary Mahy', href: '#' },
-//       assigned: { name: 'Kristin Watson', href: '#' },
-//       date: '2d ago',
-//     },
-//     {
-//       id: 3,
-//       type: 'tags',
-//       person: { name: 'Hilary Mahy', href: '#' },
-//       tags: [
-//         { name: 'Bug', href: '#', color: 'bg-rose-500' },
-//         { name: 'Accessibility', href: '#', color: 'bg-indigo-500' },
-//       ],
-//       date: '6h ago',
-//     },
-//     {
-//       id: 4,
-//       type: 'assignment',
-//       person: { name: 'Jason Meyers', href: '#' },
-//       // imageUrl:
-//       //   'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-//       comment:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
-//       date: '2h ago',
-//     },
-//   ]
+
 
 export default function UserProfileDetails() {
   const { user } = useContext(UserContext);
@@ -95,12 +59,12 @@ export default function UserProfileDetails() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
+  const deleteButtonRef = useRef(null);
 
-  const isInitialMount = useRef(true);
 
   const navigate = useNavigate();
 
-console.log(userDetails);
   
 
   useEffect(() => {
@@ -133,6 +97,7 @@ console.log(userDetails);
         setLoading(false);
       },
       function (error: any) {
+
         console.error("Error fetching recent searches:", error);
         setLoading(false);
       },
@@ -140,7 +105,33 @@ console.log(userDetails);
     );
   };
 
+  const deleteUser = () => {
 
+    setError("");
+
+
+    API(
+      "delete",
+
+      `delete-users/${id}`, 
+      {},
+
+      // {lga: 'Alimosho'},
+      function (response: any) {
+        setDeleteConfirmationModal(false)
+
+        console.log(response)
+        setLoading(false);
+      },
+      function (error: any) {
+        setDeleteConfirmationModal(false)
+
+        console.error("Error fetching recent searches:", error);
+        setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
 
   
   function classNames(...classes: string[]) {
@@ -149,9 +140,52 @@ console.log(userDetails);
 
   return (
     <>
-        {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
-          <header className="py-5"></header>
-        </div> */}
+
+     {/* BEGIN: Delete Confirmation Modal */}
+     <Dialog
+        open={deleteConfirmationModal}
+        onClose={() => {
+          setDeleteConfirmationModal(false);
+        }}
+        initialFocus={deleteButtonRef}
+      >
+        <Dialog.Panel>
+          <div className="p-5 text-center">
+            <Lucide
+              icon="XCircle"
+              className="w-16 h-16 mx-auto mt-3 text-danger"
+            />
+            <div className="mt-5 text-3xl">Are you sure?</div>
+            <div className="mt-2 text-slate-500">
+              Do you really want to delete these records? <br />
+              This process cannot be undone.
+            </div>
+          </div>
+          <div className="px-5 pb-8 text-center">
+            <Button
+              variant="outline-secondary"
+              type="button"
+              onClick={() => {
+                setDeleteConfirmationModal(false);
+              }}
+              className="w-24 mr-1"
+            >
+              Cancel
+            </Button>
+            <Button
+            onClick={() => deleteUser()}
+              variant="danger"
+              type="button"
+              className="w-24"
+              ref={deleteButtonRef}
+            >
+              Deactivate
+            </Button>
+          </div>
+        </Dialog.Panel>
+      </Dialog>
+      {/* END: Delete Confirmation Modal */}
+
 
           <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
             {/* Replace with your content */}
@@ -162,69 +196,27 @@ console.log(userDetails);
               <Tab.Group>
                 {/* BEGIN: Profile Info */}
                 <div className=" pt-5 lg:pt-2  intro-y ">
-                  {/* <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
-                  <div className="flex justify-center items-center lg:hidden mb-4">
-
-<Button variant="primary" className="mr-2 shadow-sm px-2 bg-customColor" onClick={() => {
-              navigate(`/update-profile/${id}`);
-            }}>Edit</Button>
-
-                      <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel Document
-          </Button>
-</div>
-                    <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
-         
-                      <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
-                        <img
-                          alt="Profile pix"
-                          className="rounded-lg"
-                          src={rider?.profile_picture_url}
-                        />
-                      </div>
-                      <div className="ml-5 mr-auto">
-                        <div
-                          className={`w-1/2 text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
-                            tagStyle[userDetails?.tagged]
-                          }`}
-                        >
-                          {userDetails?.tagged ? "tagged" : "Registered"}
-                        </div>
-                        <div className="w-24 text-lg font-medium truncate sm:w-40 sm:whitespace-normal">
-                          {rider?.first_name} {rider?.last_name}
-                        </div>
-                        <div className="text-slate-500">
-                          <span className="font-semibold text-md">
-                            {" "}
-                            Phone Number:
-                          </span>{" "}
-                          <span>{rider?.phone}</span>
-                        </div>
-                      </div>
-<div className="lg:flex hidden ">
-
-<Button variant="primary" className="mr-2  px-4 bg-customColor" onClick={() => {
-              navigate(`/update-profile/${id}`);
-            }}>Edit</Button>
-
-                      <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel Document
-          </Button>
-</div>
-                    </div>
-                  </div> */}
-
+   
 
                   <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
                   <div className="flex justify-center items-center lg:hidden mb-4">
 
 <Button variant="primary" className="mr-2 shadow-sm px-2 bg-customColor" onClick={() => {
-              navigate(`/edit-admin-profile`);
-            }}>Edit</Button>
+              navigate(`/edit-user-profile/${id}`);
+            }}
+            
+            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+            >Edit</Button>
 
                       <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel
           </Button>
+          <Button variant="primary" className="mr-2 shadow-sm px-2 bg-red-700" onClick={() => {
+                              setDeleteConfirmationModal(true);
+                            }}
+                            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+
+                            >Delete</Button>
 </div>
                     <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
          
@@ -237,30 +229,39 @@ console.log(userDetails);
                       </div>
                       <div className="ml-5 items-center ">
                         <div
-                          className={`lg:w-1/4 w-1/2 text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
-                            tagStyle[userDetails?.active]
+                          className={`inline-block  text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
+                            tagStyle[userDetails?.status]
                           }`}
                         >
-                          {userDetails?.active ? "Active" : "Inactive"}
+                          {userDetails?.status === 0? "Inactive" : userDetails?.status === 1?  'Active' : 'Deactivated'}
                         </div>
-                        <div className="w-24 text-lg font-medium truncate sm:w-40 sm:whitespace-normal">
-                          {userDetails?.firstName} {userDetails?.lastName}
+                        <div className="w-24 lg:w-full text-lg font-medium truncate sm:w-40 sm:whitespace-normal">
+                          {userDetails?.name} 
                         </div>
-                        <div className="text-slate-500 lg:mb-4">
+                        <div className="text-slate-500 lg:mb-4 capitalize">
                           <span className="font-semibold text-md mr-2">
                             Role:
                           </span>
-                          <span>{userDetails?.name}</span>
+                          <span>{userDetails?.role}</span>
                         </div>
 
                         <div className="text-slate-500 hidden text-xs lg:flex">
                         <Button variant="primary" className="mr-2  px-4 py-1 bg-customColor" onClick={() => {
-              navigate(`/edit-admin-profile`);
-            }}>Edit</Button>
+              navigate(`/edit-user-profile/${id}`);
+            }}
+            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+
+            >Edit</Button>
 
                       <Button className="mr-2 shadow-sm bg-white">
             <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF
           </Button>
+          <Button variant="primary" className="mr-2  px-4 py-1 bg-red-700" onClick={() => {
+                              setDeleteConfirmationModal(true);
+                            }}
+                            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+
+                            >Delete</Button>
                         </div>
                       </div>
 
@@ -362,55 +363,12 @@ console.log(userDetails);
                           </div>
                         </div>
                       </div>
-                      {/* END: Owners Details */}
-
-                        {/* BEGIN: Vehicles  */}
-
-                        {/* <div className="col-span-12 intro-y text-base ">
-                        <div className="flex items-center py-4">
-                          <h3 className="ntro-y box  font-semibold mr-4 text-sm text-primary">
-                            VEHICLE DETAILS
-                          </h3>
-                          <hr className="flex-grow border-t border-slate-200/" />
-                        </div>
-                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                            <div className="font-semibold ">
-                              Registered LGA:
-                            </div>
-                            <div className="font-semibold ">
-                              Vehicle Type:
-                            </div>
-                            <div className="font-semibold ">
-                              Plate Number:
-                            </div>
-
-                            <div className="font-semibold ">
-                              Vehicle Manufacture:
-                            </div>
-                            <div className="font-semibold ">
-                              Date Purchased:
-                            </div>
-                          </div>
-                          <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                            <div className="">{vehicleDetails?.registered_lga? vehicleDetails?.registered_lga : isNull }</div>
-
-                            <div className="">{vehicleDetails?.vehicle_type? vehicleDetails?.vehicle_type : isNull}</div>
-
-                            <div className="">{vehicleDetails?.plate_number ? vehicleDetails?.plate_number : isNull}</div>
-                            <div className="">{vehicleDetails?.manufacturer ? vehicleDetails?.manufacturer : isNull}</div>
-                            <div className="">{vehicleDetails?.date? vehicleDetails?.date : isNull}</div>
-
-                          </div>
-                        </div>
-                      </div> */}
-                      {/* END: Vehicle */}
+                    
                     </div>
                   </Tab.Panel>
 
-                  <Tab.Panel>
+                  {/* <Tab.Panel>
                     <div className="grid grid-cols-12 gap-6 text-slate-600">
-                      {/* BEGIN: Rider Details */}
                       <div className="col-span-12 intro-y  ">
                         <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
                           <div className=" items-center mb-5">
@@ -452,9 +410,7 @@ console.log(userDetails);
                           </div>
                         </div>
                       </div>
-                      {/* END: Rider Details */}
-
-                      {/* BEGIN: Next of Kin  */}
+                     
                       <div className="col-span-12 intro-y box text-base ">
                         <div className="flex items-center py-4">
                           <h3 className="intro-y box  font-semibold mr-4 text-sm">
@@ -462,35 +418,7 @@ console.log(userDetails);
                           </h3>
                           <hr className="flex-grow border-t border-slate-200/" />
                         </div>
-                        {/* <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                          <div className=" items-center mb-5 text-sm">
-                            <div className="font-semibold ">First Name:</div>
-                            <div className="font-semibold ">Last Name:</div>
-                            <div className="font-semibold ">Relationship:</div>
-                            <div className="font-semibold ">Phone Number:</div>
-
-                            <div className="font-semibold ">Home Address</div>
-                          </div>
-                          <div className=" items-center mb-5">
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.first_name}
-                            </div>
-
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.last_name}
-                            </div>
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.relationship}
-                            </div>
-
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.phone}
-                            </div>
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.home_address}
-                            </div>
-                          </div>
-                        </div> */}
+                       
 
 
 
@@ -509,80 +437,12 @@ console.log(userDetails);
             </div>
 
                       </div>
-                      {/* END: Next of Kin  */}
 
                     
                     </div>
-                  </Tab.Panel>
+                  </Tab.Panel> */}
 
-                  <Tab.Panel>
-                    <div className="grid grid-cols-12 gap-6 text-slate-600">
-               
-
-     
-
-    <div className="flow-root col-span-12 intro-y overflow-y-auto h-72">
-              <h2 className="text-lg mb-4">Activity Logs</h2>
-              {/* <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div> */}
-      <ul role="list" className="-mb-8">
-        {user_activity_logs?.map((activityItem: any , activityItemIdx: number) => (
-          <li key={activityItem.id}>
-            <div className="relative pb-8">
-              {activityItemIdx !== user_activity_logs.length - 1 ? (
-                <span className="absolute top-3 left-2 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
-              ) : null}
-              <div className="relative flex items-start space-x-3">
-                
-                  <>
-                    <div>
-                    <div className="relative px-1">
-                    <div className="h-2 w-2  bg-customColor rounded-full ring-4 ring-customColor/20 flex items-center justify-center">
-                                  {/* <Lucide icon="Activity" className="h-5 w-5 text-gray-400" aria-hidden="true" /> */}
-                                </div>
-                      </div>
-                    </div>
-                    <div className="min-w-0 flex-1 py-0">
-                      <div className="text-sm  text-gray-500">
-                        <span className="mr-2">
-                          <Link to={activityItem.id} className="font-medium text-gray-900">
-                            {activityItem.action}
-                          </Link>
-                        </span>
-                      
-                        <span className="whitespace-nowrap"> {formatDate(activityItem.created_at)}</span>
-
-                            <div className="mr-0.5">
-                            <span className=""> {activityItem.user.name }</span>
-
-                            <span
-                      className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block mx-2 '
-                      aria-hidden="true"
-                    />
-
-                                {/* <span className="ml-3  text-slate-500">{ formatChanges(activityItem.changes)}</span> */}
-                                <span className=" text-xs">{activityItem.type}</span>
-
-                                <span
-                      className='bg-slate-400 h-1.5 w-1.5 rounded-full inline-block  mx-2'
-                      aria-hidden="true"
-                    />
-
-                                                    <span className="mr-2 text-xs">{ activityItem.user.lga}</span>
-                        </div> 
-                      </div>
-                    </div>
-                  </>
-                
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-                    
-                    </div>
-                  </Tab.Panel>
+                  
                 </Tab.Panels>
               </Tab.Group>
 

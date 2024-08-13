@@ -49,9 +49,9 @@ const API = (method: any, url: any, data: any, callback: any, failback: any, tok
             }
         })
         .catch((error) => {
-            // console.log(error);
 
             if (error.response) {
+            
                 if (error.response.status === 401) {
                     // const history = useNavigate();
                     // history('/login');
@@ -63,6 +63,8 @@ const API = (method: any, url: any, data: any, callback: any, failback: any, tok
                 const objectValues = Object.values(error.response.data);
                 objectValues.map((error) => {
                     errorString = errorString + error + ', ';
+                    failback(errorString)
+
                 });
                 // console.log(errorString);
                 if(error.response?.data?.message){

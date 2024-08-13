@@ -44,7 +44,7 @@ const initialState: SideMenuState = {
         },
         {
           icon: "User",
-          pathname: "/users-layout-2",
+          pathname: "/add-user",
           title: "Add new User",
         },
         {

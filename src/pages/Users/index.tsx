@@ -47,6 +47,7 @@ const lagosLGAs = [
   const tagStyle = [
     "bg-orange-100 text-orange-600",
     "bg-green-100 text-green-600",
+    "bg-red-500  text-white"
   ];
 
 export default function Main() {

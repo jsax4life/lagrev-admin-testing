@@ -13,6 +13,8 @@ import AdminProfile from "../pages/Profile";
 import EditAdminProfile from "../pages/Profile/EditProfile"
 import AllUsers from "../pages/Users"
 import UserProfileDetails from "../pages/Users/UserDetails";
+import UpdateUserProfile from "../pages/Users/UpdateUserDetails";
+import AddNewUser from "../pages/Users/AddUser";
 
 function Router() {
   const routes = [
@@ -53,6 +55,8 @@ function Router() {
         { path: "/edit-admin-profile", element: <EditAdminProfile />},
         { path: "/users", element: <AllUsers />},
         { path: "/user-profile/:id", element: <UserProfileDetails />},
+        { path: "/edit-user-profile/:id", element: <UpdateUserProfile />},
+        { path: "/add-user", element: <AddNewUser />},
 
       
       ],
