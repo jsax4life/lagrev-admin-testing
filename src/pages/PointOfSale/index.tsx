@@ -460,6 +460,8 @@ function Main() {
        
 
           <FilterChips
+          selectedRole=""
+          selectedStatus=""
             lagosLGAs={lagosLGAs}
             selectedLGA={selectedLGA}
             selectedPark={selectedPark}

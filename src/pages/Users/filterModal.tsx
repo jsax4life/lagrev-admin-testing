@@ -16,17 +16,19 @@ interface FilterModalProps {
   setOpen: (isOpen: boolean) => void;
   handleFilterChange: (type: string, value: string) => void;
   lagosLGAs: string[];
-  carParks: string[];
+  roles: string[];
   selectedLGA: string;
   setSelectedLGA: (lga: string) => void;
-  selectedCarPark: string;
-  setSelectedCarPark: (carPark: string) => void;
+  selectedRole: string;
+  setSelectedRole: (role: string) => void;
   startDate: string;
   setStartDate: (date: string) => void;
   endDate: string;
   setEndDate: (date: string) => void;
-  activeFilter: "Role" | "LGA" | "Status";
-  setActiveFilter: (filter: "Role" | "LGA" | "Status") => void;
+  selectedStatus: string;
+  setSelectedStatus: (status: string) => void;
+  activeFilter: "Role" | "LGA" | "Date" | "Status";
+  setActiveFilter: (filter: "Role" | "LGA" | "Date" | "Status") => void;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
@@ -34,24 +36,26 @@ const FilterModal: React.FC<FilterModalProps> = ({
   setOpen,
   handleFilterChange,
   lagosLGAs,
-  carParks,
+  roles,
   selectedLGA,
   setSelectedLGA,
-  selectedCarPark,
-  setSelectedCarPark,
+  selectedRole,
+  setSelectedRole,
   startDate,
   setStartDate,
   endDate,
   setEndDate,
+  selectedStatus,
+  setSelectedStatus,
   activeFilter,
 }) => {
   // Temporary states for selections
   const [tempSelectedLGA, setTempSelectedLGA] = useState(selectedLGA);
-  const [tempSelectedCarPark, setTempSelectedCarPark] =
-    useState(selectedCarPark);
+  const [tempSelectedRole, setTempSelectedRole] =
+    useState(selectedRole);
   const [tempStartDate, setTempStartDate] = useState(startDate);
   const [tempEndDate, setTempEndDate] = useState(endDate);
-
+const [tempSelectedStatus, setTempSelectedStatus] = useState(selectedStatus)
   const sendButtonRef = useRef<HTMLButtonElement>(null);
 
   // Handle LGA filter apply
@@ -63,8 +67,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   // Handle Car Park filter apply
   const applyCarParkFilter = () => {
-    setSelectedCarPark(tempSelectedCarPark);
-    handleFilterChange("CarPark", tempSelectedCarPark);
+    setSelectedRole(tempSelectedRole);
+    handleFilterChange("Role", tempSelectedRole);
     setOpen(false);
   };
 
@@ -73,6 +77,13 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setStartDate(tempStartDate);
     setEndDate(tempEndDate);
     handleFilterChange("Date", `${tempStartDate} - ${tempEndDate}`);
+    setOpen(false);
+  };
+
+  // Handle Status filter apply
+  const applyStatusFilter = () => {
+    setSelectedStatus(tempSelectedStatus);
+    handleFilterChange("Status", tempSelectedStatus);
     setOpen(false);
   };
 
@@ -97,8 +108,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   activeFilter === "Role"
                     ? "User"
                     : activeFilter === "LGA"
-                    ? "Home"
-                    : "User"
+                    ? "Home" 
+                    : activeFilter === "Date"
+                    ? "Calendar" : "Check"
                 }
                 className="w-5 h-5"
               />
@@ -109,15 +121,19 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 {activeFilter === "Role"
                   ? "User's Role"
                   : activeFilter === "LGA"
-                  ? "Filter By LGA"
-                  : "Status"}
+                  ? "Filter By LGA" 
+                  : activeFilter === "Date"
+                  ? "Filter By date Range" : "Filter By Status"}
               </h2>
               <p className="text-xs text-slate-500">
                 {activeFilter === "LGA"
                   ? "Choose an LGA to filter"
                   : activeFilter === "Role"
-                  ? "Choose a Userrole to filter"
-                  : "Choose a date range to filter"}
+                  ? "Choose a User Role to filter"
+                  : activeFilter === "Date"
+                  ? "Choosed a Date range to filter" 
+                  : "Choose a date range to filter"
+                  }
               </p>
             </div>
           </div>
@@ -140,7 +156,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   All LGA
                 </option>
                 {lagosLGAs.map((lga, index) => (
-                  <option key={index} value={lga}>
+                  <option key={index} value={lga.toLowerCase()}>
                     {lga}
                   </option>
                 ))}
@@ -148,27 +164,27 @@ const FilterModal: React.FC<FilterModalProps> = ({
             </div>
           ) : activeFilter === "Role" ? (
             <div className="col-span-12 ">
-              <FormLabel htmlFor="carPark">Select Car Park</FormLabel>
+              <FormLabel htmlFor="role">Select Role</FormLabel>
               <FormSelect
-                id="carPark"
+                id="role"
                 className=""
                 onChange={(e) => {
                   const value = e.target.value;
-                  setTempSelectedCarPark(value); // Store the selected value temporarily
+                  setTempSelectedRole(value); // Store the selected value temporarily
                 }}
-                value={tempSelectedCarPark}
+                value={tempSelectedRole}
               >
                 <option value="" disabled>
-                  All Car Parks
+                  All Role
                 </option>
-                {carParks.map((carPark, index) => (
-                  <option key={index} value={carPark}>
-                    {carPark}
+                {roles.map((role, index) => (
+                  <option key={index} value={role.toLowerCase().replace(/\s+/g, '_')}>
+                    {role}
                   </option>
                 ))}
               </FormSelect>
             </div>
-          ) : (
+          ) : activeFilter === "Date" ? (
             <>
               <div className="col-span-12 relative">
                 <FormLabel htmlFor="modal-datepicker-1">Start Date</FormLabel>
@@ -213,6 +229,30 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 </div>
               </div>
             </>
+          ) : (
+            <div className="col-span-12 ">
+              <FormLabel htmlFor="role">Select Status</FormLabel>
+              <FormSelect
+                id="status"
+                className=""
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTempSelectedStatus(value); // Store the selected value temporarily
+                }}
+                value={tempSelectedStatus}
+              >
+                <option value="" selected disabled>
+                  All Status
+                </option>
+                <option  value='active'>
+                    Active
+                  </option>
+                  <option  value='inactive'>
+                    Inactive
+                  </option>
+                
+              </FormSelect>
+            </div>
           )}
         </Dialog.Description>
 
@@ -235,7 +275,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 ? applyLGAFilter
                 : activeFilter === "Role"
                 ? applyCarParkFilter
-                : applyDateFilter
+                : activeFilter === "Date"
+                ? applyDateFilter :
+                applyStatusFilter
             }
           >
             Apply Filter

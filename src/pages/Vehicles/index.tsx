@@ -404,6 +404,8 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 </Menu>
         
 <FilterChips
+selectedRole=''
+selectedStatus=''
           lagosLGAs={lagosLGAs}
           selectedLGA={selectedLGA}
           selectedPark={selectedPark}

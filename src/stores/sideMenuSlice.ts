@@ -42,11 +42,11 @@ const initialState: SideMenuState = {
           pathname: "/users",
           title: "All Users",
         },
-        {
-          icon: "User",
-          pathname: "/add-user",
-          title: "Add new User",
-        },
+        // {
+        //   icon: "User",
+        //   pathname: "/add-user",
+        //   title: "Add new User",
+        // },
         {
           icon: "User",
           pathname: "/users-layout-3",

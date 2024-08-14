@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, Key, useContext, useEffect } from 'react'
+import { Fragment, Key, useContext, useEffect, useCallback } from 'react'
 // import { Disclosure, Menu, Transition } from '@headlessui/react'
 // import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 
@@ -12,15 +12,33 @@ import Lucide from "../../base-components/Lucide";
 import { Dialog, Menu } from "../../base-components/Headless";
 import Table from "../../base-components/Table";
 
-import Litepicker from "../../base-components/Litepicker";
+import { Transition } from "@headlessui/react";
 import Tippy from '../../base-components/Tippy';
 import { UserContext } from '../../stores/UserContext';
 import API from '../../utils/API';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoadingIcon from '../../base-components/LoadingIcon';
 import FilterChips from '../../components/FilterChips';
 import FilterModal from './filterModal';
 import profile from "../../assets/images/profile.png"
+import { debounce } from '../../utils/debounce';
+
+
+type FilterType = {
+  lga: string;
+  role: string;
+  date?: string; // Make date optional
+  status: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+interface SearchResult {
+
+  users: Array<any>;
+}
+
+
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -29,25 +47,21 @@ const lagosLGAs = [
     "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"
   ];
 
-  const lagosParks = [
-    "Agege Park",
-    "Alimosho Park",
-    "Apapa Park",
-    "Badagry Park",
-    "Epe Park",
+  const roles = [
+    "Registration Officer",
+    "Attachment Officer",
+    "Operation Officer",
 
   ];
 
   const usersStatus = [
     "Inactive",
     "Active",
-    "Deactivated",
   ]
 
   const tagStyle = [
     "bg-orange-100 text-orange-600",
     "bg-green-100 text-green-600",
-    "bg-red-500  text-white"
   ];
 
 export default function Main() {
@@ -65,17 +79,35 @@ export default function Main() {
     const [endDate, setEndDate] = useState<string>("");
 
     const [selectedLGA, setSelectedLGA] = useState<string>('');
-    const [kpiData, setKpiData] = useState(null);
-    const [selectedPark, setSelectedPark] = useState<string>('');
+    const [selectedRole, setSelectedRole] = useState<string>('');
+    const [selectedStatus, setSelectedStatus] = useState<string>('');
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
-    const [activeFilter, setActiveFilter] = useState<"Role"| "LGA" | "Status">(
+    const [activeFilter, setActiveFilter] = useState<"Role"| "LGA" | "Date" | "Status">(
       "LGA"
     );
-    const cancelButtonRef = useRef(null);
-    const isInitialMount = useRef(true);
+
+    const [filterState, setFilterState] = useState<FilterType>({
+      lga: selectedLGA,
+      role: selectedRole,
+      date: dateRange,
+      status: selectedStatus,
+      startDate: startDate,
+      endDate: endDate,
+    });
+
+    const [searchDropdown, setSearchDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+useEffect(() => {
+  // Load recent searches from local storage when the component mounts
+  const storedRecentSearches = localStorage.getItem('recentSearches');
+  if (storedRecentSearches) {
+    setRecentSearches(JSON.parse(storedRecentSearches));
+  }
+}, []);
 
 // console.log(vehicleList)
 
@@ -83,25 +115,17 @@ const navigate = useNavigate();
 
 
 useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      // console.log('true')
+  
 
-        setDateRange('')
-      return;
-
-    }
-
+            fetchDashboardData();
     
-      fetchDashboardData();
-    
-  }, [dateRange, selectedLGA]);
+  }, [dateRange, selectedLGA, filterState ]);
 
-    useEffect(() => {
-        if (user?.token) {
-          fetchDashboardData();
-        }
-      }, [user?.token ]);
+    // useEffect(() => {
+    //     if (user?.token) {
+    //       fetchDashboardData();
+    //     }
+    //   }, [user?.token ]);
     
    
      
@@ -112,19 +136,16 @@ useEffect(() => {
     
         setError("");
         setLoading(true);
-        
-        const params: any = {};
-        if (selectedLGA) params.lga = selectedLGA;
-        if (startDate && endDate) {
-          params.start_date = startDate.trim();
-          params.end_date = endDate.trim();
-        }
+      
+
+        console.log(filterState)
     
         API(
           "get",
           `all-users`,
-          // params,
-          {},
+          
+          // {},
+          filterState,
           // {lga: 'Alimosho'},
           function (allUserData: any) {
             console.log(allUserData?.data)
@@ -143,45 +164,192 @@ useEffect(() => {
 
           // Function to handle removing filters
     const handleRemoveFilter = (filter: string) => {
+      const newFilters = { ...filterState };
+
       if (filter === 'LGA') {
         setSelectedLGA('');
-      } else if (filter === 'Park') {
-        setSelectedPark('');
+        newFilters.lga = '';
+      } else if (filter === 'Role') {
+        setSelectedRole('');
+        newFilters.role = '';
+
       } else if (filter === 'Date') {
         setDateRange('');
+        newFilters.startDate = '';
+        newFilters.endDate = '';
+
+      }else if (filter === 'Status') {
+        setSelectedStatus('');
+        newFilters.status = '';
       }
   
-      // Optionally update your data based on the filters being removed
+      // Update the filter state
+      setFilterState(newFilters);
     };
   
- 
+
 
 
   // Function to handle filter changes
-  const handleFilterChange = (filter: string, value: string) => {
-    const newFilters = {
-      lga: selectedLGA,
-      park: selectedPark,
-      date: dateRange,
-    };
+const handleFilterChange = (filter: string, value: string) => {
+console.log(filter)
+  
 
-    if (filter === 'LGA') {
-      setSelectedLGA(value);
-      newFilters.lga = value;
-    } else if (filter === 'Park') {
-      setSelectedPark(value);
-      newFilters.park = value;
-    } else if (filter === 'Date') {
-      setDateRange(value);
-      newFilters.date = value;
+  // const newFilters: FilterType = {
+  //   lga: selectedLGA,
+  //   role: selectedRole,
+  //   date: dateRange,
+  //   status: selectedStatus,
+  //   startDate: startDate,
+  //   endDate: endDate,
+  // };
+  const newFilters = { ...filterState };
+
+
+
+  if (filter === 'LGA') {
+    setSelectedLGA(value);
+    newFilters.lga = value;
+  } else if (filter === 'Role') {
+    setSelectedRole(value);  
+    newFilters.role = value;
+  } else if (filter === 'Date') {
+    setDateRange(value);
+    const [start, end] = value.split(' - ').map((date) => date.trim());
+    newFilters.startDate = start;
+    newFilters.endDate = end;
+    delete newFilters.date;
+  } else if (filter === 'Status') {
+    setSelectedStatus(value);
+    newFilters.status = value;
+  }
+
+  // Update the filter state
+  setFilterState(newFilters);
+
+  // Transform the date range into start and end dates
+  // if (newFilters.date) {
+  //   const [startDate, endDate] = newFilters.date.split(' - ').map(date => date.trim()) || [null, null];
+  //   newFilters.startDate = startDate;
+  //   newFilters.endDate = endDate;
+  //   delete newFilters.date; 
+
+  // }
+
+ 
+
+  // Call any logic to update data based on the new filters
+  // console.log('Transformed Filters:', newFilters);
+
+  // Update your data or perform actions here
+};
+
+  
+
+
+
+
+// search
+
+const [query, setQuery] = useState('');
+const [results, setResults] = useState<SearchResult>({
+
+  users: [],
+});
+
+
+
+
+
+const performSearch = async (searchQuery: string) => {
+  API(
+    "get",
+    `user-search`,
+
+    {query: searchQuery},
+    function (searchResultData: any) {
+      console.log(searchResultData)
+      setIsLoading(false);
+      
+      setResults(searchResultData);
+       // Update recent searches
+    updateRecentSearches(searchQuery);
+
+      // if(recentData.length >  0) {
+      //   SetIsRecentSearch(true)
+      // }
+    },
+    function (error: any) {
+      console.error("Error fetching recent searches:", error);
+      setRecentSearches([]);
+      setIsLoading(false);
+    },
+    user?.token && user.token
+  );
+};
+
+// Use useCallback to memoize the debounced function
+const debouncedSearch = useCallback(
+  debounce((searchQuery: string) => {
+    if (searchQuery.length > 2) {
+      performSearch(searchQuery);
+    } else {
+      setResults({
+       
+        users: [],
+      });
     }
+  }, 500), // 500ms delay
+  []
+);
 
-    // Call any logic to update data based on the new filters
-    console.log('New Filters:', newFilters);
 
-    // Update your data or perform actions here
-  };
-     
+const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const searchQuery = event.target.value;
+  setQuery(searchQuery);
+
+  // Use the debounced search function
+  debouncedSearch(searchQuery);
+};
+
+// console.log(recentSearches);
+
+
+
+
+
+const updateRecentSearches = (newSearch: string) => {
+  // Add the new search term to the recent searches array
+  const updatedSearches = [newSearch, ...recentSearches.filter(search => search !== newSearch)];
+
+  // Keep only the first 3 most recent searches
+  if (updatedSearches.length > 3) {
+    updatedSearches.pop();
+  }
+
+  setRecentSearches(updatedSearches);
+
+  // Save updated recent searches to local storage
+  localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+};
+
+
+
+const handleRecentSearchClick = (searchTerm: string) => {
+  setQuery(searchTerm);
+
+  if (searchTerm.length > 2) {
+    performSearch(searchTerm);
+  }
+};
+
+const showSearchDropdown = () => {
+  setSearchDropdown(true);
+};
+const hideSearchDropdown = () => {
+  setSearchDropdown(false);
+};
+
 
 
   
@@ -193,17 +361,19 @@ useEffect(() => {
         setOpen={setOpenModal}
         handleFilterChange={handleFilterChange}
         lagosLGAs={lagosLGAs}
-        carParks={lagosParks}
+        roles={roles}
         selectedLGA={selectedLGA}
         setSelectedLGA={setSelectedLGA}
-        selectedCarPark={selectedPark}
-        setSelectedCarPark={setSelectedPark}
+        selectedRole={selectedRole}
+        setSelectedRole={setSelectedRole}
         startDate={startDate}
         setStartDate={setStartDate}
         endDate={endDate}
         setEndDate={setEndDate}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
       />
   
     <div className="max-w-7xl mx-auto pb-12 lg:pb-0  lg:px-0 lg:mx-0 ">
@@ -215,9 +385,9 @@ useEffect(() => {
             <h2 className="text-lg font-medium text-black intro-y ">Users</h2>
             <p className="mt-4 text-xs text-black intro-y">View, Edit and Delete users</p>
           </div>
-          <Button variant="primary" className="mr-2 shadow-sm bg-customColor">
+          <Link to='/add-user'  className="mr-2 flex font-medium shadow-sm bg-customColor rounded-lg px-4 py-2 text-white">
             <Lucide icon="Plus" className="w-4 h-4 mr-2" /> Add New User
-          </Button>
+          </Link>
           <Button variant="secondary" className="mr-2 shadow-sm">
             <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF
           </Button>
@@ -229,122 +399,6 @@ useEffect(() => {
 
 
 
-          <Dialog
-                      open={datepickerModalPreview}
-                      onClose={() => {
-                        setDatepickerModalPreview(false);
-                      }}
-                      initialFocus={cancelButtonRef}
-                      className="flex place-self-center lg:items-center lg:justify-center  "
-
-                    >
-                      <Dialog.Panel className='  ">
-'>
-                        {/* BEGIN: Modal Header */}
-                        <Dialog.Title>
-                       
-                       <div className="flex justify-center items-center">
-<div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-1.5">
-<Lucide icon="Calendar" className="w-6 h-6 " />
-
-</div>
-<div className="">
-<h2 className="mr-auto text-slate-600 font-bold">
-   Date Range
- </h2>
- <p className="text-xs">Choose a date range to filter</p>
-</div>
-                       </div>
-                        
-                         
-                        </Dialog.Title>
-                        {/* END: Modal Header */}
-                        {/* BEGIN: Modal Body */}
-                        <Dialog.Description className="grid grid-cols-12 gap-x gap-y-6">
-                          <div className="col-span-12 relative">
-                            <FormLabel htmlFor="modal-datepicker-1">
-                              Start Date
-                            </FormLabel>
-                            <Litepicker
-                              id="modal-datepicker-1"
-                              value={startDate}
-                              onChange={setStartDate}
-                              options={{
-                                autoApply: false,
-                                showWeekNumbers: true,
-                                dropdowns: {
-                                  minYear: 1990,
-                                  maxYear: null,
-                                  months: true,
-                                  years: true,
-                                },
-                              }}
-                            />
-                           <div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
-        <Lucide icon="Calendar" className="w-4 h-4" />
-    </div>
-                          </div>
-                          <div className="col-span-12 relative ">
-                            <FormLabel htmlFor="modal-datepicker-2">
-                              End Date
-                            </FormLabel>
-                            <Litepicker
-                              id="modal-datepicker-2"
-                              value={endDate}
-                              onChange={setEndDate}
-                              options={{
-                                autoApply: false,
-                                showWeekNumbers: true,
-                                dropdowns: {
-                                  minYear: 1990,
-                                  maxYear: null,
-                                  months: true,
-                                  years: true,
-                                },
-                              }}
-                            />
-
-<div className="absolute flex items-center justify-center w-8  h-8 right-0 bottom-1  text-slate-500 dark:bg-darkmode-700 dark:border-darkmode-800 dark:text-slate-400">
-        <Lucide icon="Calendar" className="w-4 h-4" />
-    </div>
-                          </div>
-                        </Dialog.Description>
-                        {/* END: Modal Body */}
-                        {/* BEGIN: Modal Footer */}
-                        <Dialog.Footer className="text-right">
-                          <Button
-                            variant="outline-secondary"
-                            type="button"
-                            onClick={() => {
-                              setDatepickerModalPreview(false);
-                            }}
-                            className="w-20 mr-1"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            // variant="primary"
-                            type="button"
-                            className="w-autos bg-customColor text-secondary"
-                            ref={cancelButtonRef}
-                            onClick={() => {
-                              setDateRange(`${startDate}-${endDate}`)
-                              // const dateString = date.toString(); // Convert date object to string
-                              // handleAddFilter('Date', dateString);
-                              handleFilterChange('Date', `${startDate} - ${endDate}`);
-                              setDatepickerModalPreview(false);
-
-            
-                            }}
-
-                          >
-                            Apply Filter
-                          </Button>
-                        </Dialog.Footer>
-                        {/* END: Modal Footer */}
-                      </Dialog.Panel>
-                    </Dialog>
-
 
        
 {/* search */}
@@ -355,12 +409,120 @@ useEffect(() => {
                 type="text"
                 className="pr-10 box border-1 border-slate-200"
                 placeholder="Search database..."
+                onFocus={showSearchDropdown}
+                onBlur={hideSearchDropdown}
+                value={query}
+                onChange={handleSearch}
               />
               <Lucide
                 icon="Search"
                 className="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3"
               />
+
+
+
+
+
+
+{(query.length > 2 || recentSearches) && (
+
+<Transition
+  as={Fragment}
+  show={searchDropdown}
+  enter="transition-all ease-linear duration-150"
+  enterFrom="mt-5 invisible opacity-0 translate-y-1"
+  enterTo="mt-[3px] visible opacity-100 translate-y-0"
+  leave="transition-all ease-linear duration-150"
+  leaveFrom="mt-[3px] visible opacity-100 translate-y-0"
+  leaveTo="mt-5 invisible opacity-0 translate-y-1"
+>
+
+  <div className="absolute left-0 z-10 mt-[3px] overflow-y-scroll h-72 ">
+    <div className="w-[450px] p-5 box bg-slate-100">
+
+
+{/* Users Display */}
+{results?.users?.length > 0 && (
+<>
+      <div className="mb-2 font-medium">Users</div>
+      <div className="mb-5 font-medium border-b border-slate-200 pb-4">
+
+      <ul>
+    {results.users.map(user => (
+      <li                       key={user?.id}                  >
+
+<Link
+          to={`/user-profile/${user?.id}`}
+          className="flex items-center mt-2"
+        >
+          <div className="w-8 h-8 image-fit">
+            <img
+              alt="Midone Tailwind HTML Admin Template"
+              className="rounded-full"
+              src={user?.profile_picture_url? user?.profile_picture_url : profile}
+            />
+          </div>
+          <div className="ml-3">{user?.name}</div>
+          <div className="ml-3 text-slate-500"> {user?.lga}</div>
+
+          <div className="w-48 ml-auto text-xs text-right truncate text-slate-500">
+          {user.email}
+
+          </div>
+        </Link>
+      </li>
+    ))}
+  </ul>
+</div>
+</>
+)}
+
+
+
+{recentSearches && (
+<div className="mt-4">
+<h4>Recent Searches</h4>
+<ul>
+{recentSearches.map((search, index) => (
+  <li key={index}>
+    <button
+      onClick={() => handleRecentSearchClick(search)}
+      className="text-blue-500 underline"
+    >
+      {search}
+    </button>
+  </li>
+))}
+</ul>
+</div>
+)}
+
+
+    </div>
+  </div>
+
+</Transition>
+
+)}
+
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
 
             <Menu className="text-xs ml-2">
@@ -385,7 +547,7 @@ useEffect(() => {
 onClick={() => { setOpenModal(true); setActiveFilter("Role"); }}
 >
            
-              <Lucide icon="Home" className="w-4 h-4 mr-2" />
+              <Lucide icon="User" className="w-4 h-4 mr-2" />
               Role
               <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
         </Menu.Item> 
@@ -399,26 +561,26 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
               <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
         </Menu.Item> 
 
+        <Menu.Item
+        onClick={() => { setOpenModal(true); setActiveFilter("Date"); }}
+        >
+            <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
+            Date
+
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item>
         
         <Menu.Item
         onClick={() => { setOpenModal(true); setActiveFilter("Status"); }}
         >
-            <Lucide icon="Cloud" className="w-4 h-4 mr-2" />
+            <Lucide icon="Check" className="w-4 h-4 mr-2" />
             Status
 
             <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
 
         </Menu.Item>
-        {/* <Menu.Item
-      
-
-        onClick={(event: React.MouseEvent ) => {  event.preventDefault(); setOpenModal(true); setActiveFilter("Status"); }}
-        >
-            <Lucide icon="Calendar" className="w-4 h-4 mr-2" />
-            Date
-            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
-
-        </Menu.Item> */}
+        
        
     </Menu.Items>
 </Menu>
@@ -426,57 +588,13 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 <FilterChips
           lagosLGAs={lagosLGAs}
           selectedLGA={selectedLGA}
-          selectedPark={selectedPark}
+          selectedRole={selectedRole}
+          selectedStatus={selectedStatus}
+          selectedPark=''
           dateRange={dateRange}
           onRemoveFilter={handleRemoveFilter}
         />
-            {/* <FormSelect className="w-48 xl:w-1/5 !box mr-4">
-              <option value="" disabled>--All LGA--</option>
-              {lagosLGAs.map((lga, index) => (
-                <option key={index} value={lga}>{lga}</option>
-              ))}
-            </FormSelect> */}
-
-            {/* <FormSelect className="w-48 lg:ml-2 lg:w-1/5 !box mr-2" onChange={(e) => setSelectedLGA(e.target.value)}>
-              <option value="" disabled>--All LGA--</option>
-              {lagosLGAs.map((lga, index) => (
-                <option key={index} value={lga}>{lga}</option>
-              ))}
-            </FormSelect>
-
-            <FormSelect className="w-48  lg:w-1/5 !box mr-2">
-              <option>All Parks</option>
-              <option>Active</option>
-              <option>Removed</option>
-            </FormSelect>
-
-            <div className="relative sm:mt-0 text-slate-500">
-              <Lucide
-                icon="Calendar"
-                className="absolute inset-y-0 left-0 z-10 w-4 h-4 my-auto ml-3"
-              />
-              <Litepicker
-              title='testing'
             
-                value={dateRange}
-                onChange={setDateRange}
-                placeholder='Pick a date range'
-                options={{
-                  autoApply: false,
-                  singleMode: false,
-                  numberOfColumns: 2,
-                  numberOfMonths: 2,
-                  showWeekNumbers: true,
-                  dropdowns: {
-                    minYear: 2023,
-                    maxYear: null,
-                    months: true,
-                    years: true,
-                  },
-                }}
-                className="pl-10 sm:w-56 !box text-slate-500"
-              />
-            </div> */}
           </div>
         </div>
 
