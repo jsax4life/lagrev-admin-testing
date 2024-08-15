@@ -270,7 +270,7 @@ setMessage("")
    
 
                   <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
-                  <div className="flex justify-center items-center lg:hidden mb-4">
+                  <div className="flex justify-center md:justify-start items-center md:hidden mb-4">
 
 <Button variant="primary" className="mr-2 shadow-sm px-2 bg-customColor" onClick={() => {
               navigate(`/edit-user-profile/${id}`);
@@ -289,9 +289,9 @@ setMessage("")
 
                             >Delete</Button> */}
 </div>
-                    <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
+                    <div className="flex items-center justify-center flex-1 px-5 md:justify-start">
          
-                      <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
+                      <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-36 lg:h-36 image-fit">
                         <img
                           alt="Profile pix"
                           className="rounded-lg"
@@ -326,9 +326,7 @@ setMessage("")
                           {active? "Active" :  'Inactive'}
 
                           <FormSwitch className=" sm:w-auto  sm:mt-0">
-                    {/* <FormSwitch.Label htmlFor="show-example-1">
                    
-                    </FormSwitch.Label> */}
                     <FormSwitch.Input
                       id="show-example-1"
                       onClick={toggle}
@@ -340,7 +338,7 @@ setMessage("")
 
 
                         </div>
-                        <div className="w-24 lg:w-full text-lg font-medium truncate sm:w-40 sm:whitespace-normal">
+                        <div className="w-24 lg:w-full text-xl font-medium truncate sm:w-40 sm:whitespace-normal">
                           {userDetails?.name} 
                         </div>
                         <div className="text-slate-500 lg:mb-4 capitalize">
@@ -350,7 +348,7 @@ setMessage("")
                           <span>{userDetails?.role}</span>
                         </div>
 
-                        <div className="text-slate-500 hidden text-xs lg:flex">
+                        <div className="text-slate-500 hidden text-xs md:flex">
                         <Button variant="primary" className="mr-2  px-4 py-1 bg-customColor" onClick={() => {
               navigate(`/edit-user-profile/${id}`);
             }}
@@ -402,8 +400,8 @@ setMessage("")
                     <div className="grid grid-cols-12 gap-4 lg:gap-0 text-slate-600">
                       {/* BEGIN: Rider Details */}
                       <div className="col-span-12 intro-y  ">
-                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
-                          <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
+                        <div className=" flex lg:col-span-6 justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
+                          <div className=" lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
                             <div className="font-semibold ">Gender:</div>
                             <div className="font-semibold ">Phone Number:</div>
                             <div className="font-semibold ">Email:</div>
@@ -424,8 +422,8 @@ setMessage("")
                       {/* BEGIN: Next of Kin  */}
                       <div className="col-span-12 intro-y  text-md ">
                         
-                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                          <div className=" flex flex-col no-wrap items-start  space-y-2 mb-5 lg:mb-0 ">
+                        <div className=" flex  lg:col-span-6 justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
+                          <div className=" lg:w-1/5 flex flex-col no-wrap items-start  space-y-2 mb-5 lg:mb-0 ">
                             <div className="font-semibold ">Address:</div>
                             <div className="font-semibold ">City:</div>
                             <div className="font-semibold ">State:</div>
@@ -450,8 +448,8 @@ setMessage("")
 
                       <div className="col-span-12 intro-y text-base ">
                        
-                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                          <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
+                        <div className=" flex lg:col-span-6 justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                          <div className=" lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
                             <div className="font-semibold ">
                               LGA:
                             </div>

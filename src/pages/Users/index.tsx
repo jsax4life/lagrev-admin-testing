@@ -389,7 +389,7 @@ const hideSearchDropdown = () => {
             <Lucide icon="Plus" className="w-4 h-4 mr-2" /> Add New User
           </Link>
           <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel
           </Button>
         </div>
 

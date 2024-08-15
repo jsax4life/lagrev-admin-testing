@@ -17,6 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { UserContext } from "../../stores/UserContext";
 import API from "../../utils/API";
 import LoadingIcon from "../../base-components/LoadingIcon";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 import Litepicker from "../../base-components/Litepicker";
 import Toastify from "toastify-js";
@@ -86,6 +87,8 @@ export default function AddNewUser() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showSummary, setShowSummary] = useState(false); // New state for summary view
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPasswd = () => setShowPassword(!showPassword);
 
 
     // Watch form fields
@@ -457,23 +460,43 @@ export default function AddNewUser() {
                   <div className="py-5">
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div>
+                        <div className="relative">
                           <FormLabel htmlFor="street">
                             Password
                           </FormLabel>
                           <FormInput
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Password"
                             {...register("password")}
                             //   value={ownerData?.password}
                           />
-                          {errors.password && (
+                        
+
+<div
+                        className="absolute bottom-2  right-0 pr-3 flex items-center cursor-pointer"
+                        onClick={toggleShowPasswd}
+                      >
+                        {showPassword ? (
+                          <EyeSlashIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </div>
+
+                     
+                        </div>
+                        {errors.password && (
                             <p className="text-red-500">
                               {errors.password.message?.toString()}
                             </p>
                           )}
-                        </div>
                       </div>
                       
                       
@@ -509,7 +532,7 @@ export default function AddNewUser() {
                 {/* BEGIN: Rider Details */}
                 <div className="col-span-12 intro-y  ">
                   <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
-                    <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2 lg:space-y-4">
+                    <div className=" lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2 lg:space-y-4">
                       <div className="font-semibold ">Role:</div>
                       <div className="font-semibold ">State:</div>
                       <div className="font-semibold ">LGA:</div>
@@ -533,7 +556,7 @@ export default function AddNewUser() {
                 <div className="col-span-12 intro-y  text-md ">
                   
                   <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                    <div className=" flex flex-col no-wrap items-start  space-y-2 lg:space-y-4 mb-5 lg:mb-0 ">
+                    <div className=" lg:w-1/5 flex flex-col no-wrap items-start  space-y-2 lg:space-y-4 mb-5 lg:mb-0 ">
                       <div className="font-semibold ">Name:</div>
                       <div className="font-semibold ">Gender:</div>
                       <div className="font-semibold ">Phone Number:</div>
@@ -562,7 +585,7 @@ export default function AddNewUser() {
                 <div className="col-span-12 intro-y text-base ">
                  
                   <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                    <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2 lg:space-y-4">
+                    <div className=" lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2 lg:space-y-4">
                       <div className="font-semibold ">
                         Address:
                       </div>
@@ -587,7 +610,7 @@ export default function AddNewUser() {
                 <div className="col-span-12 intro-y text-base ">
                  
                   <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                    <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
+                    <div className="lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
                       <div className="font-semibold ">
                         Password:
                       </div>
