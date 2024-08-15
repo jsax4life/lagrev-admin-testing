@@ -477,8 +477,8 @@ selectedStatus=''
 
 
 
-              <Table className="border-spacing-y-[2px] border-separate -mt-2">
-            <Table.Thead className='bg-customColor/5 lg:h-11'>
+              <Table className="border-spacing-y-[2px] border-separate ">
+            <Table.Thead className='bg-slate-50 lg:h-10'>
               <Table.Tr>
                 
                 <Table.Th className="border-b-0 whitespace-nowrap">
@@ -497,7 +497,7 @@ selectedStatus=''
                 <Table.Th className="border-b-0 whitespace-nowrap">
                     VIN                
                 </Table.Th>
-                <Table.Th className="text-center border-b-0 whitespace-nowrap">
+                <Table.Th className="text-start border-b-0 whitespace-nowrap">
                     STATUS                
                 </Table.Th>
                 {/* <Table.Th className="text-right border-b-0 whitespace-nowrap">
@@ -572,7 +572,7 @@ selectedStatus=''
                     <div className="pr-16">{vehicle?.vin ? vehicle?.vin : '------'}</div>
                   </Table.Td>
 
-                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-center bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-start bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span
                       className=
  {`items-center px-2 lg:py-1 rounded-full text-xs font-medium capitalize ${

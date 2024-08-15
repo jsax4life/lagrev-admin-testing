@@ -772,8 +772,8 @@ function Main() {
 
       <div className="grid grid-cols-12 gap-5 lg:gap-7 mt-5 intro-y">
         <div className="col-span-12 intro-y lg:col-span-8">
-          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-            <div className="col-span-12 p-5 cursor-pointer  box">
+          <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0 ">
+            <div className="col-span-12 p-5 cursor-pointer  rounded-2xl box">
               <div className="flow-root overflow-y-auto h-72">
                 <h2 className="text-lg mb-4">Activity Log</h2>
 
@@ -856,7 +856,7 @@ function Main() {
 
         <div className="col-span-12 lg:col-span-4">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-            <div className="col-span-12 p-4 cursor-pointer  box zoom-in">
+            <div className="col-span-12 p-4 cursor-pointer rounded-2xl box zoom-in">
               <div className="">
                 <div className="flex space-x-2 justify-start items-center">
                   <div
@@ -896,7 +896,7 @@ function Main() {
                 </Progress>
               </div>
             </div>
-            <div className="col-span-12 p-4 cursor-pointer  box zoom-in">
+            <div className="col-span-12 p-4 cursor-pointer  box rounded-2xl zoom-in">
               <div className="text-base font-medium">Top Performing LGAs</div>
               <div className="text-slate-500">
                 Total vehicles successfully registered on Lagrev
