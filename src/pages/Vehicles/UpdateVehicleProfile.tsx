@@ -347,7 +347,7 @@ const [errorMessage, setErrorMessage] = useState('');
                     {/* start rider section */}
                     <div className="mt-5 intro-y text-slate-600">
                       <div className="flex items-center py-4 text-primary">
-                        <h3 className="intro-y box  font-semibold mr-4 text-sm ">
+                        <h3 className="intro-y font-semibold mr-4 text-sm ">
                           RIDER DETAILS
                         </h3>
                         <hr className="flex-grow border-t border-primary/50" />
@@ -612,7 +612,7 @@ const [errorMessage, setErrorMessage] = useState('');
 
                     <div className="mt-5 intro-y text-slate-600 ">
                       <div className="flex items-center py-4">
-                        <h3 className="intro-y box  font-semibold mr-4 text-sm text-primary">
+                        <h3 className="intro-y   font-semibold mr-4 text-sm text-primary">
                           NEXT OF KIN DETAILS
                         </h3>
                         <hr className="flex-grow border-t border-primary/50" />
@@ -725,7 +725,7 @@ const [errorMessage, setErrorMessage] = useState('');
 
                     <div className="mt-5 intro-y text-slate-600 ">
                       <div className="flex items-center py-4">
-                        <h3 className="intro-y box  font-semibold mr-4 text-sm text-primary">
+                        <h3 className="intro-y   font-semibold mr-4 text-sm text-primary">
                           OWNER DETAILS
                         </h3>
                         <hr className="flex-grow border-t border-primary/50" />
@@ -816,7 +816,7 @@ const [errorMessage, setErrorMessage] = useState('');
 
                     <div className="mt-5 intro-y text-slate-600 ">
                       <div className="flex items-center py-4">
-                        <h3 className="intro-y box  font-semibold mr-4 text-sm text-primary">
+                        <h3 className="intro-y  font-semibold mr-4 text-sm text-primary">
                           VEHICLE DETAILS
                         </h3>
                         <hr className="flex-grow border-t border-primary/50" />

@@ -2,7 +2,6 @@ import { useState, Fragment, useEffect, useContext, JSXElementConstructor, Key, 
 import Lucide from "../../base-components/Lucide";
 import LagoslogoUrl from "../../assets/images/logo.png";
 import { Link } from "react-router-dom";
-import Breadcrumb from "../../base-components/Breadcrumb";
 import { FormInput } from "../../base-components/Form";
 import { Menu, Popover } from "../../base-components/Headless";
 import fakerData from "../../utils/faker";
@@ -243,13 +242,13 @@ function Main() {
                 {results.vehicles.map(vehicle => (
                   <li key={vehicle.id}>
 
-                    <a href="" className="flex items-center mt-2">
+                    <Link to={`profile/${vehicle.id}`} className="flex items-center mt-2">
                       <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/20 dark:bg-success/10 text-success">
                         <Lucide icon="Inbox" className="w-4 h-4" />
                       </div>
                       <div className="ml-3"> {vehicle.plate_number} - {vehicle.manufacturer} - {vehicle.vin}</div>
 
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -339,8 +338,8 @@ function Main() {
                 {results.users.map(user => (
                   <li                       key={user.id}                  >
 
-<a
-                      href=""
+<Link
+                      to={`/user-profile/${user.id}`}
                       className="flex items-center mt-2"
                     >
                       <div className="w-8 h-8 image-fit">
@@ -357,7 +356,7 @@ function Main() {
                       {user.email}
 
                       </div>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

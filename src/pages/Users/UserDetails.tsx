@@ -19,13 +19,14 @@ import Button from "../../base-components/Button";
 import Lucide from "../../base-components/Lucide";
 import { formatDate } from "../../utils/utils";
 import profile from "../../assets/images/profile.png"
+import { FormSwitch } from "../../base-components/Form";
+import Alert from "../../base-components/Alert";
 
-const tagStyle = [
-  "bg-orange-100 text-orange-600",
-  "bg-green-100 text-green-600",
-  "bg-red-200 text-green-white",
+// const tagStyle = [
+//   "bg-red-200 text-green-white",
+//   "bg-green-100 text-green-600",
 
-];
+// ];
 
 
 
@@ -53,7 +54,7 @@ export default function UserProfileDetails() {
   const { user } = useContext(UserContext);
 
   const { id } = useParams<{ id: string }>();
-  const [userDetails, setuserDetails] = useState<any>(null);
+  const [userDetails, setUserDetails] = useState<any>(null);
 
   
 
@@ -61,7 +62,8 @@ export default function UserProfileDetails() {
   const [loading, setLoading] = useState(true);
   const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
   const deleteButtonRef = useRef(null);
-
+  const [active, setActive] = useState<any>();
+const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -93,8 +95,10 @@ export default function UserProfileDetails() {
       // {lga: 'Alimosho'},
       function (userData: any) {
         console.log(userData?.data.user)
-        setuserDetails(userData?.data?.user);
+        setUserDetails(userData?.data?.user);
         setLoading(false);
+
+        setActive(userData?.data?.user?.status)
       },
       function (error: any) {
 
@@ -107,8 +111,9 @@ export default function UserProfileDetails() {
 
   const deleteUser = () => {
 
+    setMessage("");
     setError("");
-
+    
 
     API(
       "delete",
@@ -118,6 +123,8 @@ export default function UserProfileDetails() {
 
       // {lga: 'Alimosho'},
       function (response: any) {
+        setActive(false);
+        setMessage(response?.message)
         setDeleteConfirmationModal(false)
 
         console.log(response)
@@ -133,6 +140,48 @@ export default function UserProfileDetails() {
     );
   };
 
+
+  const activateUser = () => {
+
+    setError("");
+setMessage("")
+
+    API(
+      "post",
+
+      `activate-users/${id}`, 
+      {},
+
+      // {lga: 'Alimosho'},
+      function (response: any) {
+        setActive(true);
+        setMessage(response.message);
+        // setDeleteConfirmationModal(false)
+
+        console.log(response)
+        setLoading(false);
+      },
+      function (error: any) {
+        // setDeleteConfirmationModal(false)
+
+        console.error("Error fetching recent searches:", error);
+        setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
+
+  const toggle = (val: any) => {
+    console.log(val.target.checked)
+
+    const toggleVal = val.target.checked;
+
+    if (toggleVal) {
+      activateUser();
+    }else {
+      deleteUser()
+    }
+  }
   
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -190,8 +239,30 @@ export default function UserProfileDetails() {
           <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
             {/* Replace with your content */}
 
+            
+
             <div className="bg-white   px-2 py-6 sm:px-6 sm:py-2">
               {/* content */}
+
+             {message && ( <Alert
+                      variant={`outline-${active? 'success' : 'warning'}`}
+                      className="flex items-center mb-2 lg:w-1/2 intro-x"
+                    >
+                      {({ dismiss }) => (
+                        <>
+                          <Lucide icon={`${active? 'Check' : 'AlertCircle'}`} className="w-6 h-6 mr-2" />{" "}
+                          {message}
+                          <Alert.DismissButton
+                            type="button"
+                            className="btn-close"
+                            onClick={dismiss}
+                            aria-label="Close"
+                          >
+                            <Lucide icon="X" className="w-4 h-4" />
+                          </Alert.DismissButton>
+                        </>
+                      )}
+                    </Alert>)}
 
               <Tab.Group>
                 {/* BEGIN: Profile Info */}
@@ -205,18 +276,18 @@ export default function UserProfileDetails() {
               navigate(`/edit-user-profile/${id}`);
             }}
             
-            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+            disabled = {active}
             >Edit</Button>
 
                       <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As Excel
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF Document
           </Button>
-          <Button variant="primary" className="mr-2 shadow-sm px-2 bg-red-700" onClick={() => {
+          {/* <Button variant="primary" className="mr-2 shadow-sm px-2 bg-red-700" onClick={() => {
                               setDeleteConfirmationModal(true);
                             }}
                             disabled = {userDetails?.status === 0 || userDetails?.status === 2}
 
-                            >Delete</Button>
+                            >Delete</Button> */}
 </div>
                     <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
          
@@ -227,13 +298,47 @@ export default function UserProfileDetails() {
                           src={userDetails?.profile_picture_url? userDetails?.profile_picture_url : profile}
                         />
                       </div>
-                      <div className="ml-5 items-center ">
-                        <div
-                          className={`inline-block  text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
+                      <div className="ml-5 items-center  ">
+
+                      {/* <FormSwitch className="w-full mt-3 sm:w-auto sm:ml-auto sm:mt-0">
+                    <FormSwitch.Label htmlFor="show-example-1">
+                    <div
+                          className={`  px-4 lg:py-1 py-0.5 rounded-full text-xs font-medium capitalize ${
                             tagStyle[userDetails?.status]
                           }`}
                         >
                           {userDetails?.status === 0? "Inactive" : userDetails?.status === 1?  'Active' : 'Deactivated'}
+                        </div>
+                    </FormSwitch.Label>
+                    <FormSwitch.Input
+                      id="show-example-1"
+                      onClick={toggle}
+                      className="ml-3 mr-0"
+                      type="checkbox"
+                    />
+                  </FormSwitch> */}
+
+                        <div
+                          className={`flex w-1/3 justify-start items-center text-center px-2 lg:py-1 py-0.5 mb-2 rounded-full text-xs font-medium capitalize ${
+                            active?  "bg-green-100 text-green-600" : "bg-red-200 text-green-white"
+                          }`}
+                        >
+                          {active? "Active" :  'Inactive'}
+
+                          <FormSwitch className=" sm:w-auto  sm:mt-0">
+                    {/* <FormSwitch.Label htmlFor="show-example-1">
+                   
+                    </FormSwitch.Label> */}
+                    <FormSwitch.Input
+                      id="show-example-1"
+                      onClick={toggle}
+                      className="ml-3 mr-0"
+                      type="checkbox"
+                      checked = {active}
+                    />
+                  </FormSwitch>
+
+
                         </div>
                         <div className="w-24 lg:w-full text-lg font-medium truncate sm:w-40 sm:whitespace-normal">
                           {userDetails?.name} 
@@ -249,19 +354,19 @@ export default function UserProfileDetails() {
                         <Button variant="primary" className="mr-2  px-4 py-1 bg-customColor" onClick={() => {
               navigate(`/edit-user-profile/${id}`);
             }}
-            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+            disabled = {!active}
 
             >Edit</Button>
 
                       <Button className="mr-2 shadow-sm bg-white">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF
+            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF Document
           </Button>
-          <Button variant="primary" className="mr-2  px-4 py-1 bg-red-700" onClick={() => {
+          {/* <Button variant="primary" className="mr-2  px-4 py-1 bg-red-700" onClick={() => {
                               setDeleteConfirmationModal(true);
                             }}
                             disabled = {userDetails?.status === 0 || userDetails?.status === 2}
 
-                            >Delete</Button>
+                            >Delete</Button> */}
                         </div>
                       </div>
 
