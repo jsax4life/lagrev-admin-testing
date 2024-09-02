@@ -253,7 +253,7 @@ setMessage("")
                           <Lucide icon={`${active? 'Check' : 'AlertCircle'}`} className="w-6 h-6 mr-2" />{" "}
                           {message}
                           <Alert.DismissButton
-                            type="button"
+                            // type="button"
                             className="btn-close"
                             onClick={dismiss}
                             aria-label="Close"
