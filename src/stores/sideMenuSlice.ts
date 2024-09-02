@@ -49,17 +49,17 @@ const initialState: SideMenuState = {
         // },
         {
           icon: "User",
-          pathname: "/users-layout-3",
+          pathname: "#",
           title: "Attendance",
         },
         {
           icon: "User",
-          pathname: "/users-layout-3",
+          pathname: "#",
           title: "Performance",
         },
         {
           icon: "User",
-          pathname: "/users-layout-3",
+          pathname: "#",
           title: "Role Management",
         },
       ],
