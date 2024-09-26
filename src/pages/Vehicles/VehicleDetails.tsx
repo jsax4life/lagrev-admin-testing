@@ -104,6 +104,14 @@ export default function ProfileDetails() {
   const isInitialMount = useRef(true);
 
   const navigate = useNavigate();
+    // State to control modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Function to toggle the modal
+    const toggleModal = () => {
+      setIsModalOpen(!isModalOpen);
+    };
+  
 
   console.log(vehicleDetails);
 
@@ -145,11 +153,48 @@ export default function ProfileDetails() {
     return classes.filter(Boolean).join(" ");
   }
 
+  const getDisplayValue = (value: any) => {
+    return value || '---';
+  };
+
   return (
     <>
       {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
           <header className="py-5"></header>
         </div> */}
+
+ {isModalOpen && 
+ <Dialog
+open={isModalOpen}
+onClose={toggleModal}
+className="flex place-self-center lg:items-center lg:justify-center"
+>
+<Dialog.Panel className="">
+  {/* <Dialog.Title>
+    <div className="flex justify-center items-center">
+      <div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-2">
+      
+       
+      </div>
+    
+    </div>
+  </Dialog.Title> */}
+
+  <Dialog.Description className="grid grid-cols-12 gap-y-3 p-0">
+  <div className="col-span-12 ">
+
+  <img
+                          src={owner?.profile_picture_url}
+                          alt="Owner"
+                          className=" max-h-96 w-full"
+                        />
+                        </div>
+  </Dialog.Description>
+
+
+</Dialog.Panel>
+</Dialog>
+}
 
       <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
         {/* Replace with your content */}
@@ -178,12 +223,16 @@ export default function ProfileDetails() {
                   </Button>
                 </div>
                 <div className="flex items-center justify-center flex-1 px-5 lg:justify-start">
-                  <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
+                  <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-36 lg:h-36 image-fit">
                     <img
                       alt="Profile pix"
-                      className="rounded-lg"
+                      className="rounded-xl"
                       src={rider?.profile_picture_url}
                     />
+                    <button                     
+ className="bg-customColor w-full h-4 absolute bottom-0 cursor-pointer rounded-b-xl flex justify-center align-center" onClick={toggleModal}>
+                    <Lucide icon="Eye" className="w-4 h-4 mr-2 " color="white" />
+                    </button>
                   </div>
                   <div className="ml-5 mr-auto">
                     <div
@@ -197,11 +246,11 @@ export default function ProfileDetails() {
                       {rider?.first_name} {rider?.last_name}
                     </div>
                     <div className="text-slate-500">
-                      <span className="font-semibold text-md">
+                      <span className={`font-semibold text-md capitalize `}>
                         {" "}
-                        Phone Number:
+                        accreditation:
                       </span>{" "}
-                      <span>{rider?.phone}</span>
+                      <span className={`uppercase ${vehicleDetails?.verification_status? 'text-green-600' : 'text-danger'}`}>{vehicleDetails?.verification_status? 'approved' : 'decline'}</span>
                     </div>
                   </div>
                   <div className="lg:flex hidden ">
@@ -240,6 +289,18 @@ export default function ProfileDetails() {
                 </Tab>
                 <Tab fullWidth={false}>
                   <Tab.Button className="flex items-center  cursor-pointer">
+                    {/* <Lucide icon="Shield" className="w-4 h-4 mr-2" /> */}
+                    Owner Details
+                  </Tab.Button>
+                </Tab>
+                <Tab fullWidth={false}>
+                  <Tab.Button className="flex items-center  cursor-pointer">
+                    {/* <Lucide icon="Shield" className="w-4 h-4 mr-2" /> */}
+                    Vehicle Tags
+                  </Tab.Button>
+                </Tab>
+                <Tab fullWidth={false}>
+                  <Tab.Button className="flex items-center  cursor-pointer">
                     {/* <Lucide icon="Lock" className="w-4 h-4 mr-2" />  */}
                     Vehicle Activity
                   </Tab.Button>
@@ -257,9 +318,20 @@ export default function ProfileDetails() {
                         <div className="font-semibold ">Nin</div>
                         <div className="font-semibold ">Age:</div>
                         <div className="font-semibold ">Gender:</div>
-                        <div className="font-semibold ">LGA</div>
-                        <div className="font-semibold ">Park/Zone</div>
+                        <div className="font-semibold ">Marital Status:</div>
+                        <div className="font-semibold ">Religion:</div>
+                        <div className="font-semibold ">Tribe:</div>
+
                         <div className="font-semibold ">Home Address</div>
+
+                        <div className="font-semibold ">LGA of Operatiion</div>
+                        <div className="font-semibold ">LASDRI Card Available</div>
+                        <div className="font-semibold ">LASDRI Card Number</div>
+                        <div className="font-semibold ">Driver License</div>
+                        <div className="font-semibold ">Driver License Number</div>
+
+
+                        {/* <div className="font-semibold ">Park/Zone</div> */}
                       </div>
                       <div className=" mb-2 flex flex-col no-wrap items-start justify-start space-y-2 ">
                         <div className="">**************</div>
@@ -269,9 +341,19 @@ export default function ProfileDetails() {
                           {rider?.gender === "f" ? "Female" : "Male"}
                         </div>
 
-                        <div className="">{rider?.lga}</div>
-                        <div className="">{rider?.parkzone}</div>
-                        <div className="">{rider?.home_address}</div>
+                        <div className="capitalize">{rider?.marital_status}</div>
+                        <div className="capitalize">{rider?.religion}</div>
+                        <div className="capitalize">{rider?.tribe}</div>
+                        <div className="capitalize">{rider?.home_address}</div>
+
+                        <div className="capitalize">{rider?.lga}</div>
+                        <div className="capitalize">{rider?.lasdri_available}</div>
+                        <div className="capitalize">{rider?.lasdri? rider?.lasdri : '---' }</div>
+                        <div className="capitalize">{rider?.ndl_available}</div>
+                        <div className="capitalize">{rider?.ndl}</div>
+
+
+
                       </div>
                     </div>
                   </div>
@@ -311,36 +393,6 @@ export default function ProfileDetails() {
                   </div>
                   {/* END: Next of Kin  */}
 
-                  {/* BEGIN: Ownser's  */}
-
-                  <div className="col-span-12 intro-y text-base ">
-                    <div className="flex items-center py-4">
-                      <h3 className="ntro-y  font-semibold mr-4 text-sm text-primary">
-                        OWNER's DETAILS
-                      </h3>
-                      <hr className="flex-grow border-t border-slate-200/" />
-                    </div>
-                    <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                      <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                        <div className="font-semibold ">First Name:</div>
-                        <div className="font-semibold ">Last Name:</div>
-                        <div className="font-semibold ">Phone Number:</div>
-
-                        <div className="font-semibold ">Home Address</div>
-                      </div>
-                      <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                        <div className="">{owner?.first_name}</div>
-
-                        <div className="">{owner?.last_name}</div>
-
-                        <div className="">{owner?.phone}</div>
-                        <div className="">{owner?.home_address}</div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* END: Owners Details */}
-
-                  {/* BEGIN: Vehicles  */}
 
                   {/* <div className="col-span-12 intro-y text-base ">
                         <div className="flex items-center py-4">
@@ -384,67 +436,103 @@ export default function ProfileDetails() {
                 </div>
               </Tab.Panel>
 
+
               <Tab.Panel>
                 <div className="grid grid-cols-12 gap-6 text-slate-600">
                   {/* BEGIN: Rider Details */}
                   <div className="col-span-12 intro-y  ">
                     <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
                       <div className=" items-center mb-5">
-                        <div className="font-semibold lg:mb-4 text-md">
-                          Registration Fee
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          registration fee:
                         </div>
-                        <div className="font-semibold lg:mb-4 text-md">
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          accreditation code:
+                        </div>
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          vehicle type:
+                        </div>
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
                           Plate Number:
                         </div>
-                        <div className="font-semibold lg:mb-4 text-md">
-                          VIN:
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          vehicle registration number:
                         </div>
-                        <div className="font-semibold lg:mb-4 text-md">
-                          Vehicle Type
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                        vehicle identification number:
                         </div>
-                        <div className="font-semibold lg:mb-4 text-md">
-                          Manufacturer{" "}
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                        road worthiness number:
                         </div>
-                        <div className="font-semibold lg:mb-4 text-md">
-                          Vehicle Color{" "}
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                        zone:
                         </div>
-                        <div className="font-semibold lg:mb-4 text-md">
-                          Year of Purchase{" "}
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                        park:
+                        </div>
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                        route:
+                        </div>
+                        
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          Vehicle Color:
+                        </div>
+                     
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          Manufacturer:
+                        </div>
+                       
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
+                          Year of Purchase:
                         </div>
                       </div>
 
                       <div className=" items-center mb-5">
                         <div className="ml-auto lg:mb-4">4,500</div>
-
                         <div className="ml-auto lg:mb-4">
-                          {vehicleDetails?.plate_number
-                            ? vehicleDetails?.plate_number
-                            : isNull}
-                        </div>
-                        <div className="ml-auto lg:mb-4">
-                          {vehicleDetails?.vin ? vehicleDetails?.vin : isNull}
+                          {getDisplayValue(vehicleDetails?.tagNumber)}
                         </div>
 
                         <div className="ml-auto lg:mb-4">
-                          {vehicleDetails?.vehicle_type
-                            ? vehicleDetails?.vehicle_type
-                            : isNull}
+                          {getDisplayValue(vehicleDetails?.vehicle_type)}
+                        </div>
+
+                        <div className="ml-auto lg:mb-4">
+                          {getDisplayValue(vehicleDetails?.plate_number)}
+                        </div>
+
+                        
+
+                        <div className="ml-auto lg:mb-4">
+                          {getDisplayValue(vehicleDetails?.vrn)}
                         </div>
                         <div className="ml-auto lg:mb-4">
-                          {vehicleDetails?.manufacturer
-                            ? vehicleDetails?.manufacturer
-                            : isNull}
+                          {getDisplayValue(vehicleDetails?.vin)}
                         </div>
                         <div className="ml-auto lg:mb-4">
-                          {vehicleDetails?.vehicle_color
-                            ? vehicleDetails?.vehicle_color
-                            : isNull}
+                          {getDisplayValue(vehicleDetails?.rwn)}
+                        </div>
+
+                        
+                        <div className="ml-auto lg:mb-4 uppercase">
+                          {getDisplayValue(vehicleDetails?.zone)}
                         </div>
                         <div className="ml-auto lg:mb-4">
-                          {vehicleDetails?.year_of_purchase
-                            ? vehicleDetails?.year_of_purchase
-                            : isNull}
+                          {getDisplayValue(vehicleDetails?.parkDesc)}
                         </div>
+                        <div className="ml-auto lg:mb-4">
+                          {getDisplayValue(vehicleDetails?.routeDesc)}
+                        </div>
+                        <div className="ml-auto lg:mb-4">
+                          {getDisplayValue(vehicleDetails?.vehicle_color)}
+                        </div>
+                        <div className="ml-auto lg:mb-4">
+                          {getDisplayValue(vehicleDetails?.manufacturer)}
+                        </div>
+                        <div className="ml-auto lg:mb-4">
+                          {getDisplayValue(vehicleDetails?.year_of_purchase)}
+                        </div>
+                       
                       </div>
                     </div>
                   </div>
@@ -516,6 +604,247 @@ export default function ProfileDetails() {
                   </div>
                   {/* END: Next of Kin  */}
                 </div>
+              </Tab.Panel>
+
+{/* Owner Tab */}
+              <Tab.Panel>
+                {/* <div className="grid grid-cols-12  text-slate-600">
+          
+
+                  <div className="col-span-12 intro-y text-base ">
+                 
+                    <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                      <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                      <div className="font-semibold ">Owner Category:</div>
+                      <div className="font-semibold ">Owner's Image:</div>
+
+                        <div className="font-semibold ">First Name:</div>
+                        <div className="font-semibold ">Middle Name:</div>
+
+                        <div className="font-semibold ">Gender:</div>
+                        <div className="font-semibold ">Marital Status:</div>
+
+                        <div className="font-semibold ">Last Name:</div>
+                        <div className="font-semibold ">Phone Number:</div>
+
+                        <div className="font-semibold ">Home Address</div>
+                      </div>
+                      <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                      <div className="capitalize">
+                        {owner?.owner_category.toLowerCase().replace(/\s+/g, '_')} 
+                        </div>
+                  
+                        <div className="">{owner?.profilePicture}
+                        <span className="ml-1 text-customColor cursor-pointer">view image</span>
+                        </div>
+
+
+                        <div className="">{owner?.first_name}</div>
+
+                        <div className="capitalize">{owner?.middle_name}</div>
+                        <div className="capitalize">{owner?.last_name}</div>
+                        <div className="capitalize">{owner?.gender === 'm'? 'male' : 'female'}</div>
+
+                        <div className="capitalize">{owner?.marital_status}</div>
+
+
+                        <div className="">{owner?.phone}</div>
+                        <div className="">{owner?.home_address}</div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div> */}
+                  <div className="grid grid-cols-12 text-slate-600">
+      <div className="col-span-12 intro-y text-base">
+        <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+            <div className="font-semibold">Owner Category:</div>
+            <div className="font-semibold">Owner's Image:</div>
+            <div className="font-semibold">First Name:</div>
+            <div className="font-semibold">Middle Name:</div>
+            <div className="font-semibold">Gender:</div>
+            <div className="font-semibold">Marital Status:</div>
+            <div className="font-semibold">Last Name:</div>
+            <div className="font-semibold">Phone Number:</div>
+            <div className="font-semibold">Home Address:</div>
+          </div>
+          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+            <div className="capitalize">
+              {owner?.owner_category?.toLowerCase().replace(/\s+/g, '_')}
+            </div>
+            <div>
+              {owner?.profilePicture ? (
+                <>
+                {owner?.profilePicture}
+                  <span
+                    className="ml-1 text-customColor cursor-pointer"
+                    onClick={toggleModal}
+                  >
+                    View Image
+                  </span>
+                  {/* Modal */}
+                  {isModalOpen && (
+                    <>
+
+
+
+                    {/* <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-white p-4 rounded shadow-lg relative">
+                           <button
+                          className="absolute top-2 right-2 text-black text-lg"
+                          onClick={toggleModal}
+                        >
+                          &times;
+                        </button>
+                        <img
+                          src={owner?.profile_picture_url}
+                          alt="Owner"
+                          className="max-w-full max-h-full"
+                        />
+                      </div>
+                    </div> */}
+
+                    </>
+                  )}
+                </>
+              ) : (
+                'No Image Available'
+              )}
+            </div>
+            <div>{getDisplayValue(owner?.first_name)}</div>
+            <div className="capitalize">{getDisplayValue(owner?.middle_name)}</div>
+            <div className="capitalize">{getDisplayValue(owner?.last_name)}</div>
+            <div className="capitalize">
+              {owner?.gender === 'm' ? 'male' : 'female'}
+            </div>
+            <div className="capitalize">{getDisplayValue(owner?.marital_status)}</div>
+            <div>{getDisplayValue(owner?.phone)}</div>
+            <div>{getDisplayValue(owner?.home_address)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+              </Tab.Panel>
+
+              <Tab.Panel>
+                {/* <div className="grid grid-cols-12  text-slate-600">
+          
+
+                  <div className="col-span-12 intro-y text-base ">
+                 
+                    <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                      <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                      <div className="font-semibold ">Owner Category:</div>
+                      <div className="font-semibold ">Owner's Image:</div>
+
+                        <div className="font-semibold ">First Name:</div>
+                        <div className="font-semibold ">Middle Name:</div>
+
+                        <div className="font-semibold ">Gender:</div>
+                        <div className="font-semibold ">Marital Status:</div>
+
+                        <div className="font-semibold ">Last Name:</div>
+                        <div className="font-semibold ">Phone Number:</div>
+
+                        <div className="font-semibold ">Home Address</div>
+                      </div>
+                      <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                      <div className="capitalize">
+                        {owner?.owner_category.toLowerCase().replace(/\s+/g, '_')} 
+                        </div>
+                  
+                        <div className="">{owner?.profilePicture}
+                        <span className="ml-1 text-customColor cursor-pointer">view image</span>
+                        </div>
+
+
+                        <div className="">{owner?.first_name}</div>
+
+                        <div className="capitalize">{owner?.middle_name}</div>
+                        <div className="capitalize">{owner?.last_name}</div>
+                        <div className="capitalize">{owner?.gender === 'm'? 'male' : 'female'}</div>
+
+                        <div className="capitalize">{owner?.marital_status}</div>
+
+
+                        <div className="">{owner?.phone}</div>
+                        <div className="">{owner?.home_address}</div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div> */}
+                  <div className="grid grid-cols-12 text-slate-600">
+      <div className="col-span-12 intro-y text-base">
+        <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+            <div className="font-semibold">Owner Category:</div>
+            <div className="font-semibold">Owner's Image:</div>
+            <div className="font-semibold">First Name:</div>
+            <div className="font-semibold">Middle Name:</div>
+            <div className="font-semibold">Gender:</div>
+            <div className="font-semibold">Marital Status:</div>
+            <div className="font-semibold">Last Name:</div>
+            <div className="font-semibold">Phone Number:</div>
+            <div className="font-semibold">Home Address:</div>
+          </div>
+          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+            <div className="capitalize">
+              {owner?.owner_category?.toLowerCase().replace(/\s+/g, '_')}
+            </div>
+            <div>
+              {owner?.profilePicture ? (
+                <>
+                {owner?.profilePicture}
+                  <span
+                    className="ml-1 text-customColor cursor-pointer"
+                    onClick={toggleModal}
+                  >
+                    View Image
+                  </span>
+                  {/* Modal */}
+                  {isModalOpen && (
+                    <>
+
+
+
+                    {/* <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-white p-4 rounded shadow-lg relative">
+                           <button
+                          className="absolute top-2 right-2 text-black text-lg"
+                          onClick={toggleModal}
+                        >
+                          &times;
+                        </button>
+                        <img
+                          src={owner?.profile_picture_url}
+                          alt="Owner"
+                          className="max-w-full max-h-full"
+                        />
+                      </div>
+                    </div> */}
+
+                    </>
+                  )}
+                </>
+              ) : (
+                'No Image Available'
+              )}
+            </div>
+            <div>{getDisplayValue(owner?.first_name)}</div>
+            <div className="capitalize">{getDisplayValue(owner?.middle_name)}</div>
+            <div className="capitalize">{getDisplayValue(owner?.last_name)}</div>
+            <div className="capitalize">
+              {owner?.gender === 'm' ? 'male' : 'female'}
+            </div>
+            <div className="capitalize">{getDisplayValue(owner?.marital_status)}</div>
+            <div>{getDisplayValue(owner?.phone)}</div>
+            <div>{getDisplayValue(owner?.home_address)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
               </Tab.Panel>
 
               <Tab.Panel>

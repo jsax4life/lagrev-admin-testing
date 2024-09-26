@@ -389,6 +389,15 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
             <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
 
         </Menu.Item>
+        {/* <Menu.Item
+        onClick={(event: React.MouseEvent ) => { setOpenModal(true); setActiveFilter("Approval"); }}
+        >
+            <Lucide icon="Check" className="w-4 h-4 mr-2 " />
+            Approval
+
+            <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+
+        </Menu.Item> */}
         <Menu.Item
       
 
@@ -497,6 +506,9 @@ selectedStatus=''
                 <Table.Th className="border-b-0 whitespace-nowrap">
                     VIN                
                 </Table.Th>
+                <Table.Th className="border-b-0 whitespace-nowrap">
+                    ACCREDITATION                
+                </Table.Th>
                 <Table.Th className="text-start border-b-0 whitespace-nowrap">
                     STATUS                
                 </Table.Th>
@@ -570,6 +582,20 @@ selectedStatus=''
                   </Table.Td>
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40  bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <div className="pr-16">{vehicle?.vin ? vehicle?.vin : '------'}</div>
+                  </Table.Td>
+
+                  
+
+                  <Table.Td className="first:rounded-l-md last:rounded-r-md text-start bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
+                    <span
+                      className=
+ {`items-center  lg:py-1  text-xs font-medium uppercase ${
+    vehicle?.verification_status? 'text-green-600' : 'text-danger'
+  }`}
+                         
+                    >
+                            {vehicle?.verification_status? 'approved' : 'rejected' }
+                    </span>
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md text-start bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">

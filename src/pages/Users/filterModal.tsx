@@ -7,7 +7,7 @@ import {
   FormSelect,
 } from "../../base-components/Form";
 import Lucide from "../../base-components/Lucide";
-import { Menu, Tab, Dialog } from "../../base-components/Headless";
+import { Dialog } from "../../base-components/Headless";
 import Litepicker from "../../base-components/Litepicker";
 
 // Define props interface for the component
