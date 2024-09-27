@@ -101,7 +101,7 @@ Tab.Button = <C extends React.ElementType = "a">({
           "border-b-2 border-transparent dark:border-transparent",
         list.variant == "link-tabs" &&
           tab.selected &&
-          "border-b-primary font-medium dark:border-b-primary",
+          "border-b-customColor font-medium dark:border-b-primary",
 
         className,
       ])}

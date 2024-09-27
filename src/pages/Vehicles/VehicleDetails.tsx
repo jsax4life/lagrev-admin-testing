@@ -97,7 +97,9 @@ export default function ProfileDetails() {
 
   const { id } = useParams<{ id: string }>();
   const [vehicleDetails, setVehicleDetails] = useState<any>(null);
+  const [surveyResponse, setSurveyResponse] = useState<any>(null);
 
+  
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -113,11 +115,12 @@ export default function ProfileDetails() {
     };
   
 
-  console.log(vehicleDetails);
+  console.log(surveyResponse);
 
   useEffect(() => {
     if (user?.token) {
       fetchVehicleData();
+      fetchRiderSurveyResponseData();
     }
   }, [user?.token]);
 
@@ -139,6 +142,29 @@ export default function ProfileDetails() {
       // {lga: 'Alimosho'},
       function (vehicleData: any) {
         setVehicleDetails(vehicleData);
+        setLoading(false);
+      },
+      function (error: any) {
+        console.error("Error fetching recent searches:", error);
+        setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
+
+  const fetchRiderSurveyResponseData = () => {
+    setError("");
+
+    API(
+      "get",
+
+      `survey-response/${id}`, // Make sure your backend API endpoint is correct
+      {},
+
+      // {lga: 'Alimosho'},
+      function (surveyResponseData: any) {
+        setSurveyResponse(surveyResponseData?.answers);
+        // console.log(surveyResponse?.answer)
         setLoading(false);
       },
       function (error: any) {
@@ -273,7 +299,7 @@ className="flex place-self-center lg:items-center lg:justify-center"
               </div>
               <Tab.List
                 variant="link-tabs"
-                className="flex-col justify-center text-center sm:flex-row lg:justify-start"
+                className="flex-col justify-center text-center sm:flex-row lg:justify-start border-b  border-slate-200/60"
               >
                 <Tab fullWidth={false}>
                   <Tab.Button className="flex items-center cursor-pointer ">
@@ -303,6 +329,12 @@ className="flex place-self-center lg:items-center lg:justify-center"
                   <Tab.Button className="flex items-center  cursor-pointer">
                     {/* <Lucide icon="Lock" className="w-4 h-4 mr-2" />  */}
                     Vehicle Activity
+                  </Tab.Button>
+                </Tab>
+                <Tab fullWidth={false}>
+                  <Tab.Button className="flex items-center  cursor-pointer">
+                    {/* <Lucide icon="Lock" className="w-4 h-4 mr-2" />  */}
+                    Survey Feedback
                   </Tab.Button>
                 </Tab>
               </Tab.List>
@@ -344,13 +376,13 @@ className="flex place-self-center lg:items-center lg:justify-center"
                         <div className="capitalize">{rider?.marital_status}</div>
                         <div className="capitalize">{rider?.religion}</div>
                         <div className="capitalize">{rider?.tribe}</div>
-                        <div className="capitalize">{rider?.home_address}</div>
+                        <div className="capitalize">{getDisplayValue(rider?.home_address)}</div>
 
-                        <div className="capitalize">{rider?.lga}</div>
-                        <div className="capitalize">{rider?.lasdri_available}</div>
-                        <div className="capitalize">{rider?.lasdri? rider?.lasdri : '---' }</div>
-                        <div className="capitalize">{rider?.ndl_available}</div>
-                        <div className="capitalize">{rider?.ndl}</div>
+                        <div className="capitalize">{getDisplayValue(rider?.lga)}</div>
+                        <div className="capitalize">{getDisplayValue(rider?.lasdri_available)}</div>
+                        <div className="capitalize">{getDisplayValue(rider?.lasdri)}</div>
+                        <div className="capitalize">{getDisplayValue(rider?.ndl_available)}</div>
+                        <div className="capitalize">{getDisplayValue(rider?.ndl)}</div>
 
 
 
@@ -530,7 +562,7 @@ className="flex place-self-center lg:items-center lg:justify-center"
                           {getDisplayValue(vehicleDetails?.manufacturer)}
                         </div>
                         <div className="ml-auto lg:mb-4">
-                          {getDisplayValue(vehicleDetails?.year_of_purchase)}
+                          {getDisplayValue(vehicleDetails?.date)}
                         </div>
                        
                       </div>
@@ -728,120 +760,15 @@ className="flex place-self-center lg:items-center lg:justify-center"
               </Tab.Panel>
 
               <Tab.Panel>
-                {/* <div className="grid grid-cols-12  text-slate-600">
-          
-
-                  <div className="col-span-12 intro-y text-base ">
-                 
-                    <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                      <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                      <div className="font-semibold ">Owner Category:</div>
-                      <div className="font-semibold ">Owner's Image:</div>
-
-                        <div className="font-semibold ">First Name:</div>
-                        <div className="font-semibold ">Middle Name:</div>
-
-                        <div className="font-semibold ">Gender:</div>
-                        <div className="font-semibold ">Marital Status:</div>
-
-                        <div className="font-semibold ">Last Name:</div>
-                        <div className="font-semibold ">Phone Number:</div>
-
-                        <div className="font-semibold ">Home Address</div>
-                      </div>
-                      <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                      <div className="capitalize">
-                        {owner?.owner_category.toLowerCase().replace(/\s+/g, '_')} 
-                        </div>
-                  
-                        <div className="">{owner?.profilePicture}
-                        <span className="ml-1 text-customColor cursor-pointer">view image</span>
-                        </div>
-
-
-                        <div className="">{owner?.first_name}</div>
-
-                        <div className="capitalize">{owner?.middle_name}</div>
-                        <div className="capitalize">{owner?.last_name}</div>
-                        <div className="capitalize">{owner?.gender === 'm'? 'male' : 'female'}</div>
-
-                        <div className="capitalize">{owner?.marital_status}</div>
-
-
-                        <div className="">{owner?.phone}</div>
-                        <div className="">{owner?.home_address}</div>
-                      </div>
-                    </div>
-                  </div>
-                 
-                </div> */}
+              
                   <div className="grid grid-cols-12 text-slate-600">
       <div className="col-span-12 intro-y text-base">
         <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
           <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-            <div className="font-semibold">Owner Category:</div>
-            <div className="font-semibold">Owner's Image:</div>
-            <div className="font-semibold">First Name:</div>
-            <div className="font-semibold">Middle Name:</div>
-            <div className="font-semibold">Gender:</div>
-            <div className="font-semibold">Marital Status:</div>
-            <div className="font-semibold">Last Name:</div>
-            <div className="font-semibold">Phone Number:</div>
-            <div className="font-semibold">Home Address:</div>
+            <div className="font-semibold">Update coming</div>
+            
           </div>
-          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-            <div className="capitalize">
-              {owner?.owner_category?.toLowerCase().replace(/\s+/g, '_')}
-            </div>
-            <div>
-              {owner?.profilePicture ? (
-                <>
-                {owner?.profilePicture}
-                  <span
-                    className="ml-1 text-customColor cursor-pointer"
-                    onClick={toggleModal}
-                  >
-                    View Image
-                  </span>
-                  {/* Modal */}
-                  {isModalOpen && (
-                    <>
-
-
-
-                    {/* <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                      <div className="bg-white p-4 rounded shadow-lg relative">
-                           <button
-                          className="absolute top-2 right-2 text-black text-lg"
-                          onClick={toggleModal}
-                        >
-                          &times;
-                        </button>
-                        <img
-                          src={owner?.profile_picture_url}
-                          alt="Owner"
-                          className="max-w-full max-h-full"
-                        />
-                      </div>
-                    </div> */}
-
-                    </>
-                  )}
-                </>
-              ) : (
-                'No Image Available'
-              )}
-            </div>
-            <div>{getDisplayValue(owner?.first_name)}</div>
-            <div className="capitalize">{getDisplayValue(owner?.middle_name)}</div>
-            <div className="capitalize">{getDisplayValue(owner?.last_name)}</div>
-            <div className="capitalize">
-              {owner?.gender === 'm' ? 'male' : 'female'}
-            </div>
-            <div className="capitalize">{getDisplayValue(owner?.marital_status)}</div>
-            <div>{getDisplayValue(owner?.phone)}</div>
-            <div>{getDisplayValue(owner?.home_address)}</div>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -923,6 +850,44 @@ className="flex place-self-center lg:items-center lg:justify-center"
                         )
                       )}
                     </ul>
+                  </div>
+                </div>
+              </Tab.Panel>
+
+
+              {/* surevy feedback */}
+
+
+              <Tab.Panel>
+                <div className="grid grid-cols-12 gap-6 text-slate-600">
+                  <div className="flow-root col-span-12 intro-y overflow-y-auto h-72">
+                    {/* <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div> */}
+                    <table className="table-auto w-full border-collapse bg-slate-50">
+        <thead>
+          <tr className="bg-customColor/5 text-left">
+            <th className=" px-4 py-2">S/N</th>
+            <th className=" px-4 py-2">Survey Question</th>
+            <th className=" px-4 py-2">Feedback/Response</th>
+          </tr>
+        </thead>
+        <tbody>
+          {surveyResponse?.length > 0 ? (
+            surveyResponse.map((answer: any, index: any) => (
+              <tr key={index}>
+                <td className=" px-4 py-2">{index + 1}</td>
+                <td className=" px-4 py-2">{answer.question}</td>
+                <td className=" px-4 py-2">{answer.answer}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3} className=" px-4 py-2 text-center">
+                No answers found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
                   </div>
                 </div>
               </Tab.Panel>
