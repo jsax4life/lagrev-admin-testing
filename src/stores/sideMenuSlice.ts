@@ -32,7 +32,25 @@ const initialState: SideMenuState = {
     },
  
     // "divider",
- 
+    {
+      icon: "Users",
+      title: "Admins",
+      subMenu: [
+        {
+          icon: "User",
+          pathname: "/admins",
+          title: "All Admins",
+        },
+    
+      
+        {
+          icon: "User",
+          pathname: "/admin-role-management",
+          title: "Role Management",
+        },
+      ],
+    },
+
     {
       icon: "Users",
       title: "Users",
@@ -59,7 +77,7 @@ const initialState: SideMenuState = {
         },
         {
           icon: "User",
-          pathname: "#",
+          pathname: "/role-management",
           title: "Role Management",
         },
       ],

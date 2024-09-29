@@ -16,6 +16,10 @@ import UserProfileDetails from "../pages/Users/UserDetails";
 import UpdateUserProfile from "../pages/Users/UpdateUserDetails";
 import AddNewUser from "../pages/Users/AddUser";
 import PrivateRoute from './PrivateRoute';
+import RolePrivilegesTable from "../pages/Users/RoleManagement";
+import AllAdmins from "../pages/Admins"
+import AdminRolePrivilegesTable from "../pages/Admins/AdminRoleManagement";
+import AddNewAdmiin from "../pages/Admins/AddAdmin";
 
 
 function Router() {
@@ -77,10 +81,19 @@ function Router() {
   
           { path: "/edit-admin-profile", element: <EditAdminProfile />},
           { path: "/users", element: <AllUsers />},
+
+
           { path: "/user-profile/:id", element: <UserProfileDetails />},
           { path: "/edit-user-profile/:id", element: <UpdateUserProfile />},
           { path: "/add-user", element: <AddNewUser />},
-  
+
+          {path: "/role-management", element: <RolePrivilegesTable/>},
+          {path: "/admin-role-management", element: <AdminRolePrivilegesTable/>},
+
+
+          { path: "/admins", element: <AllAdmins />},
+          { path: "/add-admin", element: <AddNewAdmiin />},
+
         ]
 
        },

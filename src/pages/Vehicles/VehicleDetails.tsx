@@ -102,7 +102,7 @@ export default function ProfileDetails() {
   
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const isInitialMount = useRef(true);
 
   const navigate = useNavigate();
@@ -147,6 +147,8 @@ export default function ProfileDetails() {
       function (error: any) {
         console.error("Error fetching recent searches:", error);
         setLoading(false);
+        setShowErrorModal(true);
+        setError(error)
       },
       user?.token && user.token
     );
@@ -169,6 +171,8 @@ export default function ProfileDetails() {
       },
       function (error: any) {
         console.error("Error fetching recent searches:", error);
+        // setShowErrorModal(true);
+        // setError(error)
         setLoading(false);
       },
       user?.token && user.token
@@ -222,6 +226,54 @@ className="flex place-self-center lg:items-center lg:justify-center"
 </Dialog>
 }
 
+
+
+
+
+{showErrorModal && 
+
+
+<Dialog
+
+staticBackdrop
+open={showErrorModal}
+onClose={() => {
+  setShowErrorModal(true);
+}}
+>
+<Dialog.Panel>
+  <div className="p-5 text-center">
+    <Lucide
+      icon="XCircle"
+      className="w-16 h-16 mx-auto mt-3 text-warning"
+    />
+    <div className="mt-5 text-3xl">Oops...</div>
+    <div className="mt-2 text-slate-500">
+      {error}!
+    </div>
+  </div>
+  <div className="px-5 pb-8 text-center">
+    <Button
+       type="button"
+       variant="primary"
+       className="bg-customColor"
+       onClick={() => {
+         setShowErrorModal(false);
+         navigate('/dashboard')
+
+       }}
+    >
+      Ok
+    </Button>
+  </div>
+  {/* <div className="p-5 text-center border-t border-slate-200/60 dark:border-darkmode-400">
+    <a href="" className="text-primary">
+      Why do I have this issue?
+    </a>
+  </div> */}
+</Dialog.Panel>
+</Dialog>
+}
       <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
         {/* Replace with your content */}
 
