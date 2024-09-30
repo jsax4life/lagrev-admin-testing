@@ -27,6 +27,7 @@ import FilterChips from "../../components/FilterChips";
 import { date } from "yup";
 import FilterModal from "./filterModal";
 import LoadingIcon from "../../base-components/LoadingIcon";
+import axios from "axios";
 
 interface Change {
   original: string | number | null;
@@ -62,20 +63,22 @@ const lagosLGAs = [
   "Surulere",
 ];
 
-const parks = ["Agege Park", "Alimosho Park"];
 
-const tags = [
-  { name: "Updated vehicle registration", href: "#", color: "bg-rose-500" },
-  { name: "User logged in", href: "#", color: "bg-indigo-500" },
-];
+// const parks = ["Agege Park", "Alimosho Park"];
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+// const tags = [
+//   { name: "Updated vehicle registration", href: "#", color: "bg-rose-500" },
+//   { name: "User logged in", href: "#", color: "bg-indigo-500" },
+// ];
+
+// function classNames(...classes: string[]) {
+//   return classes.filter(Boolean).join(" ");
+// }
 
 function Main() {
   const { user } = useContext(UserContext);
   const [openModal, setOpenModal] = useState(false);
+  const [parks, setParks] = useState<{ code: string, desc: string }[]>([]); // Updated to include parkDesc
 
   const [dateRange, setDateRange] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
@@ -83,6 +86,9 @@ function Main() {
 
   const [selectedLGA, setSelectedLGA] = useState<string>("");
   const [selectedPark, setSelectedPark] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<string>("");
+  const [userList, setUserList] = useState<any[]>([]);
+
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loadingKpiData, setLoadingKpiData] = useState(true);
   const [loadingActivityData, setLoadingActivityData] = useState(true);
@@ -94,7 +100,7 @@ function Main() {
   const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
   const [lgaModal, setLGAModal] = useState(false);
   const [tempSelectedLGA, setTempSelectedLGA] = useState("");
-  const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park">(
+  const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park" | "Users">(
     "LGA"
   );
 
@@ -106,6 +112,8 @@ function Main() {
   useEffect(() => {
     if (user?.token) {
       fetchDashboardData();
+      fetchKPIData();
+      fetchAllUsers();
     }
   }, [user?.token]);
 
@@ -118,17 +126,80 @@ function Main() {
     // }
 
     fetchDashboardData();
-  }, [dateRange, selectedLGA]);
+  }, [dateRange, selectedLGA, selectedPark, selectedUser]);
 
-  useEffect(() => {
-    if (user?.token) {
-      fetchKPIData();
-    }
-  }, [user?.token]);
+  // useEffect(() => {
+  //   if (user?.token) {
+  //     fetchKPIData();
+  //   }
+  // }, [user?.token]);
 
   useEffect(() => {
     fetchActivityLogs();
   }, []);
+
+  useEffect(() => {
+   
+  
+    const validatePack = async () => {
+      try {
+        const response = await axios.post('https://api.lagroute.org/validattion/sa.getpark.php', {
+          PassKey: `9c83a5d9-56f0-11ef-8aae-f23c93600e21`,
+          type: 'A'
+        }, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          }
+        });
+  
+        // console.log('Responses:', response.data.data);
+  
+        if (Array.isArray(response?.data?.data)) {
+          setParks(response?.data?.data);
+          console.log(response.data.data)
+          // localStorage.setItem('parks', response?.data?.data)
+        } else {
+          console.error('Unexpected response format:', response.data);
+        }
+      } catch (error) {
+        console.error('Error making request:', error);
+      }
+    };
+  
+    validatePack();
+  }, []);
+  
+
+
+  const fetchAllUsers = () => {
+
+    setError("");
+    // setLoading(true);
+  
+
+
+    API(
+      "get",
+      `all-users`,
+      
+      {},
+      // {lga: 'Alimosho'},
+      function (allUserData: any) {
+        console.log(allUserData?.data)
+        setUserList(allUserData?.data);
+        // setLoading(false);
+
+         // Store the user list in local storage
+      localStorage.setItem('userList', JSON.stringify(allUserData?.data));
+
+      },
+      function (error: any) {
+        console.error("Error fetching recent searches:", error);
+        // setLoading(false);
+      },
+      user?.token && user.token
+    );
+  };
 
   console.log(startDate, endDate);
 
@@ -178,8 +249,9 @@ function Main() {
       setSelectedPark("");
     } else if (filter === "Date") {
       setDateRange("");
-    }
-
+    } else if (filter === "User") {
+    setSelectedUser("");
+  }
     // Optionally update your data based on the filters being removed
   };
 
@@ -284,6 +356,8 @@ function Main() {
       params.start_date = startDate.trim();
       params.end_date = endDate.trim();
     }
+    if (selectedUser) params.user = selectedUser;
+    if (selectedPark) params.park = selectedPark;
 
     API(
       "get",
@@ -451,6 +525,9 @@ function Main() {
         setEndDate={setEndDate}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        users={userList}
       />
 
 
@@ -466,6 +543,7 @@ function Main() {
             selectedLGA={selectedLGA}
             selectedPark={selectedPark}
             dateRange={dateRange}
+            selectedUser={selectedUser}
             onRemoveFilter={handleRemoveFilter}
           />
 
@@ -545,7 +623,22 @@ function Main() {
                 Date
                 <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
               </Menu.Item>
+
+              <Menu.Item
+                // onClick={() => setShowLgaSubMenu(!showLgaSubMenu)}
+                onClick={() => {
+                  setOpenModal(true);
+                  setActiveFilter("Users");
+                }}
+              >
+                <Lucide icon="Users" className="w-4 h-4 mr-2" />
+                Users
+                <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+              </Menu.Item>
+
             </Menu.Items>
+
+           
           </Menu>
         </div>
 
@@ -905,7 +998,7 @@ function Main() {
                 (top_performing_lga: any, index: Key | null | undefined) => (
                   <div className="box mt-4 p-4" key={index}>
                     <div className="mr-auto text-xs">
-                      {top_performing_lga.registered_lga} LGA
+                      {top_performing_lga.lga} LGA
                     </div>
 
                     <div className="flex mt-2">

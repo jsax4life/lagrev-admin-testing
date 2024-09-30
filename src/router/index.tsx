@@ -3,7 +3,7 @@ import SideMenu from "../layouts/SideMenu";
 import SimpleMenu from "../layouts/SimpleMenu";
 import TopMenu from "../layouts/TopMenu";
 
-import PointOfSale from "../pages/PointOfSale";
+import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Vehicle from "../pages/Vehicles"
@@ -65,7 +65,7 @@ function Router() {
           {
  
             path: "/dashboard",
-            element: <PointOfSale />,
+            element: <Dashboard />,
           },
           {
  

@@ -9,6 +9,7 @@ interface FilterChipsProps {
   selectedPark: string;
   selectedRole: string;
   selectedStatus: string;
+  selectedUser: string;
   dateRange: string;
   onRemoveFilter: (filter: string) => void;
 }
@@ -18,6 +19,7 @@ const FilterChips: React.FC<FilterChipsProps> = ({
   selectedPark,
   selectedRole,
   selectedStatus,
+  selectedUser,
   dateRange,
   onRemoveFilter,
 }) => {
@@ -37,6 +39,9 @@ const FilterChips: React.FC<FilterChipsProps> = ({
       )}
        {selectedStatus && (
         <Chip label={`Status: ${selectedStatus}`} onDelete={() => onRemoveFilter('Status')} icon={'Check'} />
+      )}
+       {selectedUser && (
+        <Chip label={`User: ${selectedUser}`} onDelete={() => onRemoveFilter('User')} icon={'User'} />
       )}
     </div>
   );

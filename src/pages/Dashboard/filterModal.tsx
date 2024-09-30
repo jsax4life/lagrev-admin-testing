@@ -16,7 +16,8 @@ interface FilterModalProps {
   setOpen: (isOpen: boolean) => void;
   handleFilterChange: (type: string, value: string) => void;
   lagosLGAs: string[];
-  carParks: string[];
+  carParks: any[];
+  users: any[];
   selectedLGA: string;
   setSelectedLGA: (lga: string) => void;
   selectedCarPark: string;
@@ -25,8 +26,10 @@ interface FilterModalProps {
   setStartDate: (date: string) => void;
   endDate: string;
   setEndDate: (date: string) => void;
-  activeFilter: "LGA" | "Date" | "Park";
-  setActiveFilter: (filter: "LGA" | "Date" | "Park") => void;
+  selectedUser: string;
+  setSelectedUser:  (user: string) => void;
+  activeFilter: "LGA" | "Date" | "Park" | "Users";
+  setActiveFilter: (filter: "LGA" | "Date" | "Park" | "Users") => void;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
@@ -35,6 +38,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   handleFilterChange,
   lagosLGAs,
   carParks,
+  users,
   selectedLGA,
   setSelectedLGA,
   selectedCarPark,
@@ -44,14 +48,17 @@ const FilterModal: React.FC<FilterModalProps> = ({
   endDate,
   setEndDate,
   activeFilter,
+  selectedUser,
+  setSelectedUser
 }) => {
   // Temporary states for selections
   const [tempSelectedLGA, setTempSelectedLGA] = useState(selectedLGA);
   const [tempSelectedCarPark, setTempSelectedCarPark] =
     useState(selectedCarPark);
   const [tempStartDate, setTempStartDate] = useState(startDate);
-  const [tempEndDate, setTempEndDate] = useState(endDate);
+  const [  tempSelectedUser, setTempSelectedUser] = useState(selectedUser);
 
+  const [tempEndDate, setTempEndDate] = useState(endDate);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
 
   // Handle LGA filter apply
@@ -76,6 +83,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setOpen(false);
   };
 
+    // Handle Car Park filter apply
+    const applyUsersFilter = () => {
+      setSelectedUser(tempSelectedUser);
+      handleFilterChange("Users", tempSelectedUser);
+      setOpen(false);
+    };
   // Handle modal close
   const handleClose = () => {
     setOpen(false);
@@ -98,7 +111,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
                     ? "Home"
                     : activeFilter === "Park"
                     ? "Car"
-                    : "Calendar"
+                    : activeFilter === "Date" 
+                    ? "Calendar" 
+                    : "Users"
                 }
                 className="w-5 h-5"
               />
@@ -110,6 +125,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   ? "Local Government Area (LGA)"
                   : activeFilter === "Park"
                   ? "Car Park"
+                  : activeFilter === "Users"
+                  ? "All Users"
                   : "Date Range"}
               </h2>
               <p className="text-xs text-slate-500">
@@ -117,6 +134,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   ? "Choose an LGA to filter"
                   : activeFilter === "Park"
                   ? "Choose a Car Park to filter"
+                  : activeFilter === "Users"
+                  ? "Select a User to filter data"
                   : "Choose a date range to filter"}
               </p>
             </div>
@@ -162,8 +181,30 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   All Car Parks
                 </option>
                 {carParks.map((carPark, index) => (
-                  <option key={index} value={carPark}>
-                    {carPark}
+                  <option key={index} value={carPark?.desc}>
+                    {carPark?.desc}
+                  </option>
+                ))}
+              </FormSelect>
+            </div>
+          ) : activeFilter === "Users" ? (
+            <div className="col-span-12 ">
+              <FormLabel htmlFor="lga">Select User</FormLabel>
+              <FormSelect
+                id="user"
+                className=""
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTempSelectedUser(value); // Store the selected value temporarily
+                }}
+                value={tempSelectedUser}
+              >
+                <option value="" disabled>
+                  All Users
+                </option>
+                {users.map((user, index) => (
+                  <option key={index} value={user?.name}>
+                    {user?.name}
                   </option>
                 ))}
               </FormSelect>
@@ -232,10 +273,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
             ref={sendButtonRef}
             onClick={
               activeFilter === "LGA"
-                ? applyLGAFilter
-                : activeFilter === "Park"
-                ? applyCarParkFilter
-                : applyDateFilter
+              ? applyLGAFilter
+              : activeFilter === "Park"
+              ? applyCarParkFilter
+              : activeFilter === "Date"
+              ? applyDateFilter
+              : applyUsersFilter
             }
           >
             Apply Filter

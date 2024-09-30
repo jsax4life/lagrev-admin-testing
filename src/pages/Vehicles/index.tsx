@@ -21,7 +21,7 @@ import API from '../../utils/API';
 import { useNavigate } from 'react-router-dom';
 import LoadingIcon from '../../base-components/LoadingIcon';
 import FilterChips from '../../components/FilterChips';
-import FilterModal from '../PointOfSale/filterModal';
+import FilterModal from '../Dashboard/filterModal';
 
 const lagosLGAs = [
     "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
@@ -57,15 +57,18 @@ export default function Main() {
     const [dateRange, setDateRange] = useState<string>('');
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
+    const [userList, setUserList] = useState<any[]>([]);
 
     const [selectedLGA, setSelectedLGA] = useState<string>('');
+    const [selectedUser, setSelectedUser] = useState<string>('');
+
     const [kpiData, setKpiData] = useState(null);
     const [selectedPark, setSelectedPark] = useState<string>('');
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [datepickerModalPreview, setDatepickerModalPreview] = useState(false);
-    const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park">(
+    const [activeFilter, setActiveFilter] = useState<"LGA" | "Date" | "Park" | "Users">(
       "LGA"
     );
     const cancelButtonRef = useRef(null);
@@ -82,14 +85,16 @@ useEffect(() => {
       // console.log('true')
 
         setDateRange('')
-      return;
+        const userListFromLocalStorage = localStorage.getItem('userList');
+        setUserList(userListFromLocalStorage ? JSON.parse(userListFromLocalStorage) : []);   
+          return;
 
     }
 
     
       fetchDashboardData();
     
-  }, [dateRange, selectedLGA]);
+  }, [dateRange, selectedLGA, selectedPark, selectedUser]);
 
     useEffect(() => {
         if (user?.token) {
@@ -113,7 +118,9 @@ useEffect(() => {
           params.start_date = startDate.trim();
           params.end_date = endDate.trim();
         }
-    
+        if (selectedUser) params.user = selectedUser;
+        if (selectedPark) params.park = selectedPark;
+
         API(
           "get",
           `vehicle-data`,
@@ -141,6 +148,8 @@ useEffect(() => {
         setSelectedPark('');
       } else if (filter === 'Date') {
         setDateRange('');
+      } else if (filter === 'User') {
+        setSelectedUser('');
       }
   
       // Optionally update your data based on the filters being removed
@@ -155,6 +164,8 @@ useEffect(() => {
       lga: selectedLGA,
       park: selectedPark,
       date: dateRange,
+      user: selectedUser,
+
     };
 
     if (filter === 'LGA') {
@@ -166,7 +177,11 @@ useEffect(() => {
     } else if (filter === 'Date') {
       setDateRange(value);
       newFilters.date = value;
+    }else if (filter === 'User') {
+      setSelectedUser(value);
+      newFilters.user = value;
     }
+
 
     // Call any logic to update data based on the new filters
     console.log('New Filters:', newFilters);
@@ -196,6 +211,9 @@ useEffect(() => {
         setEndDate={setEndDate}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        users={userList}
       />
   
     <div className="max-w-7xl mx-auto pb-12 lg:pb-0  lg:px-0 lg:mx-0 ">
@@ -408,6 +426,18 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
             <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
 
         </Menu.Item>
+
+        <Menu.Item
+                // onClick={() => setShowLgaSubMenu(!showLgaSubMenu)}
+                onClick={() => {
+                  setOpenModal(true);
+                  setActiveFilter("Users");
+                }}
+              >
+                <Lucide icon="Users" className="w-4 h-4 mr-2" />
+                Users
+                <Lucide icon="ChevronRight" className="w-4 h-4 ml-auto" />
+              </Menu.Item>
        
     </Menu.Items>
 </Menu>
@@ -419,6 +449,7 @@ selectedStatus=''
           selectedLGA={selectedLGA}
           selectedPark={selectedPark}
           dateRange={dateRange}
+          selectedUser={selectedUser}
           onRemoveFilter={handleRemoveFilter}
         />
             {/* <FormSelect className="w-48 xl:w-1/5 !box mr-4">

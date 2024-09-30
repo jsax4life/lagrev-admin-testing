@@ -593,6 +593,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
           selectedPark=''
           dateRange={dateRange}
           onRemoveFilter={handleRemoveFilter}
+          selectedUser=''
         />
             
           </div>

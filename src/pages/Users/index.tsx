@@ -591,6 +591,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
           selectedRole={selectedRole}
           selectedStatus={selectedStatus}
           selectedPark=''
+          selectedUser=''
           dateRange={dateRange}
           onRemoveFilter={handleRemoveFilter}
         />
