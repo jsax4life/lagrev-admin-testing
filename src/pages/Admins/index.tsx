@@ -147,9 +147,12 @@ useEffect(() => {
           // {},
           filterState,
           // {lga: 'Alimosho'},
-          function (allUserData: any) {
-            console.log(allUserData?.data)
-            setUserList(allUserData?.data);
+          function (allAdmiinData: any) {
+            console.log(allAdmiinData?.data)
+            setUserList(allAdmiinData?.data);
+             // Store the user list in local storage
+      localStorage.setItem('adminList', JSON.stringify(allAdmiinData?.data));
+
             setLoading(false);
           },
           function (error: any) {
@@ -648,7 +651,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
             >
           
           {
-              userList.map((user: any, userKey: any | null | undefined) => (
+              userList.map((admin: any, userKey: any | null | undefined) => (
                 <Table.Tr key={userKey} className="intro-x text-slate-600">
                  
                   <Table.Td className=" first:rounded-l-md last:rounded-r-md w-10  bg-white  dark:bg-darkmode-600 border-slate-200 border-b ">
@@ -660,7 +663,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md  bg-white  dark:bg-darkmode-600  border-slate-200 border-b">
-                    <div className="flex items-center" onClick={() => navigate(`/profile/${user?.id}`)}>
+                    <div className="flex items-center" onClick={() => navigate(`/admin-profile/${admin?.id}`)}>
                       <div className="w-9 h-9 image-fit zoom-in">
                         <Tippy
                           as="img"
@@ -668,12 +671,12 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                           alt="Profile"
                           className="border-white rounded-lg shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]"
                           src={profile}
-                          content={`Uploaded at ${user?.created_at}`}
+                          content={`Uploaded at ${admin?.created_at}`}
                         />
                       </div>
                       <div className="ml-4">
                         <a href="" className="font-medium whitespace-nowrap">
-                          {user?.name}
+                          {admin?.name}
                         </a>
                         {/* <div className="text-slate-500 text-xs whitespace-nowrap mt-0.5">
                           {vehicle?.rider?.phone}
@@ -685,7 +688,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span  className="font-medium whitespace-nowrap ">
-{user?.firstName}
+{admin?.firstName}
                     </span>
                     
                   
@@ -693,12 +696,12 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                   
            
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40  bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
-                    <div className="pr-16">{user?.lastName}</div>
+                    <div className="pr-16">{admin?.lastName}</div>
                   </Table.Td>
 
                   <Table.Td className="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-1 dark:bg-darkmode-600 border-slate-200 border-b">
                     <span  className="font-medium whitespace-nowrap ">
-{user?.staffId}
+{admin?.staffId}
                     </span>
                     
                   
@@ -708,11 +711,11 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                     <span
                       className=
  {`items-center px-2 lg:py-1 rounded-full text-xs font-medium capitalize ${
-    tagStyle[user?.active]
+    tagStyle[admin?.active]
   }`}
                          
                     >
-                            {usersStatus[user?.active]}
+                            {usersStatus[admin?.active]}
                     </span>
                   </Table.Td>
 
@@ -720,7 +723,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
                     <div className="flex items-center justify-center">
                       <button
                         className="flex items-center  text-customColor whitespace-nowrap"
-                        onClick={() => navigate(`/user-profile/${user?.id}`)}
+                        onClick={() => navigate(`/admin-profile/${admin?.id}`)}
 
                       >
                         {/* <Lucide icon="CheckSquare" className="w-4 h-4 mr-1" />{" "} */}

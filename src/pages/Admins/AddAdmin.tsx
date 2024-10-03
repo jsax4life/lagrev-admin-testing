@@ -31,7 +31,7 @@ const validationSchema = yup.object().shape({
 
   email: yup.string().required("email is required"),
 
-  phone: yup
+  phoneNumber: yup
     .string()
     .required("Phone number is required")
     .matches(/^\d{11}$/, "Phone number must be exactly 11 digits"),
@@ -41,28 +41,7 @@ const validationSchema = yup.object().shape({
 
 });
 
-const lagosLGAs = [
-  "Agege",
-  "Ajeromi-Ifelodun",
-  "Alimosho",
-  "Amuwo-Odofin",
-  "Apapa",
-  "Badagry",
-  "Epe",
-  "Eti-Osa",
-  "Ibeju-Lekki",
-  "Ifako-Ijaiye",
-  "Ikeja",
-  "Ikorodu",
-  "Kosofe",
-  "Lagos Island",
-  "Lagos Mainland",
-  "Mushin",
-  "Ojo",
-  "Oshodi-Isolo",
-  "Shomolu",
-  "Surulere",
-];
+
 
 export default function AddNewAdmiin() {
   const {
@@ -203,13 +182,11 @@ export default function AddNewAdmiin() {
                             <option value="" selected disabled>
                               --Select--
                             </option>
-                            <option value="administrator_admin">Adminstrator Admin</option>
-                            <option value="content_admin">Content Admin</option>
-                            <option value="user_admin">User  Admin</option>
-                            <option value="support_admin">Support  Admin</option>
-                            <option value="finance_admin">Finance  Admin</option>
-
-
+                            <option value="super_admin">Super Admin</option>
+                            <option value="administrator">Administrator</option>
+                            <option value="operation_manager">Operation Manager</option>
+                            <option value="support_admin">Support Administrator</option>
+                          
 
 
                           </FormSelect>
@@ -254,18 +231,19 @@ export default function AddNewAdmiin() {
 
 
                         <div className="mt-3 ">
-                          <FormLabel htmlFor="nok_phone">
+                          <FormLabel htmlFor="phone">
                             Phone Number *
                           </FormLabel>
                           <FormInput
                             id="phone"
-                            type="number"
+                            type="text"
                             placeholder="0807********"
-                            {...register("phone")}
+                            {...register("phoneNumber")}
+                            maxLength={11}
                           />
-                          {errors.phone && (
+                          {errors?.phoneNumber && (
                             <p className="text-red-500">
-                              {errors.phone.message?.toString()}
+                              {errors?.phoneNumber?.message?.toString()}
                             </p>
                           )}
                         </div>
@@ -275,7 +253,7 @@ export default function AddNewAdmiin() {
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
                        
                       <div>
-                          <FormLabel htmlFor="first_name">
+                          <FormLabel htmlFor="lastName">
                             Last Name 
                           </FormLabel>
                           <FormInput
@@ -295,7 +273,7 @@ export default function AddNewAdmiin() {
                       
 
                         <div className="mt-3">
-                          <FormLabel htmlFor="update-profile-form-8">
+                          <FormLabel htmlFor="gender">
                             Gender
                           </FormLabel>
                           <FormSelect

@@ -9,11 +9,13 @@ import Register from "../pages/Register";
 import Vehicle from "../pages/Vehicles"
 import ProfileDetails from "../pages/Vehicles/VehicleDetails";
 import UpdateVehicleProfile from "../pages/Vehicles/UpdateVehicleProfile";
-import AdminProfile from "../pages/Profile";
-import EditAdminProfile from "../pages/Profile/EditProfile"
+import AdminProfileDetails from "../pages/Admins/AdminDetails";
+import EditAdminProfile from "../pages/Admins/AdminProfile/EditProfile"
 import AllUsers from "../pages/Users"
 import UserProfileDetails from "../pages/Users/UserDetails";
 import UpdateUserProfile from "../pages/Users/UpdateUserDetails";
+import UpdateAdminProfile from "../pages/Admins/UpdateAdminDetails";
+
 import AddNewUser from "../pages/Users/AddUser";
 import PrivateRoute from './PrivateRoute';
 import RolePrivilegesTable from "../pages/Users/RoleManagement";
@@ -77,9 +79,8 @@ function Router() {
   
           { path: "/update-profile/:id", element: <UpdateVehicleProfile />},
   
-          { path: "/admin-profile", element: <AdminProfile />},
   
-          { path: "/edit-admin-profile", element: <EditAdminProfile />},
+          { path: "/edit-admin-profile/:id", element: <UpdateAdminProfile />},
           { path: "/users", element: <AllUsers />},
 
 
@@ -89,6 +90,7 @@ function Router() {
 
           {path: "/role-management", element: <RolePrivilegesTable/>},
           {path: "/admin-role-management", element: <AdminRolePrivilegesTable/>},
+          { path: "/admin-profile/:id", element: <AdminProfileDetails />},
 
 
           { path: "/admins", element: <AllAdmins />},

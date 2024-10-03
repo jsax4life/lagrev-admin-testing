@@ -30,22 +30,15 @@ import Alert from "../../base-components/Alert";
 
 
 
-type UserRoleKey = 'registration_officer' | 'attachment_officer' | 'operation_officer';
+type UserRoleKey = 'supper_administrator' | 'administrator' | 'operation_manager' | 'support_officer';
 
-interface ActivityItem {
-  user_role: UserRoleKey;
-  // other fields...
-}
+
 
 const userRole: Record<UserRoleKey, any> = {
-  registration_officer: 'Registration Officer',
-  attachment_officer: 'Attachment Officer',
-  operation_officer: 'Operation Officer',
-};
-
-const activityItem: ActivityItem = {
-  user_role: 'registration_officer',
-  // other fields...
+  supper_administrator: 'Supper Admin',
+  administrator: 'Administrator',
+  operation_manager: 'operation_manager',
+  support_officer: 'Support Officer',
 };
 
 
@@ -54,7 +47,7 @@ export default function UserAdminDetails() {
   const { user } = useContext(UserContext);
 
   const { id } = useParams<{ id: string }>();
-  const [userDetails, setUserDetails] = useState<any>(null);
+  const [adminDetails, setAdminDetails] = useState<any>(null);
 
   
 
@@ -71,42 +64,64 @@ const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (user?.token) {
-        fetchUserData();
+        fetchAdminData();
     }
   }, [user?.token]);
 
-  const { rider, owner, user_activity_logs } = userDetails ?? {};
+  const { rider, owner, user_activity_logs } = adminDetails ?? {};
 
   // const user_activity_logs: any[] =[];
 
   const isNull = 'Unavailable';
 
-  const fetchUserData = () => {
+  const fetchAdminData = () => {
+
+        setLoading(false);
+
+    const userListFromLocalStorage = localStorage.getItem('adminList');
+let adminList = userListFromLocalStorage ? JSON.parse(userListFromLocalStorage) : [];
+
+console.log(adminList)
+// Assuming you are looking for the user with id 2
+const adminId = Number(id);
+const admin = adminList.find((u: any) => u.id === adminId);
+
+if (admin) {
+       setAdminDetails(admin);
+        setLoading(false);
+
+        setActive(admin?.status)
+  console.log("Admin found:", admin);
+} else {
+  setLoading(false);
+
+  console.log("Admin not found");
+}
 
     setError("");
 
+    // const userListFromLocalStorage = localStorage.getItem('userList');
+    // const userList = userListFromLocalStorage ? JSON.parse(userListFromLocalStorage) : [];
+    // API(
+    //   "get",
 
-    API(
-      "get",
+    //   `users/${id}/profile`, 
+    //   {},
 
-      `users/${id}/profile`, 
-      {},
+    //   function (userData: any) {
+    //     console.log(userData?.data.user)
+    //     setadminDetails(userData?.data?.user);
+    //     setLoading(false);
 
-      // {lga: 'Alimosho'},
-      function (userData: any) {
-        console.log(userData?.data.user)
-        setUserDetails(userData?.data?.user);
-        setLoading(false);
+    //     setActive(userData?.data?.user?.status)
+    //   },
+    //   function (error: any) {
 
-        setActive(userData?.data?.user?.status)
-      },
-      function (error: any) {
-
-        console.error("Error fetching recent searches:", error);
-        setLoading(false);
-      },
-      user?.token && user.token
-    );
+    //     console.error("Error fetching recent searches:", error);
+    //     setLoading(false);
+    //   },
+    //   user?.token && user.token
+    // );
   };
 
   const deleteUser = () => {
@@ -118,7 +133,7 @@ const [message, setMessage] = useState("");
     API(
       "delete",
 
-      `delete-users/${id}`, 
+      `delete-admin/${id}`, 
       {},
 
       // {lga: 'Alimosho'},
@@ -270,32 +285,14 @@ setMessage("")
    
 
                   <div className="flex flex-col pb-5 -mx-5  lg:flex-row border-slate-200/60 dark:border-darkmode-400">
-                  <div className="flex justify-center md:justify-start items-center md:hidden mb-4">
-
-<Button variant="primary" className="mr-2 shadow-sm px-2 bg-customColor" onClick={() => {
-              navigate(`/edit-user-profile/${id}`);
-            }}
-            
-            disabled = {active}
-            >Edit</Button>
-
-                      <Button variant="secondary" className="mr-2 shadow-sm">
-            <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF Document
-          </Button>
-          {/* <Button variant="primary" className="mr-2 shadow-sm px-2 bg-red-700" onClick={() => {
-                              setDeleteConfirmationModal(true);
-                            }}
-                            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
-
-                            >Delete</Button> */}
-</div>
+           
                     <div className="flex items-center justify-center flex-1 px-5 md:justify-start">
          
                       <div className="relative flex-none w-20 h-20 sm:w-24 sm:h-24 lg:w-36 lg:h-36 image-fit">
                         <img
                           alt="Profile pix"
                           className="rounded-lg"
-                          src={userDetails?.profile_picture_url? userDetails?.profile_picture_url : profile}
+                          src={adminDetails?.profile_picture_url? adminDetails?.profile_picture_url : profile}
                         />
                       </div>
                       <div className="ml-5 items-center  ">
@@ -304,10 +301,10 @@ setMessage("")
                     <FormSwitch.Label htmlFor="show-example-1">
                     <div
                           className={`  px-4 lg:py-1 py-0.5 rounded-full text-xs font-medium capitalize ${
-                            tagStyle[userDetails?.status]
+                            tagStyle[adminDetails?.status]
                           }`}
                         >
-                          {userDetails?.status === 0? "Inactive" : userDetails?.status === 1?  'Active' : 'Deactivated'}
+                          {adminDetails?.status === 0? "Inactive" : adminDetails?.status === 1?  'Active' : 'Deactivated'}
                         </div>
                     </FormSwitch.Label>
                     <FormSwitch.Input
@@ -330,39 +327,46 @@ setMessage("")
                     <FormSwitch.Input
                       id="show-example-1"
                       onClick={toggle}
-                      className="ml-3 mr-0"
+                      className="ml-4"
                       type="checkbox"
                       checked = {active}
+                      disabled
                     />
                   </FormSwitch>
 
+                  <Button variant="primary" className="shadow-sm px-2 ml-8 bg-customColor" onClick={() => {
+              navigate(`/edit-admin-profile/${id}`);
+            }}
+            
+            disabled = {active}
+            >Edit</Button>
 
                         </div>
                         <div className="w-24 lg:w-full text-xl font-medium truncate sm:w-40 sm:whitespace-normal">
-                          {userDetails?.name} 
+                          {adminDetails?.name} 
                         </div>
                         <div className="text-slate-500 lg:mb-4 capitalize">
                           <span className="font-semibold text-md mr-2">
                             Role:
                           </span>
-                          <span>{userDetails?.role}</span>
+                          <span>{adminDetails?.roles[0]?.name}</span>
                         </div>
 
                         <div className="text-slate-500 hidden text-xs md:flex">
-                        <Button variant="primary" className="mr-2  px-4 py-1 bg-customColor" onClick={() => {
+                        {/* <Button variant="primary" className="mr-2  px-4 py-1 bg-customColor" onClick={() => {
               navigate(`/edit-user-profile/${id}`);
             }}
             disabled = {!active}
 
-            >Edit</Button>
+            >Edit</Button> */}
 
-                      <Button className="mr-2 shadow-sm bg-white">
+                      {/* <Button className="mr-2 shadow-sm bg-white">
             <Lucide icon="Download" className="w-4 h-4 mr-2" /> Export As PDF Document
-          </Button>
+          </Button> */}
           {/* <Button variant="primary" className="mr-2  px-4 py-1 bg-red-700" onClick={() => {
                               setDeleteConfirmationModal(true);
                             }}
-                            disabled = {userDetails?.status === 0 || userDetails?.status === 2}
+                            disabled = {adminDetails?.status === 0 || adminDetails?.status === 2}
 
                             >Delete</Button> */}
                         </div>
@@ -380,18 +384,7 @@ setMessage("")
                         User Details
                       </Tab.Button>
                     </Tab>
-                    <Tab fullWidth={false}>
-                      <Tab.Button className="flex items-center  cursor-pointer">
-                        {/* <Lucide icon="Shield" className="w-4 h-4 mr-2" /> */}
-                        Vehicle History
-                      </Tab.Button>
-                    </Tab>
-                    <Tab fullWidth={false}>
-                      <Tab.Button className="flex items-center  cursor-pointer">
-                        {/* <Lucide icon="Lock" className="w-4 h-4 mr-2" />  */}
-                        Performance
-                      </Tab.Button>
-                    </Tab>
+                  
                   </Tab.List>
                 </div>
                 {/* END: Profile Info */}
@@ -402,70 +395,35 @@ setMessage("")
                       <div className="col-span-12 intro-y  ">
                         <div className=" flex lg:col-span-6 justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
                           <div className=" lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
+                          <div className="font-semibold ">First Name:</div>
+                          <div className="font-semibold ">last Name:</div>
+
                             <div className="font-semibold ">Gender:</div>
                             <div className="font-semibold ">Phone Number:</div>
                             <div className="font-semibold ">Email:</div>
                           </div>
                           <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2 ">
-
+                          <div className=" capitalize">
+                              {adminDetails?.firstName}
+                            </div>
                             <div className=" capitalize">
-                              {userDetails?.gender}
+                              {adminDetails?.lastName}
+                            </div>
+                            <div className=" capitalize">
+                              {adminDetails?.gender}
                             </div>
 
-                            <div className="">{userDetails?.phone}</div>
-                            <div className="">{userDetails?.email}</div>
+                            <div className="">{adminDetails?.phoneNumber}</div>
+                            <div className="capitalize">{adminDetails?.email}</div>
                           </div>
                         </div>
                       </div>
                       {/* END: Rider Details */}
 
-                      {/* BEGIN: Next of Kin  */}
-                      <div className="col-span-12 intro-y  text-md ">
-                        
-                        <div className=" flex  lg:col-span-6 justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                          <div className=" lg:w-1/5 flex flex-col no-wrap items-start  space-y-2 mb-5 lg:mb-0 ">
-                            <div className="font-semibold ">Address:</div>
-                            <div className="font-semibold ">City:</div>
-                            <div className="font-semibold ">State:</div>
-                          </div>
-                          <div className=" mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2 ">
-                            <div className="">
-                              {userDetails?.address}
-                            </div>
-
-                            <div className="">
-                              {userDetails?.city}
-                            </div>
-                            <div className="">
-                              {userDetails?.state}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* END: Next of Kin  */}
 
                       {/* BEGIN: Ownser's  */}
 
-                      <div className="col-span-12 intro-y text-base ">
-                       
-                        <div className=" flex lg:col-span-6 justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                          <div className=" lg:w-1/5 mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
-                            <div className="font-semibold ">
-                              LGA:
-                            </div>
-                            <div className="font-semibold ">
-                              Park/Zone:
-                            </div>
-                            
-                          </div>
-                          <div className="  mb-5 lg:mb-0 flex flex-col no-wrap items-start justify-start space-y-2">
-                            <div className="">{userDetails?.lga}</div>
-
-                            <div className="">{userDetails?.zone}</div>
-
-                          </div>
-                        </div>
-                      </div>
+                     
                     
                     </div>
                   </Tab.Panel>
@@ -500,7 +458,7 @@ setMessage("")
                           <div className=" items-center mb-5">
                             <div className="ml-auto lg:mb-4">4,500</div>
 
-                            <div className="ml-auto lg:mb-4">{userDetails?.plate_number? userDetails?.plate_number : isNull}</div>
+                            <div className="ml-auto lg:mb-4">{adminDetails?.plate_number? userDetails?.plate_number : isNull}</div>
                             <div className="ml-auto lg:mb-4">
                               {userDetails?.vin? userDetails?.vin: isNull}
                             </div>

@@ -1,28 +1,22 @@
 import { Fragment, Key, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
-import clsx from "clsx";
-import fakerData from "../../utils/faker";
 import Button from "../../base-components/Button";
-import Pagination from "../../base-components/Pagination";
 import {
   FormInput,
   FormSelect,
   FormLabel,
-  FormTextarea,
 } from "../../base-components/Form";
 import Lucide from "../../base-components/Lucide";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Tippy from "../../base-components/Tippy";
 import { UserContext } from "../../stores/UserContext";
 import API from "../../utils/API";
 import LoadingIcon from "../../base-components/LoadingIcon";
-import TomSelect from "../../base-components/TomSelect";
 
-import Litepicker from "../../base-components/Litepicker";
 import Toastify from "toastify-js";
 import Notification from "../../base-components/Notification";
 
@@ -56,48 +50,23 @@ interface VehicleDetails {
 
 // Define the validation schema
 const validationSchema = yup.object().shape({
-  name: yup.string().required("name is required"),
   email: yup.string().required("email is required"),
 
-  lga: yup.string().required("LGA is required"),
   //   phone: yup.string().required("Phone number is required"),
-  phone: yup
+  phoneNumber: yup
     .string()
     .required("Phone number is required")
     .matches(/^\d{11}$/, "Phone number must be exactly 11 digits"),
-  zone: yup.string().required("Zone is required"),
   gender: yup.string().required("Gender is required"),
-  address: yup.string().required("Address is required"),
-  state: yup.string().required("State is required"),
-  city: yup.string().required("City is required"),
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+
   role: yup.string().required("role is required"),
 //   password: yup.string().min(6),
 
   // date: yup.string().required('Vehicle Date is required'),
 });
 
-const lagosLGAs = [
-  "Agege",
-  "Ajeromi-Ifelodun",
-  "Alimosho",
-  "Amuwo-Odofin",
-  "Apapa",
-  "Badagry",
-  "Epe",
-  "Eti-Osa",
-  "Ibeju-Lekki",
-  "Ifako-Ijaiye",
-  "Ikeja",
-  "Ikorodu",
-  "Kosofe",
-  "Lagos Island",
-  "Lagos Mainland",
-  "Mushin",
-  "Ojo",
-  "Oshodi-Isolo",
-  "Shomolu",
-  "Surulere",
-];
 
 export default function UpdateAdminProfile() {
   const {
@@ -114,67 +83,72 @@ export default function UpdateAdminProfile() {
 
   const { id } = useParams<{ id: string }>();
 
-  const [userDetails, setUserDetails] = useState<any>(null);
+  const [adminDetails, setAdminDetails] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [selectedLga, setSelectedLga] = useState("");
   const navigate = useNavigate();
-  const [date, setDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-const [userRole, setUserRole] = useState(userDetails?.role);
+const [userRole, setUserRole] = useState(adminDetails?.role);
+const [showPassword, setShowPassword] = useState(false);
+const toggleShowPasswd = () => setShowPassword(!showPassword);
+
   console.log(loading);
 
   useEffect(() => {
     if (user?.token) {
-      fetchUserData();
+      fetchAdminData();
     }
   }, [user?.token, id]);
 
   useEffect(() => {
-    if (userDetails) {
-      const { attached_vehicles, registered_vehicles } = userDetails;
-      setValue("name", userDetails?.name || "");
-    //   setValue("last_name", userDetails?.last_name || "");
-      setValue("phone", userDetails?.phone || "");
-      setValue("address", userDetails?.address || "");
-      setValue("lga", userDetails?.lga || "");
-      setValue("gender", userDetails?.gender || "");
-      setValue("email", userDetails?.email || "");
-      setValue("zone", userDetails?.zone || "");
-      setValue("city", userDetails?.city || "");
-      setValue("role", userDetails?.role || "");
-      setValue("state", userDetails?.state || "");
-      setValue("zone", userDetails?.zone || "");
+    if (adminDetails) {
+      const { attached_vehicles, registered_vehicles } = adminDetails;
+    //   setValue("last_name", adminDetails?.last_name || "");
+      setValue("phoneNumber", adminDetails?.phoneNumber || "");
+      setValue("gender", adminDetails?.gender || "");
+      setValue("email", adminDetails?.email || "");
+      setValue("role", adminDetails?.roles[0]?.name || "");
+      setValue("email", adminDetails?.email || "");
+      setValue("firstName", adminDetails?.firstName || "");
+      setValue("lastName", adminDetails?.lastName || "");
+
 
     }
-  }, [userDetails, setValue]);
+  }, [adminDetails, setValue]);
 
-  const fetchUserData = () => {
+
+  const fetchAdminData = () => {
+
     setError("");
     setLoading(true);
 
-    API(
-      "get",
+const userListFromLocalStorage = localStorage.getItem('adminList');
+let adminList = userListFromLocalStorage ? JSON.parse(userListFromLocalStorage) : [];
 
-      `users/${id}/profile`,
-      {},
+// Assuming you are looking for the user with id 2
+const adminId = Number(id);
+const admin = adminList.find((u: any) => u.id === adminId);
 
-      // {lga: 'Alimosho'},
-      function (userData: any) {
-        console.log(userData?.data.user);
-        setUserDetails(userData?.data?.user);
-        setLoading(false);
-      },
-      function (error: any) {
-        console.error("Error fetching recent searches:", error);
-        setLoading(false);
-      },
-      user?.token && user.token
-    );
-  };
+if (admin) {
+  setAdminDetails(admin);
+
+    setLoading(false);
+
+console.log("Admin found:", admin);
+} else {
+setLoading(false);
+
+}
+
+setError("");
+
+
+};
+
+
 
   const onSubmit = async (data: any) => {
-    
+    console.log(data)
     setLoading(true);
 
     // Conditionally create the vehicle_details object only if vehicleDetails.tagged is true
@@ -185,7 +159,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
 
     API(
       "put",
-      `update-users/${id}`, // Ensure your backend API endpoint is correct
+      `update-admin/${id}`, // Ensure your backend API endpoint is correct
       { ...data },
       function (responseData: any) {
         //   setVehicleDetails(vehicleData);
@@ -255,14 +229,16 @@ const [userRole, setUserRole] = useState(userDetails?.role);
           <div className="flex items-center intro-y gap-x-2">
             <Lucide icon="User" className="w-6 h-6 text-slate-500 " />
             <h2 className="mr-auto text-lg text-slate-500 font-medium">
-              User Information
+              Admin Information
             </h2>
           </div>
           <div className="grid grid-cols-12 gap-6">
             <div className="  col-span-12 ">
               {/* Rider Information */}
 
-              <form onSubmit={handleSubmit(onSubmit)} className=" ">
+             
+
+              <form  onSubmit={handleSubmit(onSubmit)} className=" ">
               <div className="mt-5 intro-y text-slate-600 border-b border-slate-200">
                 
 
@@ -280,19 +256,22 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                             id="role"
                             {...register("role")}
                             className=""
-                            // value={userRole}
+                            // value={adminDetails?.roles[0]?.name}
                             onChange={(e) => 
                               setValue("role", e.target.value, {
                                 shouldValidate: true,
                               })
                             }
                           >
-                            <option value="" disabled>
+                            <option value="" selected disabled>
                               --Select--
                             </option>
-                            <option value="registration_officer">Registration Officer</option>
-                            <option value="attachment_officer">Attachment Officer</option>
-                            <option value="operation_officer">Operation Officer</option>
+                            <option value="Super Admin">Super Admin</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Operation Manager">Operation Manager</option>
+                            <option value="Support Administrator">Support Administrator</option>
+                          
+
 
                           </FormSelect>
 
@@ -307,150 +286,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                   </div>
                 </div>
 
-                <div className="mt-5 lg:mt-0 intro-y text-slate-600  border-b border-slate-200">
-                  
-
-                  <div className="py-5 ">
-                    <div className="grid grid-cols-12 gap-x-5">
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div className="mt-3">
-                          <FormLabel htmlFor="update-profile-form-8">
-                            State
-                          </FormLabel>
-                          <FormSelect id="state" {...register("state")}>
-                            <option value="" disabled>
-                              --Select--
-                            </option>
-                            <option value="state">Lagos</option>
-                          </FormSelect>
-
-                          {errors.state && (
-                            <p className="text-red-500">
-                              {errors.state.message?.toString()}
-                            </p>
-                          )}
-                        </div>
-                        {/* <div>
-                              <FormLabel htmlFor="first_name">
-                                First Name
-                              </FormLabel>
-
-                              <div className="intro-y">
-                                <FormInput
-                                  id="first_name"
-                                  type="text"
-                                  placeholder="First Name"
-                                  // value={rider?.first_name}
-                                  {...register("first_name")}
-                                  className=""
-                                />
-                                {errors?.first_name && (
-                                  <p className="text-red-500">
-                                    {errors?.first_name?.message?.toString()}
-                                  </p>
-                                )}
-                              </div>
-                            </div> */}
-                        {/* <div className="mt-3">
-                              <FormLabel htmlFor="update-profile-form-7">
-                                Age
-                              </FormLabel>
-
-                              <FormInput
-                                id="age"
-                                type="number"
-                                placeholder="Age"
-                                {...register("age")}
-                                className=""
-                                //   value={rider?.age}
-                              />
-                              {errors.age && (
-                                <p className="text-red-500">
-                                  {errors.age.message?.toString()}
-                                </p>
-                              )}
-                            </div> */}
-
-                        {/* <div className="mt-3">
-                              <FormLabel htmlFor="tribe">Tribe</FormLabel>
-                              <FormSelect
-                                id="tribe"
-                                {...register("tribe")}
-                                className="bg-gray-50 border border-gray-300 text-gray-900  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                              >
-                                <option value="" disabled>
-                                  --Tribe--
-                                </option>
-                                <option value="Yoruba">Yoruba</option>
-                                <option value="Hausa">Hausa</option>
-                                <option value="Igbo">Igbo</option>
-                                <option value="⁠Awori">⁠Awori</option>
-                                <option value="⁠Ijebu">⁠Ijebu</option>
-                                <option value="⁠Egun">⁠Egun</option>
-                                <option value="⁠Nupe">⁠Nupe</option>
-                                <option value="⁠Fulani">⁠Fulani</option>
-                                <option value="⁠Others">⁠Others</option>
-                              </FormSelect>
-                              {errors.tribe && (
-                                <p className="text-red-500">
-                                  {errors.tribe.message?.toString()}
-                                </p>
-                              )}
-                            </div> */}
-                      </div>
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div className="mt-3">
-                          <FormLabel htmlFor="update-profile-form-12">
-                            LGA
-                          </FormLabel>
-
-                          <select
-                            id="lga"
-                            {...register("lga")}
-                            defaultValue=""
-                            className="bg-gray-50 border border-gray-300 text-gray-900  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          >
-                            <option value="" disabled>
-                              --Select LGA--
-                            </option>
-                            {lagosLGAs.map((lga, index) => (
-                              <option key={index} value={lga}>
-                                {lga}
-                              </option>
-                            ))}
-                          </select>
-                          {errors?.lga && (
-                            <p className="text-red-500">
-                              {errors?.lga?.message?.toString()}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div className="mt-3">
-                          <FormLabel htmlFor="update-profile-form-8">
-                            Park/Zone
-                          </FormLabel>
-                          <FormSelect id="zone" {...register("zone")}>
-                            <option value="" disabled>
-                              --Park Zone--
-                            </option>
-                            <option value="zone1">Zone1</option>
-                            <option value="zone2">Zone2</option>
-                          </FormSelect>
-
-                          {errors.zone && (
-                            <p className="text-red-500">
-                              {errors.zone.message?.toString()}
-                            </p>
-                          )}
-                        </div>
-
-                      
-                      </div>
-                    </div>
-                  </div>
-                </div>
+             
           
 
                 <div className="mt-5 lg:mt-0 intro-y text-slate-600  border-b border-slate-200">
@@ -460,22 +296,65 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div>
-                          <FormLabel htmlFor="name">
+                          <FormLabel htmlFor="firstName">
                             Full Name 
                           </FormLabel>
                           <FormInput
-                            id="name"
+                            id="firstName"
                             type="text"
-                            placeholder="Full Name"
-                            {...register("name")}
+                            placeholder="First Name"
+                            {...register("firstName")}
                             //   value={rider?.name}
                           />
-                          {errors.name && (
+                          {errors.firrst_name && (
                             <p className="text-red-500">
-                              {errors?.name?.message?.toString()}
+                              {errors?.firstName?.message?.toString()}
                             </p>
                           )}
                         </div>
+
+
+                        <div className="mt-3 ">
+                          <FormLabel htmlFor="nok_phone">
+                            Phone Number *
+                          </FormLabel>
+                          <FormInput
+                            id="phone"
+                            type="text"
+                            placeholder="0807********"
+                            {...register("phoneNumber")}
+                            maxLength={11}
+                          />
+                          {errors.phone && (
+                            <p className="text-red-500">
+                              {errors.phone.message?.toString()}
+                            </p>
+                          )}
+                        </div>
+
+                        
+                      </div>
+                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                       
+                      <div>
+                          <FormLabel htmlFor="first_name">
+                            Last Name 
+                          </FormLabel>
+                          <FormInput
+                            id="lastName"
+                            type="text"
+                            placeholder="Last Name"
+                            {...register("lastName")}
+                            //   value={rider?.name}
+                          />
+                          {errors.firrst_name && (
+                            <p className="text-red-500">
+                              {errors?.lastName?.message?.toString()}
+                            </p>
+                          )}
+                        </div>
+
+                      
 
                         <div className="mt-3">
                           <FormLabel htmlFor="update-profile-form-8">
@@ -485,14 +364,13 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                             id="update-profile-form-8"
                             {...register("gender")}
                             className=""
-                            value={userDetails?.gender || ""}
                             onChange={(e) =>
                               setValue("gender", e.target.value, {
                                 shouldValidate: true,
                               })
                             }
                           >
-                            <option value="" disabled>
+                            <option value="" selected disabled>
                               --Gender--
                             </option>
                             <option value="male">Male</option>
@@ -502,40 +380,6 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                           {errors.gender && (
                             <p className="text-red-500">
                               {errors?.gender?.message?.toString()}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        {/* <div className="mt-3 xl:mt-0">
-                          <FormLabel htmlFor="nok_last_name">
-                            Last Name *
-                          </FormLabel>
-                          <FormInput
-                            id="nok_last_name"
-                            type="text"
-                            placeholder="Last Name"
-                            {...register("nok_last_name")}
-                          />
-                          {errors.nok_last_name && (
-                            <p className="text-red-500">
-                              {errors.nok_last_name.message?.toString()}
-                            </p>
-                          )}
-                        </div> */}
-                        <div className="mt-3 lg:mt-0">
-                          <FormLabel htmlFor="nok_phone">
-                            Phone Number *
-                          </FormLabel>
-                          <FormInput
-                            id="phone"
-                            type="number"
-                            placeholder="0807********"
-                            {...register("phone")}
-                          />
-                          {errors.phone && (
-                            <p className="text-red-500">
-                              {errors.phone.message?.toString()}
                             </p>
                           )}
                         </div>
@@ -563,50 +407,36 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                 </div>
               
 
-                <div className="mt-5 lg:mt-0 intro-y text-slate-600  border-b border-slate-200">
+                {/* <div className="mt-5 lg:mt-0 intro-y text-slate-600  border-b border-slate-200">
         
 
                   <div className="py-5">
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div>
-                          <FormLabel htmlFor="street">
-                            Street
-                          </FormLabel>
-                          <FormInput
-                            id="street"
-                            type="text"
-                            placeholder="First Name"
-                            {...register("street")}
-                            //   value={ownerData?.street}
-                          />
-                          {errors.street && (
-                            <p className="text-red-500">
-                              {errors.street.message?.toString()}
-                            </p>
-                          )}
-                        </div>
+                      <div className="mt-3 lg:mt-0">
+                              <FormLabel htmlFor="address">
+                                Address
+                              </FormLabel>
+                              <textarea
+                                id="address"
+                                placeholder=" Address"
+                                {...register("address")}
+                                // value={rider?.next_of_kin?.address}
+                                rows={4}
+                                className="form-textarea w-full border-gray-300 rounded-lg"
+                              />
+                              {errors.address && (
+                                <p className="text-red-500">
+                                  {errors.address.message?.toString()}
+                                </p>
+                              )}
+                            </div>
                       </div>
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div className="mt-3 xl:mt-0">
-                          <FormLabel htmlFor="city">City</FormLabel>
-                          <FormInput
-                            id="city"
-                            type="text"
-                            placeholder="City"
-                            {...register("city")}
-                          />
-                          {errors.city && (
-                            <p className="text-red-500">
-                              {errors.city.message?.toString()}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                     
+                    
+                  
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                < div className="mt-5 lg:mt-0 intro-y text-slate-600  border-b border-slate-200">
         
@@ -614,23 +444,43 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                   <div className="py-5">
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div>
+                        <div className="relative">
                           <FormLabel htmlFor="street">
                             Password
                           </FormLabel>
                           <FormInput
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Password"
                             {...register("password")}
                             //   value={ownerData?.password}
                           />
-                          {errors.password && (
+                        
+
+<div
+                        className="absolute bottom-2  right-0 pr-3 flex items-center cursor-pointer"
+                        onClick={toggleShowPasswd}
+                      >
+                        {showPassword ? (
+                          <EyeSlashIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </div>
+
+                     
+                        </div>
+                        {errors.password && (
                             <p className="text-red-500">
                               {errors.password.message?.toString()}
                             </p>
                           )}
-                        </div>
                       </div>
                       
                       
@@ -654,7 +504,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                         <div className=" text-xs text-center">Updating</div>
                       </div>
                     ) : (
-                      "Update Information"
+                      "Update Details"
                     )}
                   </Button>
                 </div>
