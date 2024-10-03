@@ -26,18 +26,14 @@ import Notification from "../../base-components/Notification";
 type Role =
   |'Super Admin'
   |'Administrator'
-  |'Content Administrator'
-  |'User Administrator'
+  |'Operation Manager'
   |'Support Administrator'
-  |'Financial Administrator';
   
 type Privilege =
   | "Add users"
   | "Change Password"
   | "Edit Users"
   | "Delete User"
-  | "Register Vehicle"
-  | "Attach Vehicle"
   | "Edit Vehicles"
   | "Dashboard"
   | "Delete Role";
@@ -46,18 +42,16 @@ type Privilege =
 const roles: Role[] = [
   'Super Admin',
   'Administrator',
-  'Content Administrator',
-  'User Administrator',
+  'Operation Manager',
   'Support Administrator',
-  'Financial Administrator',
 ];
 const privileges: Privilege[] = [
   "Add users",
   "Change Password",
   "Edit Users",
   "Delete User",
-  "Register Vehicle",
-  "Attach Vehicle",
+  // "Register Vehicle",
+  // "Attach Vehicle",
   "Edit Vehicles",
   "Dashboard",
   "Delete Role",
@@ -68,10 +62,8 @@ const privileges: Privilege[] = [
   const roleMapping: Record<Role, number> = {
     "Super Admin": 1,
     "Administrator": 2,
-    "Content Administrator": 3,
-    "User Administrator": 4,
-    "Support Administrator": 5,
-    "Financial Administrator": 6,
+    "Operation Manager": 3,
+    "Support Administrator": 4,
   };
   
   const privilegeMapping: Record<Privilege, number> = {
@@ -79,11 +71,11 @@ const privileges: Privilege[] = [
     "Change Password": 2,
     "Edit Users": 3,
     "Delete User": 4,
-    "Register Vehicle": 5,
-    "Attach Vehicle": 6,
-    "Edit Vehicles": 7,
-    "Dashboard": 8,
-    "Delete Role": 9,
+    // "Register Vehicle": 5,
+    // "Attach Vehicle": 6,
+    "Edit Vehicles": 5,
+    "Dashboard": 6,
+    "Delete Role": 7,
   };
 
   const initialPrivileges = roles.reduce((acc, role) => {
@@ -214,7 +206,6 @@ const transformPrivilegesForBackend = () => {
         "post",
         `roles/batch-update-privileges`, // Adjust this to your backend route for batch update
         { roles: payload },               // Send the entire batch of role-privilege pairs
-   
       function (response: any) {
         console.log(response)
         setMessage(response?.message)

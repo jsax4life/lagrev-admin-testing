@@ -40,6 +40,8 @@ interface Changes {
   };
 }
 
+
+
 const lagosLGAs = [
   "Agege",
   "Ajeromi-Ifelodun",
@@ -62,6 +64,8 @@ const lagosLGAs = [
   "Shomolu",
   "Surulere",
 ];
+
+
 
 
 // const parks = ["Agege Park", "Alimosho Park"];
@@ -108,6 +112,9 @@ function Main() {
   const [showLgaSubMenu, setShowLgaSubMenu] = useState(false);
 
   const sendButtonRef = useRef(null);
+const [dailyReveneModal, setDailyReveneModal] = useState(false);
+  const [monthlyReveneModal, seTotalReveneModal] = useState(false);
+
 
   useEffect(() => {
     if (user?.token) {
@@ -375,6 +382,10 @@ function Main() {
     );
   };
 
+  const handleClose = () => {
+    setDailyReveneModal(false);
+    seTotalReveneModal(false);
+  };
   // const formatChanges = (changes: Changes): string => {
   //   let formattedChanges = '';
 
@@ -507,6 +518,58 @@ function Main() {
   //   return <>{changeElements}</>;
   // };
 
+
+  
+//   const revenueBreakdown = ({ numberOfRegistrations}: any ) => {
+//     const companySharePerVehicle = 5000;
+//     const motSharePerVehicle = 1000;
+  
+  
+  
+//     // Calculate the breakdown
+//     const companyTotal = numberOfRegistrations * companySharePerVehicle;
+//     const motTotal = numberOfRegistrations * motSharePerVehicle;
+
+//     const revenueDailyShare = {
+//       dailySiitechRevenue: companyTotal? companyTotal : 0,
+//       dailMoTRevenue: motTotal? motTotal : 0,
+//     }
+  
+//     if (!companyTotal || isNaN(companyTotal)) {
+//       revenueDailyShare.dailySiitechRevenue = 0;
+//       revenueDailyShare.dailMoTRevenue = 0;
+//     }
+  
+
+
+// return revenueDailyShare;
+    
+//   };
+  
+const revenueBreakdown = ({ numberOfRegistrations }: { numberOfRegistrations: number }) => {
+  const companySharePerVehicle = 5000;
+  const motSharePerVehicle = 1000;
+
+  // Check if numberOfRegistrations is valid
+  if (!numberOfRegistrations || isNaN(numberOfRegistrations)) {
+    return {
+      dailySiitechRevenue: 0,
+      dailMoTRevenue: 0,
+    };
+  }
+
+  // Calculate the breakdown
+  const companyTotal = numberOfRegistrations * companySharePerVehicle;
+  const motTotal = numberOfRegistrations * motSharePerVehicle;
+
+  const revenueDailyShare = {
+    dailySiitechRevenue: companyTotal,
+    dailMoTRevenue: motTotal,
+  };
+
+  return revenueDailyShare;
+};
+
   return (
     <>
       <FilterModal
@@ -531,6 +594,265 @@ function Main() {
       />
 
 
+{dailyReveneModal && <Dialog
+      open={dailyReveneModal}
+      onClose={() => {handleClose}}
+      initialFocus={sendButtonRef}
+      className="flex place-self-center lg:items-center lg:justify-center "
+    >
+      <Dialog.Panel className="relative">
+        <Dialog.Title>
+
+       <button className="absolute right-4 top-4"
+       onClick={() => setDailyReveneModal(false)}
+       >
+       <Lucide
+                icon= "X"
+                className="w-4 h-4  "
+              />
+       </button>
+
+          <div className="flex flex-col gap-y-2">
+     
+           <div className="justify-center items-center flex">
+           <div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-2">
+              <Lucide
+                icon= "Banknote"
+                className="w-5 h-5"
+              />
+             
+            </div>
+            <div className="">
+              <h2 className="mr-auto text-slate-600 font-bold">
+                
+                 Daily Revenue Contribution
+                
+              </h2>
+              <p className="text-xs text-slate-500">
+               Breakdown of revenue sharing today.
+                
+              </p>
+            </div>
+           </div>
+           <div>
+       <FilterChips
+          selectedRole=""
+          selectedStatus=""
+            lagosLGAs={lagosLGAs}
+            selectedLGA={selectedLGA}
+            selectedPark={selectedPark}
+            dateRange={dateRange}
+            selectedUser={selectedUser}
+            onRemoveFilter={handleRemoveFilter}
+          />
+       </div>
+          </div>
+        </Dialog.Title>
+
+        <Dialog.Description className="grid grid-cols-12 gap-4 gap-y-3">
+         
+            <div className="col-span-12 p-4 cursor-pointer   rounded-xl  flex  items-center justify-between box ">
+            <div className="flex">
+            <div
+                className={`  rounded-md  bg-blue-500 w-5 h-5 mr-4`}
+              >
+            
+              </div>
+              <div>Administrator</div>
+            </div>
+
+              <div className="font-bold text-lg">
+                
+
+{loadingAnalytics ? (
+                    <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>
+                  ) :  (`N ${formatCurrency (revenueBreakdown({ numberOfRegistrations: dashboardData?.daily_registered_vehicles || 0 }).dailySiitechRevenue)}`)
+              }
+
+                      </div>
+              </div>
+
+          
+              <div className="col-span-12 p-4 cursor-pointer   rounded-xl py-5 flex  items-center justify-between box ">
+            <div className="flex">
+            <div
+                className={`  rounded-md  bg-customColor w-5 h-5 mr-4`}
+              >
+            
+              </div>
+              <div>Remittance</div>
+            </div>
+
+              <div className="font-bold text-lg">
+                
+
+{loadingAnalytics ? (
+                    <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>
+                  ) :  (`N ${formatCurrency (revenueBreakdown({ numberOfRegistrations: dashboardData?.daily_registered_vehicles || 0 }).dailMoTRevenue)}`)
+              }
+
+                      </div>
+              </div>
+        </Dialog.Description>
+
+        <Dialog.Footer className="text-right">
+          {/* <Button
+            type="button"
+            variant="outline-secondary"
+            onClick={handleClose}
+            className="w-20 mr-1 border-customColor text-customColor"
+          >
+            Cancel
+          </Button> */}
+          {/* <Button
+            variant="primary"
+            type="button"
+            className="lg:w-25 bg-customColor"
+            ref={sendButtonRef}
+            onClick={
+              activeFilter === "LGA"
+            }
+          >
+            Apply Filter
+          </Button> */}
+        </Dialog.Footer>
+      </Dialog.Panel>
+    </Dialog>
+    }
+
+{monthlyReveneModal && <Dialog
+      open={monthlyReveneModal}
+      onClose={() => {handleClose}}
+      initialFocus={sendButtonRef}
+      className="flex place-self-center lg:items-center lg:justify-center "
+    >
+      <Dialog.Panel className="relative">
+        <Dialog.Title>
+
+       <button className="absolute right-4 top-4"
+       onClick={() => seTotalReveneModal(false)}
+       >
+       <Lucide
+                icon= "X"
+                className="w-4 h-4  "
+              />
+       </button>
+
+          <div className="flex flex-col gap-y-2">
+     
+           <div className="justify-center items-center flex">
+           <div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-2">
+              <Lucide
+                icon= "Banknote"
+                className="w-5 h-5"
+              />
+             
+            </div>
+            <div className="">
+              <h2 className="mr-auto text-slate-600 font-bold">
+                
+                 Total Revenue Distribution
+                
+              </h2>
+              <p className="text-xs text-slate-500">
+               Breakdown of revenue sharing with specific date.
+                
+              </p>
+            </div>
+           </div>
+           <div>
+       <FilterChips
+          selectedRole=""
+          selectedStatus=""
+            lagosLGAs={lagosLGAs}
+            selectedLGA={selectedLGA}
+            selectedPark={selectedPark}
+            dateRange={dateRange}
+            selectedUser={selectedUser}
+            onRemoveFilter={handleRemoveFilter}
+          />
+       </div>
+          </div>
+        </Dialog.Title>
+
+        <Dialog.Description className="grid grid-cols-12 gap-4 gap-y-3">
+         
+            <div className="col-span-12 p-4 cursor-pointer   rounded-xl  flex  items-center justify-between box ">
+            <div className="flex">
+            <div
+                className={`  rounded-md  bg-blue-500 w-5 h-5 mr-4`}
+              >
+            
+              </div>
+              <div>Administrator</div>
+            </div>
+
+              <div className="font-bold text-lg">
+                
+
+{loadingAnalytics ? (
+                    <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>
+                  ) :  (`N ${formatCurrency (revenueBreakdown({ numberOfRegistrations: dashboardData?.total_registered_vehicles || 0 }).dailySiitechRevenue)}`)
+              }
+
+                      </div>
+              </div>
+
+          
+              <div className="col-span-12 p-4 cursor-pointer   rounded-xl py-5 flex  items-center justify-between box ">
+            <div className="flex">
+            <div
+                className={`  rounded-md  bg-customColor w-5 h-5 mr-4`}
+              >
+            
+              </div>
+              <div>Remittance</div>
+            </div>
+
+              <div className="font-bold text-lg">
+                
+
+{loadingAnalytics ? (
+                    <div className="flex flex-col items-center justify-end col-span-6 sm:col-span-3 xl:col-span-2">
+                      <LoadingIcon icon="three-dots" className="w-6 h-6" />
+                    </div>
+                  ) :  (`N ${formatCurrency (revenueBreakdown({ numberOfRegistrations: dashboardData?.total_registered_vehicles || 0 }).dailMoTRevenue)}`)
+              }
+
+                      </div>
+              </div>
+        </Dialog.Description>
+
+        <Dialog.Footer className="text-right">
+          {/* <Button
+            type="button"
+            variant="outline-secondary"
+            onClick={handleClose}
+            className="w-20 mr-1 border-customColor text-customColor"
+          >
+            Cancel
+          </Button> */}
+          {/* <Button
+            variant="primary"
+            type="button"
+            className="lg:w-25 bg-customColor"
+            ref={sendButtonRef}
+            onClick={
+              activeFilter === "LGA"
+            }
+          >
+            Apply Filter
+          </Button> */}
+        </Dialog.Footer>
+      </Dialog.Panel>
+    </Dialog>
+    }
 
       <div className="grid grid-cols-12 gap-5 lg:gap-7 mt-5 lg:mt-0 intro-y  lg:py-0 py-8  ">
         <div className="col-span-12 justify-end items-center flex  intro-y sm:flex">
@@ -802,7 +1124,7 @@ function Main() {
 
         <div className="col-span-12 lg:col-span-4">
           <div className="grid grid-cols-12 gap-5 mt-5 lg:mt-0">
-            <div className="col-span-12 p-4 cursor-pointer  shadow-lg rounded-xl bg-white py-5 zoom-in flex">
+            <div onClick={() => setDailyReveneModal(true)} className="col-span-12 p-4 cursor-pointer  shadow-lg rounded-xl bg-white py-5 zoom-in flex" >
               <div
                 className={`flex mr-4 items-center justify-center rounded-md  bg-green-200 w-10 h-10`}
               >
@@ -832,7 +1154,7 @@ function Main() {
               </div>
             </div>
 
-            <div className="col-span-12 cursor-pointer shadow-lg rounded-xl bg-white p-5 zoom-in flex">
+            <div onClick={() => seTotalReveneModal(true)}  className="col-span-12 cursor-pointer shadow-lg rounded-xl bg-white p-5 zoom-in flex">
               <div
                 className={`flex mr-4 items-center justify-center rounded-md bg-green-200 w-10 h-10`}
               >
@@ -850,7 +1172,7 @@ function Main() {
                     </div>
                   ) : (
                     `N ${formatCurrency(
-                      dashboardData?.total_registered_vehicles * 4500
+                      dashboardData?.total_registered_vehicles * 6000
                     )}`
                   )}
                 </div>

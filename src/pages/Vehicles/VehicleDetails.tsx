@@ -124,7 +124,7 @@ export default function ProfileDetails() {
     }
   }, [user?.token]);
 
-  const { rider, owner, user_activity_logs } = vehicleDetails ?? {};
+  const { rider, owner, user_activity_logs, images } = vehicleDetails ?? {};
 
   // const user_activity_logs: any[] =[];
 
@@ -572,12 +572,12 @@ onClose={() => {
                       </div>
 
                       <div className=" items-center mb-5">
-                        <div className="ml-auto lg:mb-4">4,500</div>
+                        <div className="ml-auto lg:mb-4">6,000</div>
                         <div className="ml-auto lg:mb-4">
                           {getDisplayValue(vehicleDetails?.tagNumber)}
                         </div>
 
-                        <div className="ml-auto lg:mb-4">
+                        <div className="ml-auto lg:mb-4 capitalize">
                           {getDisplayValue(vehicleDetails?.vehicle_type)}
                         </div>
 
@@ -626,7 +626,7 @@ onClose={() => {
                   <div className="col-span-12 intro-y box text-base ">
                     <div className="flex items-center py-4">
                       <h3 className="intro-y box  font-semibold mr-4 text-sm">
-                        VEHICLE IMAGES
+                        VEHICLE ATTACHMENTS
                       </h3>
                       <hr className="flex-grow border-t border-slate-200/" />
                     </div>
@@ -660,30 +660,24 @@ onClose={() => {
                           </div>
                         </div> */}
 
+                    <div>
+                    <div className="border rounded-md flex-none w-24 h-24 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
+              <img alt="QRCode" className="rounded-lg" src={vehicleDetails?.qr_code_url} />
+            </div>
                     <div className="flex-1 gap-y-4 lg:px-5 pt-5 mt-2 border-t-2 lg:mt-0 lg:border-0 border-slate-200/60 dark:border-darkmode-400 lg:pt-0">
                       <div className="flex justify-start items-center space-x-4 lg:flex-none text-sm lg:font-medium text-center lg:text-left lg:mt-5">
-                        <div>
-                          <img
-                            alt="Front"
-                            className=""
-                            src={vehicleDetails?.images?.vehicle_picture1}
-                          />
-                        </div>
-                        <div>
-                          <img
-                            alt="Side"
-                            className=""
-                            src={vehicleDetails?.images?.vehicle_picture2}
-                          />
-                        </div>
-                        <div>
-                          <img
-                            alt="Aeriel"
-                            className=""
-                            src={vehicleDetails?.images?.vehicle_picture3}
-                          />
-                        </div>
+                        {images?.map((image: { public_image_url: string | undefined; }, index: any) => (
+  <div key={index}>
+  <img
+    alt="Front"
+    className=""
+    src={image?.public_image_url}
+  />
+</div>
+                        ))}
+                      
                       </div>
+                    </div>
                     </div>
                   </div>
                   {/* END: Next of Kin  */}
@@ -928,7 +922,7 @@ onClose={() => {
               <tr key={index}>
                 <td className=" px-4 py-2">{index + 1}</td>
                 <td className=" px-4 py-2">{answer.question}</td>
-                <td className=" px-4 py-2">{answer.answer}</td>
+                <td className=" px-4 py-2 capitalize">{answer.answer}</td>
               </tr>
             ))
           ) : (

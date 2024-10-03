@@ -49,6 +49,7 @@ function Main() {
 
 
   const performSearch = async (searchQuery: string) => {
+    console.log('searchung..')
     API(
       "get",
       `search`,

@@ -17,76 +17,57 @@ import Button from "../../base-components/Button";
 import Notification from "../../base-components/Notification";
 
 type Role =
-  |'Super Admin'
-  |'Administrator'
-  |'Content Administrator'
-  |'User Administrator'
-  |'Support Administrator'
-  |'Financial Administrator';
-
+  |'Super User'
+  |'Operation Officer'
+  |'Attachment Officer'
+  |'Registration Officer'
+  
 type Privilege =
   | "Add users"
   | "Change Password"
   | "Edit Users"
-  | "Delete User"
-  | "Register Vehicle"
-  | "Attach Vehicle"
   | "Edit Vehicles"
+  | "Edit Riders"
+  | "Edit Owners"
   | "Dashboard"
-  | "Delete Role";
+  
 
 // Initial privileges for each role (can be fetched from backend)
 const roles: Role[] = [
-  'Super Admin',
-  'Administrator',
-  'Content Administrator',
-  'User Administrator',
-  'Support Administrator',
-  'Financial Administrator',
+  'Super User',
+  'Operation Officer',
+  'Attachment Officer',
+  'Registration Officer',
 ];
-
 const privileges: Privilege[] = [
   "Add users",
   "Change Password",
   "Edit Users",
-  "Delete User",
-  "Register Vehicle",
-  "Attach Vehicle",
   "Edit Vehicles",
+  "Edit Riders",
+  "Edit Owners",
   "Dashboard",
-  "Delete Role",
 ];
 
-const roleMapping: Record<Role, number> = {
-    "Super Admin": 1,
-    "Administrator": 2,
-    "Content Administrator": 3,
-    "User Administrator": 4,
-    "Support Administrator": 5,
-    "Financial Administrator": 6,
-  };
 
   
-//   const roleMapping: Record<Role, number> = {
-//     "Super Admin": 1,
-//     "Administrator": 2,
-//     "Operation Manager": 3,
-//     "Operation Officer": 4,
-//     "Vehicle Registration Officer": 5,
-//     "Vehicle Attachment Officer": 6,
-//   };
+  const roleMapping: Record<Role, number> = {
+    "Super User": 1,
+    "Operation Officer": 2,
+    "Attachment Officer": 3,
+    "Registration Officer": 4,
+  };
   
   const privilegeMapping: Record<Privilege, number> = {
     "Add users": 1,
     "Change Password": 2,
     "Edit Users": 3,
-    "Delete User": 4,
-    "Register Vehicle": 5,
-    "Attach Vehicle": 6,
-    "Edit Vehicles": 7,
-    "Dashboard": 8,
-    "Delete Role": 9,
+    "Edit Vehicles": 4,
+    "Edit Riders": 5,
+    "Edit Owners": 6,
+    "Dashboard": 7,
   };
+
 
   const initialPrivileges = roles.reduce((acc, role) => {
     acc[role] = privileges.reduce((roleAcc, privilege) => {
@@ -117,7 +98,7 @@ const RolePrivilegesTable: React.FC = () => {
     const fetchRolePrivileges = () => {
 
         // setError("");
-        setLoading(true);
+        // setLoading(true);
      
     
         API(

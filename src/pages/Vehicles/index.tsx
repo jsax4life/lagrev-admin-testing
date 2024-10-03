@@ -236,7 +236,7 @@ useEffect(() => {
 
 
 
-          <Dialog
+      {datepickerModalPreview &&    <Dialog
                       open={datepickerModalPreview}
                       onClose={() => {
                         setDatepickerModalPreview(false);
@@ -351,7 +351,7 @@ useEffect(() => {
                         {/* END: Modal Footer */}
                       </Dialog.Panel>
                     </Dialog>
-
+}
 
        
 
