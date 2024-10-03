@@ -99,21 +99,19 @@ export default function ProfileDetails() {
   const [vehicleDetails, setVehicleDetails] = useState<any>(null);
   const [surveyResponse, setSurveyResponse] = useState<any>(null);
 
-  
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const isInitialMount = useRef(true);
 
   const navigate = useNavigate();
-    // State to control modal visibility
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  // State to control modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Function to toggle the modal
-    const toggleModal = () => {
-      setIsModalOpen(!isModalOpen);
-    };
-  
+  // Function to toggle the modal
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
 
   console.log(surveyResponse);
 
@@ -148,7 +146,7 @@ export default function ProfileDetails() {
         console.error("Error fetching recent searches:", error);
         setLoading(false);
         setShowErrorModal(true);
-        setError(error)
+        setError(error);
       },
       user?.token && user.token
     );
@@ -184,7 +182,7 @@ export default function ProfileDetails() {
   }
 
   const getDisplayValue = (value: any) => {
-    return value || '---';
+    return value || "---";
   };
 
   return (
@@ -193,14 +191,14 @@ export default function ProfileDetails() {
           <header className="py-5"></header>
         </div> */}
 
- {isModalOpen && 
- <Dialog
-open={isModalOpen}
-onClose={toggleModal}
-className="flex place-self-center lg:items-center lg:justify-center"
->
-<Dialog.Panel className="">
-  {/* <Dialog.Title>
+      {isModalOpen && (
+        <Dialog
+          open={isModalOpen}
+          onClose={toggleModal}
+          className="flex place-self-center lg:items-center lg:justify-center"
+        >
+          <Dialog.Panel className="">
+            {/* <Dialog.Title>
     <div className="flex justify-center items-center">
       <div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-2">
       
@@ -210,70 +208,57 @@ className="flex place-self-center lg:items-center lg:justify-center"
     </div>
   </Dialog.Title> */}
 
-  <Dialog.Description className="grid grid-cols-12 gap-y-3 p-0">
-  <div className="col-span-12 ">
+            <Dialog.Description className="grid grid-cols-12 gap-y-3 p-0">
+              <div className="col-span-12 ">
+                <img
+                  src={owner?.profile_picture_url}
+                  alt="Owner"
+                  className=" max-h-96 w-full"
+                />
+              </div>
+            </Dialog.Description>
+          </Dialog.Panel>
+        </Dialog>
+      )}
 
-  <img
-                          src={owner?.profile_picture_url}
-                          alt="Owner"
-                          className=" max-h-96 w-full"
-                        />
-                        </div>
-  </Dialog.Description>
-
-
-</Dialog.Panel>
-</Dialog>
-}
-
-
-
-
-
-{showErrorModal && 
-
-
-<Dialog
-
-staticBackdrop
-open={showErrorModal}
-onClose={() => {
-  setShowErrorModal(true);
-}}
->
-<Dialog.Panel>
-  <div className="p-5 text-center">
-    <Lucide
-      icon="XCircle"
-      className="w-16 h-16 mx-auto mt-3 text-warning"
-    />
-    <div className="mt-5 text-3xl">Oops...</div>
-    <div className="mt-2 text-slate-500">
-      {error}!
-    </div>
-  </div>
-  <div className="px-5 pb-8 text-center">
-    <Button
-       type="button"
-       variant="primary"
-       className="bg-customColor"
-       onClick={() => {
-         setShowErrorModal(false);
-         navigate('/dashboard')
-
-       }}
-    >
-      Ok
-    </Button>
-  </div>
-  {/* <div className="p-5 text-center border-t border-slate-200/60 dark:border-darkmode-400">
+      {showErrorModal && (
+        <Dialog
+          staticBackdrop
+          open={showErrorModal}
+          onClose={() => {
+            setShowErrorModal(true);
+          }}
+        >
+          <Dialog.Panel>
+            <div className="p-5 text-center">
+              <Lucide
+                icon="XCircle"
+                className="w-16 h-16 mx-auto mt-3 text-warning"
+              />
+              <div className="mt-5 text-3xl">Oops...</div>
+              <div className="mt-2 text-slate-500">{error}!</div>
+            </div>
+            <div className="px-5 pb-8 text-center">
+              <Button
+                type="button"
+                variant="primary"
+                className="bg-customColor"
+                onClick={() => {
+                  setShowErrorModal(false);
+                  navigate("/dashboard");
+                }}
+              >
+                Ok
+              </Button>
+            </div>
+            {/* <div className="p-5 text-center border-t border-slate-200/60 dark:border-darkmode-400">
     <a href="" className="text-primary">
       Why do I have this issue?
     </a>
   </div> */}
-</Dialog.Panel>
-</Dialog>
-}
+          </Dialog.Panel>
+        </Dialog>
+      )}
       <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
         {/* Replace with your content */}
 
@@ -307,9 +292,15 @@ onClose={() => {
                       className="rounded-xl"
                       src={rider?.profile_picture_url}
                     />
-                    <button                     
- className="bg-customColor w-full h-4 absolute bottom-0 cursor-pointer rounded-b-xl flex justify-center align-center" onClick={toggleModal}>
-                    <Lucide icon="Eye" className="w-4 h-4 mr-2 " color="white" />
+                    <button
+                      className="bg-customColor w-full h-4 absolute bottom-0 cursor-pointer rounded-b-xl flex justify-center align-center"
+                      onClick={toggleModal}
+                    >
+                      <Lucide
+                        icon="Eye"
+                        className="w-4 h-4 mr-2 "
+                        color="white"
+                      />
                     </button>
                   </div>
                   <div className="ml-5 mr-auto">
@@ -328,7 +319,17 @@ onClose={() => {
                         {" "}
                         accreditation:
                       </span>{" "}
-                      <span className={`uppercase ${vehicleDetails?.verification_status? 'text-green-600' : 'text-danger'}`}>{vehicleDetails?.verification_status? 'approved' : 'decline'}</span>
+                      <span
+                        className={`uppercase ${
+                          vehicleDetails?.verification_status
+                            ? "text-green-600"
+                            : "text-danger"
+                        }`}
+                      >
+                        {vehicleDetails?.verification_status
+                          ? "approved"
+                          : "decline"}
+                      </span>
                     </div>
                   </div>
                   <div className="lg:flex hidden ">
@@ -409,11 +410,14 @@ onClose={() => {
                         <div className="font-semibold ">Home Address</div>
 
                         <div className="font-semibold ">LGA of Operatiion</div>
-                        <div className="font-semibold ">LASDRI Card Available</div>
+                        <div className="font-semibold ">
+                          LASDRI Card Available
+                        </div>
                         <div className="font-semibold ">LASDRI Card Number</div>
                         <div className="font-semibold ">Driver License</div>
-                        <div className="font-semibold ">Driver License Number</div>
-
+                        <div className="font-semibold ">
+                          Driver License Number
+                        </div>
 
                         {/* <div className="font-semibold ">Park/Zone</div> */}
                       </div>
@@ -425,19 +429,30 @@ onClose={() => {
                           {rider?.gender === "f" ? "Female" : "Male"}
                         </div>
 
-                        <div className="capitalize">{rider?.marital_status}</div>
+                        <div className="capitalize">
+                          {rider?.marital_status}
+                        </div>
                         <div className="capitalize">{rider?.religion}</div>
                         <div className="capitalize">{rider?.tribe}</div>
-                        <div className="capitalize">{getDisplayValue(rider?.home_address)}</div>
+                        <div className="capitalize">
+                          {getDisplayValue(rider?.home_address)}
+                        </div>
 
-                        <div className="capitalize">{getDisplayValue(rider?.lga)}</div>
-                        <div className="capitalize">{getDisplayValue(rider?.lasdri_available)}</div>
-                        <div className="capitalize">{getDisplayValue(rider?.lasdri)}</div>
-                        <div className="capitalize">{getDisplayValue(rider?.ndl_available)}</div>
-                        <div className="capitalize">{getDisplayValue(rider?.ndl)}</div>
-
-
-
+                        <div className="capitalize">
+                          {getDisplayValue(rider?.lga)}
+                        </div>
+                        <div className="capitalize">
+                          {getDisplayValue(rider?.lasdri_available)}
+                        </div>
+                        <div className="capitalize">
+                          {getDisplayValue(rider?.lasdri)}
+                        </div>
+                        <div className="capitalize">
+                          {getDisplayValue(rider?.ndl_available)}
+                        </div>
+                        <div className="capitalize">
+                          {getDisplayValue(rider?.ndl)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -476,7 +491,6 @@ onClose={() => {
                     </div>
                   </div>
                   {/* END: Next of Kin  */}
-
 
                   {/* <div className="col-span-12 intro-y text-base ">
                         <div className="flex items-center py-4">
@@ -520,7 +534,6 @@ onClose={() => {
                 </div>
               </Tab.Panel>
 
-
               <Tab.Panel>
                 <div className="grid grid-cols-12 gap-6 text-slate-600">
                   {/* BEGIN: Rider Details */}
@@ -543,29 +556,29 @@ onClose={() => {
                           vehicle registration number:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
-                        vehicle identification number:
+                          vehicle identification number:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
-                        road worthiness number:
+                          road worthiness number:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
-                        zone:
+                          zone:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
-                        park:
+                          park:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
-                        route:
+                          route:
                         </div>
-                        
+
                         <div className="font-semibold capitalize lg:mb-4 text-md">
                           Vehicle Color:
                         </div>
-                     
+
                         <div className="font-semibold capitalize lg:mb-4 text-md">
                           Manufacturer:
                         </div>
-                       
+
                         <div className="font-semibold capitalize lg:mb-4 text-md">
                           Year of Purchase:
                         </div>
@@ -581,23 +594,20 @@ onClose={() => {
                           {getDisplayValue(vehicleDetails?.vehicle_type)}
                         </div>
 
-                        <div className="ml-auto lg:mb-4">
+                        <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.plate_number)}
                         </div>
 
-                        
-
-                        <div className="ml-auto lg:mb-4">
+                        <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.vrn)}
                         </div>
-                        <div className="ml-auto lg:mb-4">
+                        <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.vin)}
                         </div>
-                        <div className="ml-auto lg:mb-4">
+                        <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.rwn)}
                         </div>
 
-                        
                         <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.zone)}
                         </div>
@@ -607,7 +617,7 @@ onClose={() => {
                         <div className="ml-auto lg:mb-4">
                           {getDisplayValue(vehicleDetails?.routeDesc)}
                         </div>
-                        <div className="ml-auto lg:mb-4">
+                        <div className="ml-auto lg:mb-4 capitalize">
                           {getDisplayValue(vehicleDetails?.vehicle_color)}
                         </div>
                         <div className="ml-auto lg:mb-4">
@@ -616,7 +626,6 @@ onClose={() => {
                         <div className="ml-auto lg:mb-4">
                           {getDisplayValue(vehicleDetails?.date)}
                         </div>
-                       
                       </div>
                     </div>
                   </div>
@@ -660,31 +669,43 @@ onClose={() => {
                           </div>
                         </div> */}
 
-                    <div>
-                    <div className="border rounded-md flex-none w-24 h-24 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
-              <img alt="QRCode" className="rounded-lg" src={vehicleDetails?.qr_code_url} />
-            </div>
-                    <div className="flex-1 gap-y-4 lg:px-5 pt-5 mt-2 border-t-2 lg:mt-0 lg:border-0 border-slate-200/60 dark:border-darkmode-400 lg:pt-0">
-                      <div className="flex justify-start items-center space-x-4 lg:flex-none text-sm lg:font-medium text-center lg:text-left lg:mt-5">
-                        {images?.map((image: { public_image_url: string | undefined; }, index: any) => (
-  <div key={index}>
-  <img
-    alt="Front"
-    className=""
-    src={image?.public_image_url}
-  />
-</div>
-                        ))}
-                      
+                    <div className="flex justify-start items-center gap-x-6">
+                      <div className="border rounded-md flex-none w-24 h-24 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
+                        <h3>Qr Code</h3>
+                        <img
+                          alt="QRCode"
+                          className="rounded-lg"
+                          src={vehicleDetails?.qr_code_url}
+                        />
                       </div>
-                    </div>
-                    </div>
+
+                      {/* <div className="flex-1 gap-y-4 lg:px-5 pt-5 mt-2 border-t-2 lg:mt-0 lg:border-0 border-slate-200/60 dark:border-darkmode-400 lg:pt-0"> */}
+                        <div className="flex justify-start items-center space-x-4 text-sm lg:font-medium text-center ">
+
+                          {images?.map(
+                            (
+                              image: { public_image_url: string | undefined },
+                              index: any
+                            ) => (
+                              <div key={index}>
+                                <img
+                                  alt="Front"
+                                  className="h-32 w-32"
+                                  src={image?.public_image_url}
+                                />
+                              </div>
+                            )
+                          )}
+                        </div>
+                        
+                      </div>
+                    {/* </div> */}
                   </div>
                   {/* END: Next of Kin  */}
                 </div>
               </Tab.Panel>
 
-{/* Owner Tab */}
+              {/* Owner Tab */}
               <Tab.Panel>
                 {/* <div className="grid grid-cols-12  text-slate-600">
           
@@ -733,41 +754,40 @@ onClose={() => {
                   </div>
                  
                 </div> */}
-                  <div className="grid grid-cols-12 text-slate-600">
-      <div className="col-span-12 intro-y text-base">
-        <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-            <div className="font-semibold">Owner Category:</div>
-            <div className="font-semibold">Owner's Image:</div>
-            <div className="font-semibold">First Name:</div>
-            <div className="font-semibold">Middle Name:</div>
-            <div className="font-semibold">Gender:</div>
-            <div className="font-semibold">Marital Status:</div>
-            <div className="font-semibold">Last Name:</div>
-            <div className="font-semibold">Phone Number:</div>
-            <div className="font-semibold">Home Address:</div>
-          </div>
-          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-            <div className="capitalize">
-              {owner?.owner_category?.toLowerCase().replace(/\s+/g, '_')}
-            </div>
-            <div>
-              {owner?.profilePicture ? (
-                <>
-                {owner?.profilePicture}
-                  <span
-                    className="ml-1 text-customColor cursor-pointer"
-                    onClick={toggleModal}
-                  >
-                    View Image
-                  </span>
-                  {/* Modal */}
-                  {isModalOpen && (
-                    <>
-
-
-
-                    {/* <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="grid grid-cols-12 text-slate-600">
+                  <div className="col-span-12 intro-y text-base">
+                    <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                      <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                        <div className="font-semibold">Owner Category:</div>
+                        <div className="font-semibold">Owner's Image:</div>
+                        <div className="font-semibold">First Name:</div>
+                        <div className="font-semibold">Middle Name:</div>
+                        <div className="font-semibold">Gender:</div>
+                        <div className="font-semibold">Marital Status:</div>
+                        <div className="font-semibold">Last Name:</div>
+                        <div className="font-semibold">Phone Number:</div>
+                        <div className="font-semibold">Home Address:</div>
+                      </div>
+                      <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                        <div className="capitalize">
+                          {owner?.owner_category
+                            ?.toLowerCase()
+                            .replace(/\s+/g, "_")}
+                        </div>
+                        <div>
+                          {owner?.profilePicture ? (
+                            <>
+                              {owner?.profilePicture}
+                              <span
+                                className="ml-1 text-customColor cursor-pointer"
+                                onClick={toggleModal}
+                              >
+                                View Image
+                              </span>
+                              {/* Modal */}
+                              {isModalOpen && (
+                                <>
+                                  {/* <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                       <div className="bg-white p-4 rounded shadow-lg relative">
                            <button
                           className="absolute top-2 right-2 text-black text-lg"
@@ -782,42 +802,44 @@ onClose={() => {
                         />
                       </div>
                     </div> */}
-
-                    </>
-                  )}
-                </>
-              ) : (
-                'No Image Available'
-              )}
-            </div>
-            <div>{getDisplayValue(owner?.first_name)}</div>
-            <div className="capitalize">{getDisplayValue(owner?.middle_name)}</div>
-            <div className="capitalize">{getDisplayValue(owner?.last_name)}</div>
-            <div className="capitalize">
-              {owner?.gender === 'm' ? 'male' : 'female'}
-            </div>
-            <div className="capitalize">{getDisplayValue(owner?.marital_status)}</div>
-            <div>{getDisplayValue(owner?.phone)}</div>
-            <div>{getDisplayValue(owner?.home_address)}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            "No Image Available"
+                          )}
+                        </div>
+                        <div>{getDisplayValue(owner?.first_name)}</div>
+                        <div className="capitalize">
+                          {getDisplayValue(owner?.middle_name)}
+                        </div>
+                        <div className="capitalize">
+                          {getDisplayValue(owner?.last_name)}
+                        </div>
+                        <div className="capitalize">
+                          {owner?.gender === "m" ? "male" : "female"}
+                        </div>
+                        <div className="capitalize">
+                          {getDisplayValue(owner?.marital_status)}
+                        </div>
+                        <div>{getDisplayValue(owner?.phone)}</div>
+                        <div>{getDisplayValue(owner?.home_address)}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </Tab.Panel>
 
               <Tab.Panel>
-              
-                  <div className="grid grid-cols-12 text-slate-600">
-      <div className="col-span-12 intro-y text-base">
-        <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-          <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-            <div className="font-semibold">Update coming</div>
-            
-          </div>
-          
-        </div>
-      </div>
-    </div>
+                <div className="grid grid-cols-12 text-slate-600">
+                  <div className="col-span-12 intro-y text-base">
+                    <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                      <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
+                        <div className="font-semibold">Update coming</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </Tab.Panel>
 
               <Tab.Panel>
@@ -900,40 +922,40 @@ onClose={() => {
                 </div>
               </Tab.Panel>
 
-
               {/* surevy feedback */}
-
 
               <Tab.Panel>
                 <div className="grid grid-cols-12 gap-6 text-slate-600">
                   <div className="flow-root col-span-12 intro-y overflow-y-auto h-72">
                     {/* <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div> */}
                     <table className="table-auto w-full border-collapse bg-slate-50">
-        <thead>
-          <tr className="bg-customColor/5 text-left">
-            <th className=" px-4 py-2">S/N</th>
-            <th className=" px-4 py-2">Survey Question</th>
-            <th className=" px-4 py-2">Feedback/Response</th>
-          </tr>
-        </thead>
-        <tbody>
-          {surveyResponse?.length > 0 ? (
-            surveyResponse.map((answer: any, index: any) => (
-              <tr key={index}>
-                <td className=" px-4 py-2">{index + 1}</td>
-                <td className=" px-4 py-2">{answer.question}</td>
-                <td className=" px-4 py-2 capitalize">{answer.answer}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3} className=" px-4 py-2 text-center">
-                No answers found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                      <thead>
+                        <tr className="bg-customColor/5 text-left">
+                          <th className=" px-4 py-2">S/N</th>
+                          <th className=" px-4 py-2">Survey Question</th>
+                          <th className=" px-4 py-2">Feedback/Response</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {surveyResponse?.length > 0 ? (
+                          surveyResponse.map((answer: any, index: any) => (
+                            <tr key={index}>
+                              <td className=" px-4 py-2">{index + 1}</td>
+                              <td className=" px-4 py-2">{answer.question}</td>
+                              <td className=" px-4 py-2 capitalize">
+                                {answer.answer}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={3} className=" px-4 py-2 text-center">
+                              No answers found.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </Tab.Panel>
