@@ -250,13 +250,13 @@ export default function ProfileDetails() {
 
       // Directly call htmlToImage.toPng without the Promise check
       htmlToImage
-        .toPng(driverTagRef.current)
+        .toJpeg(driverTagRef.current)
         .then((dataUrl) => {
           console.log("Conversion successful, preparing to download"); // Log if conversion is successful
 
           const link = document.createElement("a");
           link.href = dataUrl;
-          link.download = `${rider?.first_name}_Driver_Tag.png`; // Customize the download file name
+          link.download = `${rider?.first_name}_Driver_Tag.jpeg`; // Customize the download file name
           link.click();
         })
         .catch((error) => {
@@ -320,7 +320,7 @@ export default function ProfileDetails() {
   </Dialog.Title> */}
 
             <Dialog.Description className="grid  p-2 ">
-              <div ref={driverTagRef} className=" col-span-12 w-full flex flex-col gap-y-4 ">
+              <div  className=" col-span-12 w-full flex flex-col gap-y-4 ">
                 <div
                   
                   className=""
@@ -530,6 +530,89 @@ export default function ProfileDetails() {
           </Dialog.Panel>
         </Dialog>
       )}
+
+
+
+
+{/* downloadble */}
+
+<div className="  p-2  hidden">
+              <div className=" col-span-12 w-full flex flex-col gap-y-4 ">
+                <div
+                  
+                  className=""
+                >
+                  <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-700  font-bold items-center justify-center gap-x-8 py-4 border rounded-xl">
+                    <div>
+                      <img
+                        className="w-20 h-20    sm:block"
+                        alt="lagos logo"
+                        src={logoBig}
+                      />
+                    </div>
+
+                    <div className="text-center">
+                      <h3 className="uppercase text-2xl tracking-widest">
+                        LAGOS STATE GOVERNMENT
+                      </h3>
+                      <p className="uppercase font-normal text-lg  tracking-widest dark:text-slate-500 ">
+                        ministry of transportation
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex mt-6 w-full items-start leading-relaxed  text-white/70 dark:text-slate-500 gap-x-4 ">
+                    <div className=" border rounded-xl">
+                      <img
+                        className="  h-44 w-40 rounded-xl "
+                        alt="lagos logo"
+                        src={rider?.profile_picture_url}
+                      />
+                    </div>
+
+                    <div className="flex-col  text-xs">
+                      <div className="mb-2 text-slate-700 text-xs">
+                        <span className="capitalize text-sm text-slate-700 dark:text-slate-500 mr-2">
+                          Name:
+                        </span>
+                        <span className="mb-2 text-slate-600 text-sm font-bold">
+                          {rider?.first_name} {rider?.middle_name}{" "}
+                          {rider?.last_name}
+                        </span>
+                      </div>
+                      <div className="mb-2 text-slate-700 text-xs">
+                        <span className="capitalize text-sm text-slate-700 dark:text-slate-500 mr-2">
+                          License Number:
+                        </span>
+                        <span className="text-slate-600 text-sm font-bold">
+                          {rider?.ndl ? rider?.ndl : "nill"}
+                        </span>
+                      </div>
+                      <div className="mb-2 text-slate-700 text-xs">
+                        <span className="capitalize text-sm text-slate-700 dark:text-slate-500 mr-2">
+                          LASDRI Number:
+                        </span>
+                        <span className="text-slate-600 text-sm font-bold">
+                          {rider?.lasdri ? rider?.lasdri : "nill"}
+                        </span>
+                      </div>
+                      <div className=" flex gap-x-6 items-end mt-5 ">
+                        <img
+                          alt="QRCode"
+                          className=" w-20 h-20"
+                          src={vehicleDetails?.qr_code_url}
+                        />
+                        <div className="uppercase text-white px-6  text-xl bg-green-700">
+                          conductor's badge
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+{/* end */}
+
       <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
         {/* Replace with your content */}
 
@@ -1107,8 +1190,11 @@ export default function ProfileDetails() {
                         <h3 className="font-semibold text-sm ">Driver's Tag</h3>
                         <div
                          
-                          className="relative  overflow-hidden   intro-y "
+                           className="relative   overflow-hidden   intro-y "
                         >
+                         
+                         <div  ref={driverTagRef} className="border-b border-black rounded-xl bg-white">
+
                           <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-800 items-center justify-center gap-x-4 py-4">
                             <div>
                               <img
@@ -1172,6 +1258,7 @@ export default function ProfileDetails() {
                               </div>
                             </div>
                           </div>
+                         </div>
 
                           <div className="flex justify-between fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 p-2  border-black z-50 border-b rounded-b-lg">
                             <div className="flex gap-x-2 justify-center items-center">
