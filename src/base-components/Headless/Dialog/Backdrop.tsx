@@ -103,7 +103,7 @@ Dialog.Panel = ({
         leave="ease-in-out duration-[400ms]"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className="fixed inset-0 bg-black/60"
+        className="fixed inset-0 bg-black/30"
         aria-hidden="true"
       />
       <Transition.Child

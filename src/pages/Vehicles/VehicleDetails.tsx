@@ -12,9 +12,8 @@ import {
 // import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 
 import _ from "lodash";
-import clsx from "clsx";
 import { useState, useRef } from "react";
-import fakerData from "../../utils/faker";
+import * as htmlToImage from "html-to-image";
 
 import { Dialog, Menu, Tab } from "../../base-components/Headless";
 
@@ -25,6 +24,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Button from "../../base-components/Button";
 import Lucide from "../../base-components/Lucide";
 import { formatDate } from "../../utils/utils";
+import logo from "../../assets/images/logo.png";
+import logoBig from "../../assets/images/Lagos-Seal.png";
 
 const tagStyle = [
   "bg-orange-100 text-orange-600",
@@ -105,8 +106,14 @@ export default function ProfileDetails() {
   const isInitialMount = useRef(true);
 
   const navigate = useNavigate();
+
+  const driverTagRef = useRef<HTMLDivElement>(null);
+
   // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // State for modal visibility
+  const [isRiderModalOpen, setIsRiderModalOpen] = useState(false);
+  const [isBodyTagModalOpen, setIsBodyTagModalOpen] = useState(false);
 
   // Function to toggle the modal
   const toggleModal = () => {
@@ -177,6 +184,109 @@ export default function ProfileDetails() {
     );
   };
 
+  // Function to handle download
+  // const handleRiderDownload = () => {
+  //   if (driverTagRef.current) {
+  //     htmlToImage
+  //       .toPng(driverTagRef.current)
+  //       .then(function (dataUrl) {
+  //         const link = document.createElement("a");
+  //         link.href = dataUrl;
+  //         link.download = `${rider?.first_name}_Driver_Tag.png`;
+  //         link.click();
+  //       })
+  //       .catch(function (error) {
+  //         console.error("Oops, something went wrong!", error);
+  //       });
+  //   }
+  // };
+
+  // const handleRiderDownload = () => {
+  //   console.log('Download button clicked'); // Log when the button is clicked
+
+  //   if (driverTagRef.current) {
+  //     console.log('driverTagRef is not null'); // Log if the ref is valid
+
+  //     const images = driverTagRef.current.getElementsByTagName("img");
+  //     const promises = Array.from(images).map((img) => {
+  //       return new Promise((resolve, reject) => {
+  //         img.onload = resolve;
+  //         img.onerror = reject;
+  //       });
+  //     });
+
+  //     Promise.all(promises)
+  //       .then(() => {
+  //         console.log('All images loaded successfully'); // Log when images are loaded
+
+  //         if (driverTagRef.current) {
+  //           console.log('Starting htmlToImage.toPng conversion'); // Log before conversion
+  //           return htmlToImage.toPng(driverTagRef.current);
+  //         } else {
+  //           throw new Error("Driver tag reference is null");
+  //         }
+  //       })
+  //       .then((dataUrl) => {
+  //         console.log('Conversion successful, preparing to download'); // Log if conversion is successful
+
+  //         const link = document.createElement("a");
+  //         link.href = dataUrl;
+  //         link.download = `${rider?.first_name}_Driver_Tag.png`;
+  //         link.click();
+  //       })
+  //       .catch((error) => {
+  //         console.error("Oops, something went wrong!", error); // Log if there's an error
+  //       });
+  //   } else {
+  //     console.error("Driver tag reference is null"); // Log if ref is null
+  //   }
+  // };
+
+  const handleRiderDownload = () => {
+    console.log("Download button clicked"); // Log when the button is clicked
+
+    if (driverTagRef.current) {
+      console.log("driverTagRef is not null"); // Log if the ref is valid
+
+      // Directly call htmlToImage.toPng without the Promise check
+      htmlToImage
+        .toPng(driverTagRef.current)
+        .then((dataUrl) => {
+          console.log("Conversion successful, preparing to download"); // Log if conversion is successful
+
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `${rider?.first_name}_Driver_Tag.png`; // Customize the download file name
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Oops, something went wrong!", error); // Log if there's an error
+        });
+    } else {
+      console.error("Driver tag reference is null"); // Log if ref is null
+    }
+  };
+
+  // Function to handle preview
+  const handleRiderPreview = () => {
+    setIsRiderModalOpen(true);
+  };
+
+  // Function to close modal
+  const closeRiderModal = () => {
+    setIsRiderModalOpen(false);
+  };
+
+  // Function to handle preview
+  const handleBodyTagPreview = () => {
+    setIsBodyTagModalOpen(true);
+  };
+
+  // Function to close modal
+  const closeBodyTagModal = () => {
+    setIsBodyTagModalOpen(false);
+  };
+
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
   }
@@ -190,6 +300,167 @@ export default function ProfileDetails() {
       {/* <div className="bg-gradient-to-r from-primary via-purple-800 to-primary pb-32">
           <header className="py-5"></header>
         </div> */}
+
+      {isRiderModalOpen && (
+        <Dialog
+          open={isRiderModalOpen}
+          onClose={closeRiderModal}
+          className="lg:flex place-self-center lg:items-center lg:justify-center hidden  "
+          size="cs"
+        >
+          <Dialog.Panel className="border rounded-3xl">
+            {/* <Dialog.Title>
+    <div className="flex justify-center items-center">
+      <div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-2">
+      
+       
+      </div>
+    
+    </div>
+  </Dialog.Title> */}
+
+            <Dialog.Description className="grid  p-2 ">
+              <div className="col-span-12 w-full flex flex-col gap-y-4 ">
+                <div
+                  ref={driverTagRef}
+                  className=""
+                >
+                  <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-700  font-bold items-center justify-center gap-x-8 py-4 border rounded-xl">
+                    <div>
+                      <img
+                        className="w-20 h-20    sm:block"
+                        alt="lagos logo"
+                        src={logoBig}
+                      />
+                    </div>
+
+                    <div className="text-center">
+                      <h3 className="uppercase text-2xl tracking-widest">
+                        LAGOS STATE GOVERNMENT
+                      </h3>
+                      <p className="uppercase font-normal text-lg  tracking-widest dark:text-slate-500 ">
+                        ministry of transportation
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex mt-6 w-full items-start leading-relaxed  text-white/70 dark:text-slate-500 gap-x-4 ">
+                    <div className=" border rounded-xl">
+                      <img
+                        className="  h-44 w-40 rounded-xl "
+                        alt="lagos logo"
+                        src={rider?.profile_picture_url}
+                      />
+                    </div>
+
+                    <div className="flex-col  text-xs">
+                      <div className="mb-2 text-slate-700 text-xs">
+                        <span className="capitalize text-sm text-slate-700 dark:text-slate-500 mr-2">
+                          Name:
+                        </span>
+                        <span className="mb-2 text-slate-600 text-sm font-bold">
+                          {rider?.first_name} {rider?.middle_name}{" "}
+                          {rider?.last_name}
+                        </span>
+                      </div>
+                      <div className="mb-2 text-slate-700 text-xs">
+                        <span className="capitalize text-sm text-slate-700 dark:text-slate-500 mr-2">
+                          License Number:
+                        </span>
+                        <span className="text-slate-600 text-sm font-bold">
+                          {rider?.ndl ? rider?.ndl : "nill"}
+                        </span>
+                      </div>
+                      <div className="mb-2 text-slate-700 text-xs">
+                        <span className="capitalize text-sm text-slate-700 dark:text-slate-500 mr-2">
+                          LASDRI Number:
+                        </span>
+                        <span className="text-slate-600 text-sm font-bold">
+                          {rider?.lasdri ? rider?.lasdri : "nill"}
+                        </span>
+                      </div>
+                      <div className=" flex gap-x-6 items-end mt-5 ">
+                        <img
+                          alt="QRCode"
+                          className=" w-20 h-20"
+                          src={vehicleDetails?.qr_code_url}
+                        />
+                        <div className="uppercase text-white px-6  text-xl bg-green-700">
+                          conductor's badge
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Dialog.Description>
+          </Dialog.Panel>
+        </Dialog>
+      )}
+
+      {isBodyTagModalOpen && (
+        <Dialog
+          open={isBodyTagModalOpen}
+          onClose={closeBodyTagModal}
+          className="lg:flex place-self-center lg:items-center lg:justify-center hidden  "
+          size="cs"
+        >
+          <Dialog.Panel className="border ">
+            {/* <Dialog.Title>
+    <div className="flex justify-center items-center">
+      <div className="bg-customColor/20 fill-customColor text-customColor mr-2 rounded-lg p-2">
+      
+       
+      </div>
+    
+    </div>
+  </Dialog.Title> */}
+
+            <Dialog.Description className="flex  gap-x-12  justify-center col-span-12 py-8 bg-slate-50 items-center ">
+                  <div className="p-1   w-1/2 bg-slate-100">
+                  <div className="  col-span-12 flex flex-col box items-center justify-start px-6  py-2 space-y-2 ">
+                    <h3 className="uppercase text-red-600 font-bold text-md ">
+                      lekki - epe route
+                    </h3>
+                    <div>
+                      <img alt="logo" className=" w-20 h-20" src={logoBig} />
+                    </div>
+                    <h3 className="uppercase  font-bold text-lg ">
+                      {vehicleDetails?.plate_number}
+                    </h3>
+                    <div className="text-white uppercase bg-blue-500 w-full text-center px-8 text-2xl font-semibold">
+                      {vehicleDetails?.plate_number}
+                    </div>
+
+                    <p className="uppercase   text-xs">exp date dec 2024 </p>
+                  </div>
+                  </div>
+                  
+                    <div className="justify-center gap-x-2 items-center text-slate-800 text-xs border border-black">
+                     <div className="flex items-center border-b border-black">
+                     <div className="border-r border-black p-1">
+                        <img alt="logo" className=" w-12 h-12" src={logo} />
+                      </div>
+                      <div>
+                        <h3 className="uppercase  tracking-wider text-lg px-4 ">
+                          {vehicleDetails?.plate_number}
+                        </h3>
+                      </div>
+                     </div>
+
+                      <div className="p-2">
+                        <img
+                          alt="QRCode"
+                          className=" w-28 h-28 mx-auto"
+                          src={vehicleDetails?.qr_code_url}
+                        />
+                      </div>
+                    </div>
+                  
+            </Dialog.Description>
+          </Dialog.Panel>
+        </Dialog>
+      )}
 
       {isModalOpen && (
         <Dialog
@@ -680,25 +951,23 @@ export default function ProfileDetails() {
                       </div>
 
                       {/* <div className="flex-1 gap-y-4 lg:px-5 pt-5 mt-2 border-t-2 lg:mt-0 lg:border-0 border-slate-200/60 dark:border-darkmode-400 lg:pt-0"> */}
-                        <div className="flex justify-start items-center space-x-4 text-sm lg:font-medium text-center ">
-
-                          {images?.map(
-                            (
-                              image: { public_image_url: string | undefined },
-                              index: any
-                            ) => (
-                              <div key={index}>
-                                <img
-                                  alt="Front"
-                                  className="h-32 w-32"
-                                  src={image?.public_image_url}
-                                />
-                              </div>
-                            )
-                          )}
-                        </div>
-                        
+                      <div className="flex justify-start items-center space-x-4 text-sm lg:font-medium text-center ">
+                        {images?.map(
+                          (
+                            image: { public_image_url: string | undefined },
+                            index: any
+                          ) => (
+                            <div key={index}>
+                              <img
+                                alt="Front"
+                                className="h-32 w-32"
+                                src={image?.public_image_url}
+                              />
+                            </div>
+                          )
+                        )}
                       </div>
+                    </div>
                     {/* </div> */}
                   </div>
                   {/* END: Next of Kin  */}
@@ -833,9 +1102,227 @@ export default function ProfileDetails() {
               <Tab.Panel>
                 <div className="grid grid-cols-12 text-slate-600">
                   <div className="col-span-12 intro-y text-base">
-                    <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                      <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                        <div className="font-semibold">Update coming</div>
+                    <div className="md:flex  justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
+                      <div className="col-span-12 mt-6 lg:col-span-6 flex flex-col gap-y-4 ">
+                        <h3 className="font-semibold text-sm ">Driver's Tag</h3>
+                        <div
+                          ref={driverTagRef}
+                          className="relative  overflow-hidden   intro-y "
+                        >
+                          <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-800 items-center justify-center gap-x-4 py-4">
+                            <div>
+                              <img
+                                className="w-10 h-10    sm:block"
+                                alt="lagos logo"
+                                src={logo}
+                              />
+                            </div>
+
+                            <div className="text-center">
+                              <h3 className="uppercase text-sm tracking-wider">
+                                LAGOS STATE GOVERNMENT
+                              </h3>
+                              <p className="uppercase text-[10px] text-white/70 dark:text-slate-500 text-xs">
+                                ministry of transportation
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex mt-3 w-full items-start leading-relaxed sm:w-72 text-white/70 dark:text-slate-500 gap-x-4">
+                            <div>
+                              <img
+                                className=" rounded-r-md h-20 w-20   "
+                                alt="lagos logo"
+                                src={rider?.profile_picture_url}
+                              />
+                            </div>
+
+                            <div className="flex-col  text-xs">
+                              <div className="text-slate-700 text-xs">
+                                <span className="capitalize text-[10px] text-slate-700 dark:text-slate-500 text-xs mr-2">
+                                  Name:
+                                </span>
+                                <span className="text-slate-600 text-[10px] font-bold">
+                                  {rider?.first_name} {rider?.middle_name}{" "}
+                                  {rider?.last_name}
+                                </span>
+                              </div>
+                              <div className="text-slate-700 text-xs">
+                                <span className="capitalize text-[10px] text-slate-700 dark:text-slate-500 text-xs mr-2">
+                                  License Number:
+                                </span>
+                                <span className="text-slate-600 text-[10px] font-bold">
+                                  {rider?.ndl ? rider?.ndl : "nill"}
+                                </span>
+                              </div>
+                              <div className="text-slate-700 text-xs">
+                                <span className="capitalize text-[10px] text-slate-700 dark:text-slate-500 text-xs mr-2">
+                                  LASDRI Number:
+                                </span>
+                                <span className="text-slate-600 text-[10px] font-bold">
+                                  {rider?.lasdri ? rider?.lasdri : "nill"}
+                                </span>
+                              </div>
+                              <div className="mt-1">
+                                <img
+                                  alt="QRCode"
+                                  className=" w-12 h-12"
+                                  src={vehicleDetails?.qr_code_url}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 p-2  border-black z-50 border-b rounded-b-lg">
+                            <div className="flex gap-x-2 justify-center items-center">
+                              <div>
+                                <Lucide
+                                  icon="Eye"
+                                  className="w-3 h-3 text-white"
+                                />
+                              </div>
+                              <button
+                                onClick={handleRiderPreview}
+                                className="text-white text-xs"
+                              >
+                                Preview
+                              </button>
+                            </div>
+
+                            <div className="flex gap-x-2 justify-center items-center">
+                              <div>
+                                <Lucide
+                                  icon="Download"
+                                  className="w-3 h-3 text-white"
+                                />
+                              </div>
+                              <button
+                                onClick={handleRiderDownload}
+                                className="text-white text-xs"
+                              >
+                                Download
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-span-12 mt-6 lg:col-span-6 flex flex-col gap-y-4  ">
+                        <h3 className="font-semibold text-sm ">
+                          Vehicle Body Tag
+                        </h3>
+                        <div className="relative  overflow-hidden   intro-y bg-slate-50 py-4">
+                          {/* <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-800  p-4">
+                            <img
+                              className="w-12  mr-2 -mt-3 sm:block"
+                              alt="lagos logo"
+                              src={logo}
+                            />
+
+                            <div className="text-center">
+                              <h3 className="uppercase text-sm tracking-wider">
+                                LAGOS STATE GOVERNMENT
+                              </h3>
+                              <p className="uppercase text-[12px] text-white/70 dark:text-slate-500 text-xs">
+                                ministry of transportation
+                              </p>
+                            </div>
+                          </div> */}
+
+                          <div className="flex gap-x-4 w-full items-center justify-between leading-relaxed sm:w-72 text-slate-700 dark:text-slate-500 overflow-y-scroll">
+                            <div className=" flex flex-col box items-center justify-start px-4  py-2 space-y-2">
+                              <h3 className="uppercase text-red-600 font-bold text-[8px] ">
+                                lekki - epe route
+                              </h3>
+                              <div>
+                                <img
+                                  alt="logo"
+                                  className=" w16 h-12"
+                                  src={logoBig}
+                                />
+                              </div>
+                              <h3 className="uppercase  font-bold text-[8px] ">
+                                {vehicleDetails?.plate_number}
+                              </h3>
+                              <div className="text-white uppercase bg-blue-500 w-full text-center px-8 text-xs">
+                                {vehicleDetails?.plate_number}
+                              </div>
+
+                              <p className="uppercase   text-[6px]">
+                                exp date dec 2024{" "}
+                              </p>
+                            </div>
+
+                            <div className="flex-col text-xs box rounded-none items-center justify-center space-y-2 border pb-1 border-black">
+                              <div className="flex justify-center gap-x-2 px-1 items-center text-slate-700 text-xs border-b border-black">
+                                <div className="border-r border-black px-1">
+                                  <img
+                                    alt="logo"
+                                    className=" w-6 h-6"
+                                    src={logo}
+                                  />
+                                </div>
+                                <div>
+                                  <h3 className="uppercase  font-bold text-xs ">
+                                    {vehicleDetails?.plate_number}
+                                  </h3>
+                                </div>
+                              </div>
+                              {/* <div className="text-slate-700 text-xs">
+                                <span className="capitalize text-[12px] text-slate-700 dark:text-slate-500 text-xs mr-2">
+                                  License Number:
+                                </span>
+                                <span className="text-slate-600 font-bold">
+                                  {rider?.ndl ? rider?.ndl : "nill"}
+                                </span>
+                              </div>
+                              <div className="text-slate-700 text-xs">
+                                <span className="capitalize text-[12px] text-slate-700 dark:text-slate-500 text-xs mr-2">
+                                  LASDRI Number:
+                                </span>
+                                <span className="text-slate-600 font-bold">
+                                  {rider?.lasdri ? rider?.lasdri : "nill"}
+                                </span>
+                              </div> */}
+                              <div className="">
+                                <img
+                                  alt="QRCode"
+                                  className=" w-12 h-12 mx-auto"
+                                  src={vehicleDetails?.qr_code_url}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 p-2  border-black z-50 border-b rounded-b-lg">
+                            <div className="flex gap-x-2 justify-center items-center">
+                              <div>
+                                <Lucide
+                                  icon="Eye"
+                                  className="w-3 h-3 text-white"
+                                />
+                              </div>
+                              <button
+                                onClick={handleBodyTagPreview}
+                                className="text-white text-xs"
+                              >
+                                Preview
+                              </button>
+                            </div>
+
+                            <div className="flex gap-x-2 justify-center items-center">
+                              <div>
+                                <Lucide
+                                  icon="Download"
+                                  className="w-3 h-3 text-white"
+                                />
+                              </div>
+                              <button className="text-white text-xs">
+                                Download
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

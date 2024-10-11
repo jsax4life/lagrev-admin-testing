@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { Dialog as HeadlessDialog, Transition } from "@headlessui/react";
 import { Fragment, createContext, useContext, useRef, useState } from "react";
 
-type Size = "sm" | "md" | "lg" | "xl";
+type Size = "sm" | "md" | "lg" | "xl" | "cs";
 
 const dialogContext = createContext<{
   open: boolean;
@@ -81,7 +81,7 @@ Dialog.Panel = ({
         leave="ease-in-out duration-[400ms]"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className={`fixed inset-0 bg-black/20 `}
+        className={`fixed inset-0 bg-black/60 `}
         aria-hidden="true"
       />
       <Transition.Child
@@ -109,6 +109,8 @@ Dialog.Panel = ({
             dialog.size == "sm" && "sm:w-[300px]",
             dialog.size == "lg" && "sm:w-[600px]",
             dialog.size == "xl" && "sm:w-[600px] lg:w-[900px]",
+            dialog.size == "cs" && "sm:w-[550px]",
+
             dialog.zoom && "scale-105",
             className,
           ])}

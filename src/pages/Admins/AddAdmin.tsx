@@ -524,7 +524,7 @@ export default function AddNewAdmiin() {
       <div className="text-xs text-center">Submitting</div>
     </div>
   ) : (
-    "Create User"
+    "Create Admin"
   )}
 </Button>
 </div>
@@ -536,7 +536,7 @@ export default function AddNewAdmiin() {
                 <div className="ml-4 mr-4">
                   <div className="font-medium">Created Successful</div>
                   <div className="mt-1 text-slate-500">
-                    User Created Successfully 
+                    Admin Created Successfully 
                   </div>
                 </div>
               </Notification>
