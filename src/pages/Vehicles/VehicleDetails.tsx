@@ -320,9 +320,9 @@ export default function ProfileDetails() {
   </Dialog.Title> */}
 
             <Dialog.Description className="grid  p-2 ">
-              <div className="col-span-12 w-full flex flex-col gap-y-4 ">
+              <div ref={driverTagRef} className=" col-span-12 w-full flex flex-col gap-y-4 ">
                 <div
-                  ref={driverTagRef}
+                  
                   className=""
                 >
                   <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-700  font-bold items-center justify-center gap-x-8 py-4 border rounded-xl">
@@ -1106,7 +1106,7 @@ export default function ProfileDetails() {
                       <div className="col-span-12 mt-6 lg:col-span-6 flex flex-col gap-y-4 ">
                         <h3 className="font-semibold text-sm ">Driver's Tag</h3>
                         <div
-                          ref={driverTagRef}
+                         
                           className="relative  overflow-hidden   intro-y "
                         >
                           <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-800 items-center justify-center gap-x-4 py-4">
