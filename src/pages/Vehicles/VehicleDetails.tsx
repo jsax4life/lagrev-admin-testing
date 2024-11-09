@@ -1084,14 +1084,14 @@ export default function ProfileDetails() {
                       <div className="flex justify-start items-center space-x-4 text-sm lg:font-medium text-center ">
                         {images?.map(
                           (
-                            image: { public_image_url: string | undefined },
+                            image: { public_image_base64: string | undefined },
                             index: any
                           ) => (
                             <div key={index}>
                               <img
-                                alt="Front"
+                                alt="Attachment"
                                 className="h-32 w-32"
-                                src={image?.public_image_url}
+                                src={image?.public_image_base64}
                               />
                             </div>
                           )
