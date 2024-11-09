@@ -251,16 +251,16 @@ export default function ProfileDetails() {
   // console.log(vehicleDetails)
 
   const handleRiderDownload = () => {
-    console.log("Download button clicked"); // Log when the button is clicked
+    // console.log("Download button clicked"); // Log when the button is clicked
 
     if (driverTagRef.current) {
-      console.log("driverTagRef is not null"); // Log if the ref is valid
+      // console.log("driverTagRef is not null"); // Log if the ref is valid
 
       // Directly call htmlToImage.toPng without the Promise check
       htmlToImage
         .toJpeg(driverTagRef.current)
         .then((dataUrl) => {
-          console.log("Conversion successful, preparing to download"); // Log if conversion is successful
+          // console.log("Conversion successful, preparing to download"); // Log if conversion is successful
 
           const link = document.createElement("a");
           link.href = dataUrl;
@@ -988,7 +988,7 @@ export default function ProfileDetails() {
                         <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.rfid_tag)}
                         </div>
-                        
+
                         <div className="ml-auto lg:mb-4 capitalize">
                           {getDisplayValue(vehicleDetails?.vehicle_type)}
                         </div>
