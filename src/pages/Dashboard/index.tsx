@@ -208,7 +208,7 @@ const [dailyReveneModal, setDailyReveneModal] = useState(false);
     );
   };
 
-  console.log(startDate, endDate);
+  // console.log(startDate, endDate);
 
   // const handleAddFilter = (filter: string, value: string) => {
   //   if (filter === 'LGA') setSelectedLGA(value);
@@ -547,8 +547,8 @@ const [dailyReveneModal, setDailyReveneModal] = useState(false);
 //   };
   
 const revenueBreakdown = ({ numberOfRegistrations }: { numberOfRegistrations: number }) => {
-  const companySharePerVehicle = 5000;
-  const motSharePerVehicle = 1000;
+  const companySharePerVehicle = 4000;
+  const motSharePerVehicle = 2000;
 
   // Check if numberOfRegistrations is valid
   if (!numberOfRegistrations || isNaN(numberOfRegistrations)) {
@@ -1144,7 +1144,7 @@ const revenueBreakdown = ({ numberOfRegistrations }: { numberOfRegistrations: nu
                     </div>
                   ) : (
                     `N ${formatCurrency(
-                      dashboardData?.daily_registered_vehicles * 4500
+                      dashboardData?.daily_registered_vehicles * 6000
                       )}`
                   )}
                 </div>
