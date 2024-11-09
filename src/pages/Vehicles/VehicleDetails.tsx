@@ -109,6 +109,9 @@ export default function ProfileDetails() {
 
   const driverTagRef = useRef<HTMLDivElement>(null);
 
+  const bodyTagRef = useRef<HTMLDivElement>(null);
+
+
   // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
   // State for modal visibility
@@ -120,7 +123,7 @@ export default function ProfileDetails() {
     setIsModalOpen(!isModalOpen);
   };
 
-  console.log(surveyResponse);
+  console.log(vehicleDetails);
 
   useEffect(() => {
     if (user?.token) {
@@ -132,6 +135,8 @@ export default function ProfileDetails() {
   const { rider, owner, user_activity_logs, images } = vehicleDetails ?? {};
 
   // const user_activity_logs: any[] =[];
+
+  console.log(`rider: ${rider}`);
 
   const isNull = "Unavailable";
 
@@ -148,6 +153,7 @@ export default function ProfileDetails() {
       function (vehicleData: any) {
         setVehicleDetails(vehicleData);
         setLoading(false);
+        // console.log(vehicleData)
       },
       function (error: any) {
         console.error("Error fetching recent searches:", error);
@@ -242,6 +248,8 @@ export default function ProfileDetails() {
   //   }
   // };
 
+  // console.log(vehicleDetails)
+
   const handleRiderDownload = () => {
     console.log("Download button clicked"); // Log when the button is clicked
 
@@ -280,6 +288,32 @@ export default function ProfileDetails() {
   // Function to handle preview
   const handleBodyTagPreview = () => {
     setIsBodyTagModalOpen(true);
+  };
+
+    // Function to handle body tag download
+  const handleBodyTagDownload = () => {
+    console.log("Download button clicked"); // Log when the button is clicked
+
+    if (bodyTagRef.current) {
+      console.log("driverTagRef is not null"); // Log if the ref is valid
+
+      // Directly call htmlToImage.toPng without the Promise check
+      htmlToImage
+        .toJpeg(bodyTagRef.current)
+        .then((dataUrl) => {
+          console.log("Conversion successful, preparing to download"); // Log if conversion is successful
+
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `${rider?.first_name}_Body_Tag.jpeg`; // Customize the download file name
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Oops, something went wrong!", error); // Log if there's an error
+        });
+    } else {
+      console.error("Driver tag reference is null"); // Log if ref is null
+    }
   };
 
   // Function to close modal
@@ -349,7 +383,7 @@ export default function ProfileDetails() {
                       <img
                         className="  h-44 w-40 rounded-xl "
                         alt="lagos logo"
-                        src={rider?.profile_picture_url}
+                        src={rider?.profile_picture_base64}
                       />
                     </div>
 
@@ -383,7 +417,7 @@ export default function ProfileDetails() {
                         <img
                           alt="QRCode"
                           className=" w-20 h-20"
-                          src={vehicleDetails?.qr_code_url}
+                          src={vehicleDetails?.qr_code_base64}
                         />
                         <div className="uppercase text-white px-6  text-xl bg-green-700">
                           conductor's badge
@@ -416,7 +450,7 @@ export default function ProfileDetails() {
     </div>
   </Dialog.Title> */}
 
-            <Dialog.Description className="flex  gap-x-12  justify-center col-span-12 py-8 bg-slate-50 items-center ">
+            <Dialog.Description  className="flex  gap-x-12  justify-center col-span-12 py-8 bg-slate-50 items-center ">
                   <div className="p-1   w-1/2 bg-slate-100">
                   <div className="  col-span-12 flex flex-col box items-center justify-start px-6  py-2 space-y-2 ">
                     <h3 className="uppercase text-red-600 font-bold text-md ">
@@ -452,7 +486,7 @@ export default function ProfileDetails() {
                         <img
                           alt="QRCode"
                           className=" w-28 h-28 mx-auto"
-                          src={vehicleDetails?.qr_code_url}
+                          src={vehicleDetails?.qr_code_base64}
                         />
                       </div>
                     </div>
@@ -482,7 +516,7 @@ export default function ProfileDetails() {
             <Dialog.Description className="grid grid-cols-12 gap-y-3 p-0">
               <div className="col-span-12 ">
                 <img
-                  src={owner?.profile_picture_url}
+                  src={owner?.profile_picture_base64}
                   alt="Owner"
                   className=" max-h-96 w-full"
                 />
@@ -566,7 +600,7 @@ export default function ProfileDetails() {
                       <img
                         className="  h-44 w-40 rounded-xl "
                         alt="lagos logo"
-                        src={rider?.profile_picture_url}
+                        src={rider?.profile_picture_base64}
                       />
                     </div>
 
@@ -600,7 +634,7 @@ export default function ProfileDetails() {
                         <img
                           alt="QRCode"
                           className=" w-20 h-20"
-                          src={vehicleDetails?.qr_code_url}
+                          src={vehicleDetails?.qr_code_base64}
                         />
                         <div className="uppercase text-white px-6  text-xl bg-green-700">
                           conductor's badge
@@ -611,6 +645,10 @@ export default function ProfileDetails() {
                 </div>
               </div>
             </div>
+
+            
+
+
 {/* end */}
 
       <div className=" mx-auto pb-12 lg:pb-0  lg:px-0 ">
@@ -644,7 +682,7 @@ export default function ProfileDetails() {
                     <img
                       alt="Profile pix"
                       className="rounded-xl"
-                      src={rider?.profile_picture_url}
+                      src={rider?.profile_picture_base64}
                     />
                     <button
                       className="bg-customColor w-full h-4 absolute bottom-0 cursor-pointer rounded-b-xl flex justify-center align-center"
@@ -901,6 +939,9 @@ export default function ProfileDetails() {
                           accreditation code:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
+                          RFID Tag Number:
+                        </div>
+                        <div className="font-semibold capitalize lg:mb-4 text-md">
                           vehicle type:
                         </div>
                         <div className="font-semibold capitalize lg:mb-4 text-md">
@@ -944,9 +985,15 @@ export default function ProfileDetails() {
                           {getDisplayValue(vehicleDetails?.tagNumber)}
                         </div>
 
+                        <div className="ml-auto lg:mb-4 uppercase">
+                          {getDisplayValue(vehicleDetails?.rfid_tag)}
+                        </div>
+                        
                         <div className="ml-auto lg:mb-4 capitalize">
                           {getDisplayValue(vehicleDetails?.vehicle_type)}
                         </div>
+
+                      
 
                         <div className="ml-auto lg:mb-4 uppercase">
                           {getDisplayValue(vehicleDetails?.plate_number)}
@@ -1029,7 +1076,7 @@ export default function ProfileDetails() {
                         <img
                           alt="QRCode"
                           className="rounded-lg"
-                          src={vehicleDetails?.qr_code_url}
+                          src={vehicleDetails?.qr_code_base64}
                         />
                       </div>
 
@@ -1148,7 +1195,7 @@ export default function ProfileDetails() {
                           &times;
                         </button>
                         <img
-                          src={owner?.profile_picture_url}
+                          src={owner?.profile_picture_base64}
                           alt="Owner"
                           className="max-w-full max-h-full"
                         />
@@ -1219,7 +1266,7 @@ export default function ProfileDetails() {
                               <img
                                 className=" rounded-r-md h-20 w-20   "
                                 alt="lagos logo"
-                                src={rider?.profile_picture_url}
+                                src={rider?.profile_picture_base64}
                               />
                             </div>
 
@@ -1253,7 +1300,7 @@ export default function ProfileDetails() {
                                 <img
                                   alt="QRCode"
                                   className=" w-12 h-12"
-                                  src={vehicleDetails?.qr_code_url}
+                                  src={vehicleDetails?.qr_code_base64}
                                 />
                               </div>
                             </div>
@@ -1298,7 +1345,7 @@ export default function ProfileDetails() {
                         <h3 className="font-semibold text-sm ">
                           Vehicle Body Tag
                         </h3>
-                        <div className="relative  overflow-hidden   intro-y bg-slate-50 py-4">
+                        <div className="relative  overflow-hidden   intro-y bg-slate-50 ">
                           {/* <div className="flex leading-[2.15rem] w-full text-white text-xl bg-green-800  p-4">
                             <img
                               className="w-12  mr-2 -mt-3 sm:block"
@@ -1316,7 +1363,7 @@ export default function ProfileDetails() {
                             </div>
                           </div> */}
 
-                          <div className="flex gap-x-4 w-full items-center justify-between leading-relaxed sm:w-72 text-slate-700 dark:text-slate-500 overflow-y-scroll">
+                          <div ref={bodyTagRef} className="flex gap-x-4 w-full items-center bg-slate-100 p-4 justify-between leading-relaxed sm:w-72 text-slate-700 dark:text-slate-500 overflow-y-scroll" >
                             <div className=" flex flex-col box items-center justify-start px-4  py-2 space-y-2">
                               <h3 className="uppercase text-red-600 font-bold text-[8px] ">
                                 lekki - epe route
@@ -1324,7 +1371,7 @@ export default function ProfileDetails() {
                               <div>
                                 <img
                                   alt="logo"
-                                  className=" w16 h-12"
+                                  className=" w-12 h-12"
                                   src={logoBig}
                                 />
                               </div>
@@ -1341,11 +1388,11 @@ export default function ProfileDetails() {
                             </div>
 
                             <div className="flex-col text-xs box rounded-none items-center justify-center space-y-2 border pb-1 border-black">
-                              <div className="flex justify-center gap-x-2 px-1 items-center text-slate-700 text-xs border-b border-black">
+                              <div className="flex justify-center  items-center text-slate-700 text-xs border-b border-black">
                                 <div className="border-r border-black px-1">
                                   <img
                                     alt="logo"
-                                    className=" w-6 h-6"
+                                    className=" "
                                     src={logo}
                                   />
                                 </div>
@@ -1355,27 +1402,12 @@ export default function ProfileDetails() {
                                   </h3>
                                 </div>
                               </div>
-                              {/* <div className="text-slate-700 text-xs">
-                                <span className="capitalize text-[12px] text-slate-700 dark:text-slate-500 text-xs mr-2">
-                                  License Number:
-                                </span>
-                                <span className="text-slate-600 font-bold">
-                                  {rider?.ndl ? rider?.ndl : "nill"}
-                                </span>
-                              </div>
-                              <div className="text-slate-700 text-xs">
-                                <span className="capitalize text-[12px] text-slate-700 dark:text-slate-500 text-xs mr-2">
-                                  LASDRI Number:
-                                </span>
-                                <span className="text-slate-600 font-bold">
-                                  {rider?.lasdri ? rider?.lasdri : "nill"}
-                                </span>
-                              </div> */}
+                              
                               <div className="">
                                 <img
                                   alt="QRCode"
                                   className=" w-12 h-12 mx-auto"
-                                  src={vehicleDetails?.qr_code_url}
+                                  src={vehicleDetails?.qr_code_base64}
                                 />
                               </div>
                             </div>
@@ -1404,7 +1436,7 @@ export default function ProfileDetails() {
                                   className="w-3 h-3 text-white"
                                 />
                               </div>
-                              <button className="text-white text-xs">
+                              <button className="text-white text-xs"  onClick={handleBodyTagDownload}>
                                 Download
                               </button>
                             </div>
