@@ -85,11 +85,12 @@ const RiderDetailsForm: React.FC<RiderDetailsFormProps> = ({ lagosLGAs }) => {
                 </option>
               ))}
             </TomSelect> */}
+            {/* tom here */}
             <Controller
               control={control}
               name="lga"
               render={({ field }) => (
-                <TomSelect
+                <select
                   {...field}
                   className="w-full"
                   {...lagosLGAs.map((lga, index) => (
@@ -108,7 +109,8 @@ const RiderDetailsForm: React.FC<RiderDetailsFormProps> = ({ lagosLGAs }) => {
 
           <div className="mt-3">
             <FormLabel htmlFor="tribe">Tribe</FormLabel>
-            <TomSelect
+            {/* ttom here */}
+            <select
               id="tribe"
             //   onChange={setSelect}
               className="w-full"
@@ -125,7 +127,7 @@ const RiderDetailsForm: React.FC<RiderDetailsFormProps> = ({ lagosLGAs }) => {
               <option value="⁠Nupe">⁠Nupe</option>
               <option value="⁠Fulani">⁠Fulani</option>
               <option value="⁠Others">⁠Others</option>
-            </TomSelect>
+            </select>
           </div>
         </div>
         <div className="col-span-12 md:col-span-6 lg:col-span-4">
