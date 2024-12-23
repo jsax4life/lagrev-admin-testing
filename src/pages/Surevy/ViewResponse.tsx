@@ -15,11 +15,9 @@ interface Response {
     question: Question;
 }
 
-interface DisplayResponsesProps {
-    surveyId: number;
-}
 
-const DisplayResponses: React.FC<DisplayResponsesProps> = () => {
+
+const DisplayResponses = () => {
     const { user } = useContext(UserContext);
 
     const [responses, setResponses] = useState<{ [questionId: number]: Response[] }>({});
