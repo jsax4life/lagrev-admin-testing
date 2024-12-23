@@ -176,8 +176,8 @@ export default function ProfileDetails() {
 
       // {lga: 'Alimosho'},
       function (surveyResponseData: any) {
-        setSurveyResponse(surveyResponseData?.answers);
-        // console.log(surveyResponse?.answer)
+        setSurveyResponse(surveyResponseData?.responses);
+        console.log(surveyResponseData)
         setLoading(false);
       },
       function (error: any) {
@@ -189,6 +189,8 @@ export default function ProfileDetails() {
       user?.token && user.token
     );
   };
+
+  console.log(surveyResponse)
 
   // Function to handle download
   // const handleRiderDownload = () => {
@@ -1544,12 +1546,12 @@ export default function ProfileDetails() {
                       </thead>
                       <tbody>
                         {surveyResponse?.length > 0 ? (
-                          surveyResponse.map((answer: any, index: any) => (
+                          surveyResponse.map((response: any, index: any) => (
                             <tr key={index}>
                               <td className=" px-4 py-2">{index + 1}</td>
-                              <td className=" px-4 py-2">{answer.question}</td>
+                              <td className=" px-4 py-2">{response.question}</td>
                               <td className=" px-4 py-2 capitalize">
-                                {answer.answer}
+                                {response.response}
                               </td>
                             </tr>
                           ))

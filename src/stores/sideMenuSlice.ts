@@ -48,6 +48,12 @@ const initialState: SideMenuState = {
           pathname: "/admin-role-management",
           title: "Role Management",
         },
+     
+        {
+          icon: "Book",
+          pathname: "/survey",
+          title: "Survey",
+        },
       ],
     },
 

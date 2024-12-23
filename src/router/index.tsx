@@ -20,6 +20,9 @@ import AddNewUser from "../pages/Users/AddUser";
 import PrivateRoute from './PrivateRoute';
 import RolePrivilegesTable from "../pages/Users/RoleManagement";
 import AllAdmins from "../pages/Admins"
+import Survey from "../pages/Surevy"
+import SurveyResponse from "../pages/Surevy/ViewResponse"
+
 import AdminRolePrivilegesTable from "../pages/Admins/AdminRoleManagement";
 import AddNewAdmiin from "../pages/Admins/AddAdmin";
 
@@ -95,6 +98,8 @@ function Router() {
 
           { path: "/admins", element: <AllAdmins />},
           { path: "/add-admin", element: <AddNewAdmiin />},
+          { path: "/survey", element: <Survey />},
+          { path: "/survey-responses/:surveyId", element: <SurveyResponse />},
 
         ]
 
