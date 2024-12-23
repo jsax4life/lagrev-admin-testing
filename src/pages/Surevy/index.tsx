@@ -7,20 +7,17 @@ import _ from "lodash";
 import { useState, useRef } from "react";
 import Button from "../../base-components/Button";
 import Alert from "../../base-components/Alert";
-import Pagination from "../../base-components/Pagination";
 import { FormCheck, FormInput, FormLabel, FormSelect } from "../../base-components/Form";
 import Lucide from "../../base-components/Lucide";
 import { Dialog, Menu } from "../../base-components/Headless";
 import Table from "../../base-components/Table";
 
-import { Transition } from "@headlessui/react";
 import Tippy from '../../base-components/Tippy';
 import { UserContext } from '../../stores/UserContext';
 import API from '../../utils/API';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingIcon from '../../base-components/LoadingIcon';
 import FilterChips from '../../components/FilterChips';
-// import FilterModal from './filterModal';
 import profile from "../../assets/images/profile.png"
 import { debounce } from '../../utils/debounce';
 
