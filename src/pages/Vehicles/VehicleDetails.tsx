@@ -53,6 +53,17 @@ const activityItem: ActivityItem = {
   // other fields...
 };
 
+type DisplaySectionProps = {
+  title: string;
+  data: Record<string, any>;
+  keys: {
+    label: string;
+    valueKey: string;
+    formatter?: (value: any) => string; // For formatting values
+    render?: (value: any) => React.ReactNode; // For custom rendering
+  }[];
+};
+
 // const activity = [
 //     {
 //       id: 1,
@@ -92,6 +103,43 @@ const activityItem: ActivityItem = {
 //       date: '2h ago',
 //     },
 //   ]
+
+const DisplaySection: React.FC<DisplaySectionProps> = ({ title, data, keys }) => (
+  <div className="col-span-12 intro-y text-md">
+    {title && (
+      <div className="flex items-center py-4">
+        <h3 className="intro-y font-semibold mr-4 text-md text-primary uppercase">{title}</h3>
+        <hr className="flex-grow border-t border-slate-200/" />
+      </div>
+    )}
+    <div className="flex justify-start items-center py-5 gap-x-6 sm:py-3 dark:border-darkmode-400">
+      <div className="flex flex-col no-wrap items-start space-y-3 mb-2">
+        {keys.map(({ label }) => (
+          <div key={label} className="font-semibold">
+            {label}
+          </div>
+        ))}
+      </div>
+      {/* <div className="flex flex-col no-wrap items-start space-y-3 mb-2">
+        {keys.map(({ valueKey, formatter }) => (
+          <div key={valueKey} className="capitalize">
+            {formatter ? formatter(data[valueKey]) : data[valueKey] || "---"}
+          </div>
+        ))}
+      </div> */}
+      <div className="flex flex-col no-wrap items-start space-y-3 mb-2">
+        {keys.map(({ valueKey, formatter, render }) => {
+          const value = data[valueKey];
+          return (
+            <div key={valueKey} className="capitalize">
+              {render ? render(value) : formatter ? formatter(value) : value || "---"}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+);
 
 export default function ProfileDetails() {
   const { user } = useContext(UserContext);
@@ -330,6 +378,9 @@ export default function ProfileDetails() {
   const getDisplayValue = (value: any) => {
     return value || "---";
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -788,253 +839,85 @@ export default function ProfileDetails() {
             </div>
             {/* END: Profile Info */}
             <Tab.Panels className="mt-5">
+ 
+
+
               <Tab.Panel>
-                <div className="grid grid-cols-12  text-slate-600">
-                  {/* BEGIN: Rider Details */}
-                  <div className="col-span-12 intro-y  ">
-                    <div className=" flex justify-start items-center py-5 gap-x-6  border-t sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-md">
-                      <div className=" mb-2 flex flex-col no-wrap items-start justify-start space-y-2">
-                        <div className="font-semibold ">Nin</div>
-                        <div className="font-semibold ">Age:</div>
-                        <div className="font-semibold ">Gender:</div>
-                        <div className="font-semibold ">Marital Status:</div>
-                        <div className="font-semibold ">Religion:</div>
-                        <div className="font-semibold ">Tribe:</div>
+              <div className="grid grid-cols-12 text-slate-600">
+                {/* Rider Details */}
+                <DisplaySection
+                  title="Rider Details"
+                  data={rider || {}}
+                  keys={[
+                    { label: "NIN", valueKey: "nin" },
+                    { label: "Phone Number", valueKey: "phone" },
+                    { label: "Email Address", valueKey: "email" },
+                    { label: "Home Address", valueKey: "home_address" },
+                    { label: "Gender", valueKey: "gender", formatter: (value) => (value === "f" ? "Female" : "Male") },
+                    { label: "Blood Group", valueKey: "blood_group" },
+                    { label: "Marital Status", valueKey: "marital_status" },
+                    { label: "Blood Group", valueKey: "blood_group" },
+                    { label: "No. of Children", valueKey: "number_of_children" },
+                    { label: "State of Origin", valueKey: "state_of_origin" },
+                    { label: "LGA of Origin", valueKey: "lga_of_origin" },
+                    { label: "Town/Village", valueKey: "town" },
+                    { label: "Place of Birth", valueKey: "place_of_birth" },
+                    { label: "Tribe", valueKey: "tribe" },
+                    { label: "Age", valueKey: "age" },
+                    { label: "Religion", valueKey: "religion" },
+                    { label: "LGA of Operation", valueKey: "lga" },
+                    { label: "LASDRI Card Available", valueKey: "lasdri_available" },
+                    { label: "LASDRI Card Number", valueKey: "lasdri" },
+                    { label: "Driver License", valueKey: "ndl_available" },
+                    { label: "Driver License Number", valueKey: "ndl" },
+                  ]}
+                />
 
-                        <div className="font-semibold ">Home Address</div>
+                {/* Next of Kin Details */}
+                <DisplaySection
+                  title="Next of Kin Details"
+                  data={rider?.next_of_kin || {}}
+                  keys={[
+                    { label: "First Name", valueKey: "first_name" },
+                    { label: "Last Name", valueKey: "last_name" },
+                    { label: "Relationship", valueKey: "relationship" },
+                    { label: "Phone Number", valueKey: "phone" },
+                    { label: "Home Address", valueKey: "home_address" },
+                  ]}
+                />
 
-                        <div className="font-semibold ">LGA of Operatiion</div>
-                        <div className="font-semibold ">
-                          LASDRI Card Available
-                        </div>
-                        <div className="font-semibold ">LASDRI Card Number</div>
-                        <div className="font-semibold ">Driver License</div>
-                        <div className="font-semibold ">
-                          Driver License Number
-                        </div>
+              </div>
+            </Tab.Panel>
 
-                        {/* <div className="font-semibold ">Park/Zone</div> */}
-                      </div>
-                      <div className=" mb-2 flex flex-col no-wrap items-start justify-start space-y-2 ">
-                        <div className="">**************</div>
-
-                        <div className="">{rider?.age}</div>
-                        <div className="">
-                          {rider?.gender === "f" ? "Female" : "Male"}
-                        </div>
-
-                        <div className="capitalize">
-                          {rider?.marital_status}
-                        </div>
-                        <div className="capitalize">{rider?.religion}</div>
-                        <div className="capitalize">{rider?.tribe}</div>
-                        <div className="capitalize">
-                          {getDisplayValue(rider?.home_address)}
-                        </div>
-
-                        <div className="capitalize">
-                          {getDisplayValue(rider?.lga)}
-                        </div>
-                        <div className="capitalize">
-                          {getDisplayValue(rider?.lasdri_available)}
-                        </div>
-                        <div className="capitalize">
-                          {getDisplayValue(rider?.lasdri)}
-                        </div>
-                        <div className="capitalize">
-                          {getDisplayValue(rider?.ndl_available)}
-                        </div>
-                        <div className="capitalize">
-                          {getDisplayValue(rider?.ndl)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* END: Rider Details */}
-
-                  {/* BEGIN: Next of Kin  */}
-                  <div className="col-span-12 intro-y  text-md ">
-                    <div className="flex items-center py-4">
-                      <h3 className="intro-y  font-semibold mr-4 text-sm text-primary">
-                        NEXT OF KIN DETAILS
-                      </h3>
-                      <hr className="flex-grow border-t border-slate-200/" />
-                    </div>
-                    <div className=" flex justify-start items-center py-5 gap-x-6 sm:py-3  dark:border-darkmode-400">
-                      <div className=" flex flex-col no-wrap items-start  space-y-2 mb-2 ">
-                        <div className="font-semibold ">First Name:</div>
-                        <div className="font-semibold ">Last Name:</div>
-                        <div className="font-semibold ">Relationship:</div>
-                        <div className="font-semibold ">Phone Number:</div>
-
-                        <div className="font-semibold ">Home Address</div>
-                      </div>
-                      <div className=" mb-2 flex flex-col no-wrap items-start justify-start space-y-2 ">
-                        <div className="">{rider?.next_of_kin?.first_name}</div>
-
-                        <div className="">{rider?.next_of_kin?.last_name}</div>
-                        <div className="">
-                          {rider?.next_of_kin?.relationship}
-                        </div>
-
-                        <div className="">{rider?.next_of_kin?.phone}</div>
-                        <div className="">
-                          {rider?.next_of_kin?.home_address}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* END: Next of Kin  */}
-
-                  {/* <div className="col-span-12 intro-y text-base ">
-                        <div className="flex items-center py-4">
-                          <h3 className="ntro-y box  font-semibold mr-4 text-sm text-primary">
-                            VEHICLE DETAILS
-                          </h3>
-                          <hr className="flex-grow border-t border-slate-200/" />
-                        </div>
-                        <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                          <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                            <div className="font-semibold ">
-                              Registered LGA:
-                            </div>
-                            <div className="font-semibold ">
-                              Vehicle Type:
-                            </div>
-                            <div className="font-semibold ">
-                              Plate Number:
-                            </div>
-
-                            <div className="font-semibold ">
-                              Vehicle Manufacture:
-                            </div>
-                            <div className="font-semibold ">
-                              Date Purchased:
-                            </div>
-                          </div>
-                          <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                            <div className="">{vehicleDetails?.registered_lga? vehicleDetails?.registered_lga : isNull }</div>
-
-                            <div className="">{vehicleDetails?.vehicle_type? vehicleDetails?.vehicle_type : isNull}</div>
-
-                            <div className="">{vehicleDetails?.plate_number ? vehicleDetails?.plate_number : isNull}</div>
-                            <div className="">{vehicleDetails?.manufacturer ? vehicleDetails?.manufacturer : isNull}</div>
-                            <div className="">{vehicleDetails?.date? vehicleDetails?.date : isNull}</div>
-
-                          </div>
-                        </div>
-                      </div> */}
-                  {/* END: Vehicle */}
-                </div>
-              </Tab.Panel>
 
               <Tab.Panel>
                 <div className="grid grid-cols-12 gap-6 text-slate-600">
-                  {/* BEGIN: Rider Details */}
-                  <div className="col-span-12 intro-y  ">
-                    <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                      <div className=" items-center mb-5">
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          registration fee:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          accreditation code:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          RFID Tag Number:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          vehicle type:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          Plate Number:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          vehicle registration number:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          vehicle identification number:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          road worthiness number:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          zone:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          park:
-                        </div>
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          route:
-                        </div>
+                  {/* BEGIN: Vehicle Details */}
+                  <DisplaySection
+                  title=""
+                  data={vehicleDetails || {}}
+                  keys={[
+                    { label: "Registration Fee", valueKey: "5000" },
+                    { label: "Accreditation Code ", valueKey: "tagNumber" },
+                    { label: "RFID Tag Number", valueKey: "rfid_tag" },
+                    { label: "Vehicle Type", valueKey: "vehicle_type" },
+                    { label: "Plate Number", valueKey: "plate_number" },
+                    { label: "Vehicle Registration Number", valueKey: "vrn" },
+                    { label: "Vehicle Identification Number", valueKey: "vin" },
+                    { label: "Road Worthiness Number", valueKey: "rwn" },
+                    { label: "Zone ", valueKey: "zone" },
+                    { label: "Park ", valueKey: "parkDesc" },
+                    { label: "Route ", valueKey: "routeDesc" },
 
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          Vehicle Color:
-                        </div>
+                    { label: "Vehicle Color ", valueKey: "vehicle_color" },
 
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          Manufacturer:
-                        </div>
+                    { label: "Vehicle Manufacture", valueKey: "manufacturer" },
+                    { label: "Date Purchased", valueKey: "date" },
+                  ]}
+                />
+                  {/* END: Vehicle Details */}
 
-                        <div className="font-semibold capitalize lg:mb-4 text-md">
-                          Year of Purchase:
-                        </div>
-                      </div>
-
-                      <div className=" items-center mb-5">
-                        <div className="ml-auto lg:mb-4">6,000</div>
-                        <div className="ml-auto lg:mb-4">
-                          {getDisplayValue(vehicleDetails?.tagNumber)}
-                        </div>
-
-                        <div className="ml-auto lg:mb-4 uppercase">
-                          {getDisplayValue(vehicleDetails?.rfid_tag)}
-                        </div>
-
-                        <div className="ml-auto lg:mb-4 capitalize">
-                          {getDisplayValue(vehicleDetails?.vehicle_type)}
-                        </div>
-
-                      
-
-                        <div className="ml-auto lg:mb-4 uppercase">
-                          {getDisplayValue(vehicleDetails?.plate_number)}
-                        </div>
-
-                        <div className="ml-auto lg:mb-4 uppercase">
-                          {getDisplayValue(vehicleDetails?.vrn)}
-                        </div>
-                        <div className="ml-auto lg:mb-4 uppercase">
-                          {getDisplayValue(vehicleDetails?.vin)}
-                        </div>
-                        <div className="ml-auto lg:mb-4 uppercase">
-                          {getDisplayValue(vehicleDetails?.rwn)}
-                        </div>
-
-                        <div className="ml-auto lg:mb-4 uppercase">
-                          {getDisplayValue(vehicleDetails?.zone)}
-                        </div>
-                        <div className="ml-auto lg:mb-4">
-                          {getDisplayValue(vehicleDetails?.parkDesc)}
-                        </div>
-                        <div className="ml-auto lg:mb-4">
-                          {getDisplayValue(vehicleDetails?.routeDesc)}
-                        </div>
-                        <div className="ml-auto lg:mb-4 capitalize">
-                          {getDisplayValue(vehicleDetails?.vehicle_color)}
-                        </div>
-                        <div className="ml-auto lg:mb-4">
-                          {getDisplayValue(vehicleDetails?.manufacturer)}
-                        </div>
-                        <div className="ml-auto lg:mb-4">
-                          {getDisplayValue(vehicleDetails?.date)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* END: Rider Details */}
-
-                  {/* BEGIN: Next of Kin  */}
+                  {/* BEGIN: Vehicle attachment */}
                   <div className="col-span-12 intro-y box text-base ">
                     <div className="flex items-center py-4">
                       <h3 className="intro-y box  font-semibold mr-4 text-sm">
@@ -1042,35 +925,6 @@ export default function ProfileDetails() {
                       </h3>
                       <hr className="flex-grow border-t border-slate-200/" />
                     </div>
-                    {/* <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400">
-                          <div className=" items-center mb-5 text-sm">
-                            <div className="font-semibold ">First Name:</div>
-                            <div className="font-semibold ">Last Name:</div>
-                            <div className="font-semibold ">Relationship:</div>
-                            <div className="font-semibold ">Phone Number:</div>
-
-                            <div className="font-semibold ">Home Address</div>
-                          </div>
-                          <div className=" items-center mb-5">
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.first_name}
-                            </div>
-
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.last_name}
-                            </div>
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.relationship}
-                            </div>
-
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.phone}
-                            </div>
-                            <div className="ml-auto">
-                              {rider?.next_of_kin?.home_address}
-                            </div>
-                          </div>
-                        </div> */}
 
                     <div className="flex justify-start items-center gap-x-6">
                       <div className="border rounded-md flex-none w-24 h-24 sm:w-24 sm:h-24 lg:w-32 lg:h-32 image-fit">
@@ -1108,126 +962,49 @@ export default function ProfileDetails() {
 
               {/* Owner Tab */}
               <Tab.Panel>
-                {/* <div className="grid grid-cols-12  text-slate-600">
-          
 
-                  <div className="col-span-12 intro-y text-base ">
-                 
-                    <div className=" flex justify-start items-center py-5 gap-x-6  border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                      <div className=" mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                      <div className="font-semibold ">Owner Category:</div>
-                      <div className="font-semibold ">Owner's Image:</div>
-
-                        <div className="font-semibold ">First Name:</div>
-                        <div className="font-semibold ">Middle Name:</div>
-
-                        <div className="font-semibold ">Gender:</div>
-                        <div className="font-semibold ">Marital Status:</div>
-
-                        <div className="font-semibold ">Last Name:</div>
-                        <div className="font-semibold ">Phone Number:</div>
-
-                        <div className="font-semibold ">Home Address</div>
-                      </div>
-                      <div className="  mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                      <div className="capitalize">
-                        {owner?.owner_category.toLowerCase().replace(/\s+/g, '_')} 
-                        </div>
-                  
-                        <div className="">{owner?.profilePicture}
-                        <span className="ml-1 text-customColor cursor-pointer">view image</span>
-                        </div>
-
-
-                        <div className="">{owner?.first_name}</div>
-
-                        <div className="capitalize">{owner?.middle_name}</div>
-                        <div className="capitalize">{owner?.last_name}</div>
-                        <div className="capitalize">{owner?.gender === 'm'? 'male' : 'female'}</div>
-
-                        <div className="capitalize">{owner?.marital_status}</div>
-
-
-                        <div className="">{owner?.phone}</div>
-                        <div className="">{owner?.home_address}</div>
-                      </div>
-                    </div>
-                  </div>
-                 
-                </div> */}
                 <div className="grid grid-cols-12 text-slate-600">
-                  <div className="col-span-12 intro-y text-base">
-                    <div className="flex justify-start items-center py-5 gap-x-6 border-b sm:py-3 border-slate-200/60 dark:border-darkmode-400 text-sm">
-                      <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                        <div className="font-semibold">Owner Category:</div>
-                        <div className="font-semibold">Owner's Image:</div>
-                        <div className="font-semibold">First Name:</div>
-                        <div className="font-semibold">Middle Name:</div>
-                        <div className="font-semibold">Gender:</div>
-                        <div className="font-semibold">Marital Status:</div>
-                        <div className="font-semibold">Last Name:</div>
-                        <div className="font-semibold">Phone Number:</div>
-                        <div className="font-semibold">Home Address:</div>
-                      </div>
-                      <div className="mb-5 flex flex-col no-wrap items-start justify-start space-y-2">
-                        <div className="capitalize">
-                          {owner?.owner_category
-                            ?.toLowerCase()
-                            .replace(/\s+/g, "_")}
-                        </div>
-                        <div>
-                          {owner?.profilePicture ? (
-                            <>
-                              {owner?.profilePicture}
-                              <span
-                                className="ml-1 text-customColor cursor-pointer"
-                                onClick={toggleModal}
-                              >
-                                View Image
-                              </span>
-                              {/* Modal */}
-                              {isModalOpen && (
-                                <>
-                                  {/* <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                      <div className="bg-white p-4 rounded shadow-lg relative">
-                           <button
-                          className="absolute top-2 right-2 text-black text-lg"
-                          onClick={toggleModal}
-                        >
-                          &times;
-                        </button>
-                        <img
-                          src={owner?.profile_picture_base64}
-                          alt="Owner"
-                          className="max-w-full max-h-full"
-                        />
-                      </div>
-                    </div> */}
-                                </>
-                              )}
-                            </>
-                          ) : (
-                            "No Image Available"
-                          )}
-                        </div>
-                        <div>{getDisplayValue(owner?.first_name)}</div>
-                        <div className="capitalize">
-                          {getDisplayValue(owner?.middle_name)}
-                        </div>
-                        <div className="capitalize">
-                          {getDisplayValue(owner?.last_name)}
-                        </div>
-                        <div className="capitalize">
-                          {owner?.gender === "m" ? "male" : "female"}
-                        </div>
-                        <div className="capitalize">
-                          {getDisplayValue(owner?.marital_status)}
-                        </div>
-                        <div>{getDisplayValue(owner?.phone)}</div>
-                        <div>{getDisplayValue(owner?.home_address)}</div>
-                      </div>
-                    </div>
-                  </div>
+
+
+
+<DisplaySection
+  title=""
+  data={owner || {}}
+  keys={[
+    { label: "Owner Category", valueKey: "owner_category" },
+    {
+      label: "Owner's Image",
+      valueKey: "profilePicture",
+      render: (value) =>
+        value ? (
+          <>
+            {value}
+            <span
+              className="ml-1 text-customColor cursor-pointer"
+              onClick={toggleModal}
+            >
+              View Image
+            </span>
+          </>
+        ) : (
+          "No Image Available"
+        ),
+    },
+    { label: "First Name", valueKey: "first_name" },
+    { label: "Middle Name", valueKey: "middle_name" },
+    { label: "Last Name", valueKey: "last_name" },
+    {
+      label: "Gender",
+      valueKey: "gender",
+      render: (value) => (value === "m" ? "Male" : "Female"),
+    },
+    { label: "Marital Status", valueKey: "marital_status" },
+    { label: "Phone Number", valueKey: "phone" },
+    { label: "Home Address", valueKey: "home_address" },
+  ]}
+/>
+
+
                 </div>
               </Tab.Panel>
 
