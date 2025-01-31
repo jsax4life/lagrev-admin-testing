@@ -37,6 +37,30 @@ type UserRoleKey =
   | "attachment_officer"
   | "operation_officer";
 
+
+  interface Activity {
+    id: any;
+    user_id: number;
+    user_role: UserRoleKey;
+    vehicle_id: number;
+    action: string;
+    type: string;
+    details: string | null;
+    created_at: string;
+    user: {
+      id: any;
+      name: string;
+      email: string;
+      phone: string;
+      role: string;
+      lga: string;
+    };
+  }
+
+  interface ActivityLogProps {
+  logs: Activity[];
+}
+
 interface ActivityItem {
   user_role: UserRoleKey;
   // other fields...
@@ -184,9 +208,9 @@ export default function ProfileDetails() {
 
   // const user_activity_logs: any[] =[];
 
+  console.log(user_activity_logs);
   console.log(`rider: ${rider}`);
 
-  const isNull = "Unavailable";
 
   const fetchVehicleData = () => {
     setError("");
@@ -212,6 +236,7 @@ export default function ProfileDetails() {
       user?.token && user.token
     );
   };
+
 
   const fetchRiderSurveyResponseData = () => {
     setError("");
@@ -240,63 +265,7 @@ export default function ProfileDetails() {
 
   console.log(surveyResponse)
 
-  // Function to handle download
-  // const handleRiderDownload = () => {
-  //   if (driverTagRef.current) {
-  //     htmlToImage
-  //       .toPng(driverTagRef.current)
-  //       .then(function (dataUrl) {
-  //         const link = document.createElement("a");
-  //         link.href = dataUrl;
-  //         link.download = `${rider?.first_name}_Driver_Tag.png`;
-  //         link.click();
-  //       })
-  //       .catch(function (error) {
-  //         console.error("Oops, something went wrong!", error);
-  //       });
-  //   }
-  // };
-
-  // const handleRiderDownload = () => {
-  //   console.log('Download button clicked'); // Log when the button is clicked
-
-  //   if (driverTagRef.current) {
-  //     console.log('driverTagRef is not null'); // Log if the ref is valid
-
-  //     const images = driverTagRef.current.getElementsByTagName("img");
-  //     const promises = Array.from(images).map((img) => {
-  //       return new Promise((resolve, reject) => {
-  //         img.onload = resolve;
-  //         img.onerror = reject;
-  //       });
-  //     });
-
-  //     Promise.all(promises)
-  //       .then(() => {
-  //         console.log('All images loaded successfully'); // Log when images are loaded
-
-  //         if (driverTagRef.current) {
-  //           console.log('Starting htmlToImage.toPng conversion'); // Log before conversion
-  //           return htmlToImage.toPng(driverTagRef.current);
-  //         } else {
-  //           throw new Error("Driver tag reference is null");
-  //         }
-  //       })
-  //       .then((dataUrl) => {
-  //         console.log('Conversion successful, preparing to download'); // Log if conversion is successful
-
-  //         const link = document.createElement("a");
-  //         link.href = dataUrl;
-  //         link.download = `${rider?.first_name}_Driver_Tag.png`;
-  //         link.click();
-  //       })
-  //       .catch((error) => {
-  //         console.error("Oops, something went wrong!", error); // Log if there's an error
-  //       });
-  //   } else {
-  //     console.error("Driver tag reference is null"); // Log if ref is null
-  //   }
-  // };
+ 
 
   // console.log(vehicleDetails)
 
@@ -324,6 +293,31 @@ export default function ProfileDetails() {
       console.error("Driver tag reference is null"); // Log if ref is null
     }
   };
+
+
+  // Function to parse and display activity details
+const renderDetails = (details: string) => {
+  try {
+    const parsedDetails = JSON.parse(details);
+
+    return Object.keys(parsedDetails).map((section) => (
+      <div key={section} className="mb-2">
+        <strong className="text-blue-600">{section.toUpperCase()}</strong>
+        <ul className="ml-4 list-disc text-sm">
+          {Object.entries(parsedDetails[section]).map(([field, values]) => (
+            <li key={field}>
+              <span className="font-medium">{field}:</span>{" "}
+              <span className="text-red-500 line-through">{(values as any).old}</span> →
+              <span className="text-green-600"> {(values as any).new}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ));
+  } catch (error) {
+    return <p className="text-red-500">Error parsing details.</p>;
+  }
+};
 
   // Function to handle preview
   const handleRiderPreview = () => {
@@ -1234,7 +1228,7 @@ export default function ProfileDetails() {
                     {/* <div className="flex mb-4 items-center">   <Lucide icon="ArrowUp" className="h-5 w-5 text-green-600"  /> <p className="text-xs text-slate-500">15% this month</p> </div> */}
                     <ul role="list" className="-mb-8">
                       {user_activity_logs?.map(
-                        (activityItem: any, activityItemIdx: number) => (
+                        (activityItem: Activity, activityItemIdx: number) => (
                           <li key={activityItem.id}>
                             <div className="relative pb-8">
                               {activityItemIdx !==
@@ -1294,6 +1288,15 @@ export default function ProfileDetails() {
                                           {activityItem.user.lga}
                                         </span>
                                       </div>
+
+                                    {/* If details exist, parse and display */}
+            {activityItem.details && (
+              <div className="mt-2 p-2 border-l-4 border-customColor/40 bg-gray-50 rounded">
+                <strong className="block mb-1">Changes:</strong>
+                {renderDetails(activityItem.details)}
+              </div>
+            )}
+
                                     </div>
                                   </div>
                                 </>
