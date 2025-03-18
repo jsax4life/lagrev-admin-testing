@@ -550,7 +550,7 @@ export default function AddNewUser() {
 
                       <div className="">{formData?.state}</div>
                       <div className="">{formData?.lga}</div>
-                      <div className="">{formData?.zone}</div>
+                      {/* <div className="">{formData?.zone}</div> */}
 
                     </div>
                   </div>
