@@ -227,7 +227,25 @@ export default function AddNewUser() {
                   
 
                   <div className="py-5 ">
+
                     <div className="grid grid-cols-12 gap-x-5">
+                    <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                            <FormLabel htmlFor="name">
+                            Full Name 
+                          </FormLabel>
+                          <FormInput
+                            id="name"
+                            type="text"
+                            placeholder="Full Name"
+                            {...register("name")}
+                            //   value={rider?.name}
+                          />
+                          {errors.name && (
+                            <p className="text-red-500">
+                              {errors?.name?.message?.toString()}
+                            </p>
+                          )}
+                        </div>
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div className="mt-3">
                           <FormLabel htmlFor="state">
@@ -282,7 +300,7 @@ export default function AddNewUser() {
                           )}
                         </div>
                       </div>
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                      {/* <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div className="mt-3">
                           <FormLabel htmlFor="zone">
                             Park/Zone
@@ -308,7 +326,9 @@ export default function AddNewUser() {
                         </div>
 
                       
-                      </div>
+                      </div> */}
+
+
                     </div>
                   </div>
                 </div>
@@ -320,24 +340,7 @@ export default function AddNewUser() {
                   <div className="py-5">
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div>
-                          <FormLabel htmlFor="name">
-                            Full Name 
-                          </FormLabel>
-                          <FormInput
-                            id="name"
-                            type="text"
-                            placeholder="Full Name"
-                            {...register("name")}
-                            //   value={rider?.name}
-                          />
-                          {errors.name && (
-                            <p className="text-red-500">
-                              {errors?.name?.message?.toString()}
-                            </p>
-                          )}
-                        </div>
-
+                   
                         <div className="mt-3">
                           <FormLabel htmlFor="update-profile-form-8">
                             Gender

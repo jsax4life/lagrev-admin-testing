@@ -547,7 +547,7 @@ const [dailyReveneModal, setDailyReveneModal] = useState(false);
 //   };
   
 const revenueBreakdown = ({ numberOfRegistrations }: { numberOfRegistrations: number }) => {
-  const companySharePerVehicle = 4000;
+  const companySharePerVehicle = 3000;
   const motSharePerVehicle = 2000;
 
   // Check if numberOfRegistrations is valid
@@ -1144,7 +1144,7 @@ const revenueBreakdown = ({ numberOfRegistrations }: { numberOfRegistrations: nu
                     </div>
                   ) : (
                     `N ${formatCurrency(
-                      dashboardData?.daily_registered_vehicles * 6000
+                      dashboardData?.daily_registered_vehicles * 5000
                       )}`
                   )}
                 </div>
@@ -1172,7 +1172,7 @@ const revenueBreakdown = ({ numberOfRegistrations }: { numberOfRegistrations: nu
                     </div>
                   ) : (
                     `N ${formatCurrency(
-                      dashboardData?.total_registered_vehicles * 6000
+                      dashboardData?.total_registered_vehicles * 5000
                     )}`
                   )}
                 </div>

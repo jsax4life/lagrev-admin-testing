@@ -501,19 +501,19 @@ const renderDetails = (details: string) => {
                   <div className="p-1   w-1/2 bg-slate-100">
                   <div className="  col-span-12 flex flex-col box items-center justify-start px-6  py-2 space-y-2 ">
                     <h3 className="uppercase text-red-600 font-bold text-md ">
-                      lekki - epe route
+                      all routes
                     </h3>
                     <div>
                       <img alt="logo" className=" w-20 h-20" src={logoBig} />
                     </div>
                     <h3 className="uppercase  font-bold text-lg ">
-                      {vehicleDetails?.plate_number}
+                      {vehicleDetails?.tagNumber}
                     </h3>
                     <div className="text-white uppercase bg-blue-500 w-full text-center px-8 text-2xl font-semibold">
                       {vehicleDetails?.plate_number}
                     </div>
 
-                    <p className="uppercase   text-xs">exp date dec 2024 </p>
+                    <p className="uppercase   text-xs">exp date dec 2025 </p>
                   </div>
                   </div>
                   
@@ -1139,7 +1139,7 @@ const renderDetails = (details: string) => {
                           <div ref={bodyTagRef} className="flex gap-x-4 w-full items-center bg-slate-100 p-4 justify-between leading-relaxed sm:w-72 text-slate-700 dark:text-slate-500 overflow-y-scroll" >
                             <div className=" flex flex-col box items-center justify-start px-4  py-2 space-y-2">
                               <h3 className="uppercase text-red-600 font-bold text-[8px] ">
-                                lekki - epe route
+                                all routes
                               </h3>
                               <div>
                                 <img
@@ -1149,7 +1149,7 @@ const renderDetails = (details: string) => {
                                 />
                               </div>
                               <h3 className="uppercase  font-bold text-[8px] ">
-                                {vehicleDetails?.plate_number}
+                                {vehicleDetails?.tagNumber}
                               </h3>
                               <div className="text-white uppercase bg-blue-500 w-full text-center px-8 text-xs">
                                 {vehicleDetails?.plate_number}
