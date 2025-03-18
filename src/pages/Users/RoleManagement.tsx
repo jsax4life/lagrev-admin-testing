@@ -140,7 +140,7 @@ const RolePrivilegesTable: React.FC = () => {
     fetchRolePrivileges();
   }, []); // Empty dependency array to ensure this runs only once on mount
 
-  // console.log(vehicleList)
+  // console.log(rolePrivileges)
 
 
 //   const transformPrivilegesForBackend = () => {
