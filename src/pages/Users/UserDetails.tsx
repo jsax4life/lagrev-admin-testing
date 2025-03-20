@@ -276,7 +276,7 @@ setMessage("")
               navigate(`/edit-user-profile/${id}`);
             }}
             
-            disabled = {active}
+            disabled = {!active}
             >Edit</Button>
 
                       <Button variant="secondary" className="mr-2 shadow-sm">

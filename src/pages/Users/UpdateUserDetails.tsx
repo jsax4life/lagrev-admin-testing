@@ -26,33 +26,7 @@ import Litepicker from "../../base-components/Litepicker";
 import Toastify from "toastify-js";
 import Notification from "../../base-components/Notification";
 
-interface VehicleDetails {
-  rider: {
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    age: number;
-    lga: string;
-    religion: string;
-    phone: string;
-    tribe: string;
-    parkzone: string;
-    gender: string;
-    home_address: string;
-  };
-  nok: {
-    first_name: string;
-    last_name: string;
-    phone: string;
-    relationship: string;
-  };
-  owner: {
-    first_name: string;
-    last_name: string;
-    phone: string;
-    address: string;
-  };
-}
+ 
 
 // Define the validation schema
 const validationSchema = yup.object().shape({
@@ -65,14 +39,19 @@ const validationSchema = yup.object().shape({
     .string()
     .required("Phone number is required")
     .matches(/^\d{11}$/, "Phone number must be exactly 11 digits"),
-  zone: yup.string().required("Zone is required"),
+  // zone: yup.string().required("Zone is required"),
   gender: yup.string().required("Gender is required"),
   address: yup.string().required("Address is required"),
   state: yup.string().required("State is required"),
   city: yup.string().required("City is required"),
   role: yup.string().required("role is required"),
-//   password: yup.string().min(6),
-
+  // password: yup.string().nullable().min(6, "Password must be at least 6 characters"),
+  password: yup
+    .string()
+    .transform((value) => (value === "" ? null : value)) // Convert empty string to null
+    .nullable()
+    .notRequired()
+    .min(6, "Password must be at least 6 characters"),
   // date: yup.string().required('Vehicle Date is required'),
 });
 
@@ -140,11 +119,11 @@ const [userRole, setUserRole] = useState(userDetails?.role);
       setValue("lga", userDetails?.lga || "");
       setValue("gender", userDetails?.gender || "");
       setValue("email", userDetails?.email || "");
-      setValue("zone", userDetails?.zone || "");
+      // setValue("zone", userDetails?.zone || "");
       setValue("city", userDetails?.city || "");
       setValue("role", userDetails?.role || "");
       setValue("state", userDetails?.state || "");
-      setValue("zone", userDetails?.zone || "");
+      // setValue("zone", userDetails?.zone || "");
 
     }
   }, [userDetails, setValue]);
@@ -312,6 +291,28 @@ const [userRole, setUserRole] = useState(userDetails?.role);
 
                   <div className="py-5 ">
                     <div className="grid grid-cols-12 gap-x-5">
+                    
+                    <div className="col-span-12 md:col-span-6 lg:col-span-4">
+
+                    <div className="mt-3">
+                          <FormLabel htmlFor="name">
+                            Full Name 
+                          </FormLabel>
+                          <FormInput
+                            id="name"
+                            type="text"
+                            placeholder="Full Name"
+                            {...register("name")}
+                            //   value={rider?.name}
+                          />
+                          {errors.name && (
+                            <p className="text-red-500">
+                              {errors?.name?.message?.toString()}
+                            </p>
+                          )}
+                        </div>
+                        </div>
+                        
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div className="mt-3">
                           <FormLabel htmlFor="update-profile-form-8">
@@ -426,7 +427,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                           )}
                         </div>
                       </div>
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                      {/* <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div className="mt-3">
                           <FormLabel htmlFor="update-profile-form-8">
                             Park/Zone
@@ -447,7 +448,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                         </div>
 
                       
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -459,23 +460,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                   <div className="py-5">
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
-                        <div>
-                          <FormLabel htmlFor="name">
-                            Full Name 
-                          </FormLabel>
-                          <FormInput
-                            id="name"
-                            type="text"
-                            placeholder="Full Name"
-                            {...register("name")}
-                            //   value={rider?.name}
-                          />
-                          {errors.name && (
-                            <p className="text-red-500">
-                              {errors?.name?.message?.toString()}
-                            </p>
-                          )}
-                        </div>
+                   
 
                         <div className="mt-3">
                           <FormLabel htmlFor="update-profile-form-8">
@@ -568,7 +553,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
 
                   <div className="py-5">
                     <div className="grid grid-cols-12 gap-x-5">
-                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                      {/* <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div>
                           <FormLabel htmlFor="street">
                             Street
@@ -586,6 +571,26 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                             </p>
                           )}
                         </div>
+                      </div> */}
+                      <div className="col-span-12 md:col-span-6 lg:col-span-4">
+                      <div className="mt-3 lg:mt-0">
+                              <FormLabel htmlFor="address">
+                                Address
+                              </FormLabel>
+                              <textarea
+                                id="address"
+                                placeholder=" Address"
+                                {...register("address")}
+                                // value={rider?.next_of_kin?.address}
+                                rows={4}
+                                className="form-textarea w-full border-gray-300 rounded-lg"
+                              />
+                              {errors.address && (
+                                <p className="text-red-500">
+                                  {errors.address.message?.toString()}
+                                </p>
+                              )}
+                            </div>
                       </div>
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div className="mt-3 xl:mt-0">
@@ -615,7 +620,7 @@ const [userRole, setUserRole] = useState(userDetails?.role);
                     <div className="grid grid-cols-12 gap-x-5">
                       <div className="col-span-12 md:col-span-6 lg:col-span-4">
                         <div>
-                          <FormLabel htmlFor="street">
+                          <FormLabel htmlFor="password">
                             Password
                           </FormLabel>
                           <FormInput

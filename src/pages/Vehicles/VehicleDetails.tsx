@@ -1156,7 +1156,7 @@ const renderDetails = (details: string) => {
                               </div>
 
                               <p className="uppercase   text-[6px]">
-                                exp date dec 2024{" "}
+                                exp date dec 2025
                               </p>
                             </div>
 
