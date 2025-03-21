@@ -103,7 +103,7 @@ const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
 useEffect(() => {
   // Load recent searches from local storage when the component mounts
-  const storedRecentSearches = localStorage.getItem('recentSearches');
+  const storedRecentSearches = localStorage.getItem('userRecentSearches');
   if (storedRecentSearches) {
     setRecentSearches(JSON.parse(storedRecentSearches));
   }
@@ -330,7 +330,7 @@ const updateRecentSearches = (newSearch: string) => {
   setRecentSearches(updatedSearches);
 
   // Save updated recent searches to local storage
-  localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+  localStorage.setItem('userRecentSearches', JSON.stringify(updatedSearches));
 };
 
 
