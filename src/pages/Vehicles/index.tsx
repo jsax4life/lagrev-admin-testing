@@ -77,6 +77,12 @@ export default function Main() {
   const [openModal, setOpenModal] = useState(false);
 
   const [vehicleList, setVehicleList] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+  last_page: 1, // Total pages
+  per_page: 10,
+  total: 0,
+  });
 
   const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
   const deleteButtonRef = useRef(null);
@@ -127,12 +133,13 @@ export default function Main() {
       return;
     }
 
-    fetchDashboardData();
+    fetchDashboardData(pagination.current_page);
   }, [dateRange, selectedLGA, selectedPark, selectedUser]);
 
   useEffect(() => {
     if (user?.token) {
-      fetchDashboardData();
+      fetchDashboardData(pagination.current_page);
+      
     }
   }, [user?.token]);
 
@@ -144,7 +151,7 @@ export default function Main() {
     }
   }, []);
 
-  const fetchDashboardData = () => {
+  const fetchDashboardData = (page = 1, perPage = pagination.per_page) => {
     const [startDate, endDate] = dateRange?.split(" - ") || [null, null];
 
     setError("");
@@ -158,6 +165,8 @@ export default function Main() {
     }
     if (selectedUser) params.user = selectedUser;
     if (selectedPark) params.park = selectedPark;
+    params.page = page;
+    params.per_page = perPage;
 
     API(
       "get",
@@ -165,7 +174,15 @@ export default function Main() {
       params,
       // {lga: 'Alimosho'},
       function (vehicleListData: any) {
-        setVehicleList(vehicleListData.registered_vehicles);
+        console.log(vehicleListData);
+        setVehicleList(vehicleListData?.data);
+        setPagination({
+          current_page: vehicleListData.current_page,
+          last_page: vehicleListData.last_page,
+          
+          per_page: vehicleListData.per_page,
+          total: vehicleListData.total
+        });
         setLoading(false);
       },
       function (error: any) {
@@ -176,6 +193,9 @@ export default function Main() {
     );
   };
 
+  const handlePageChange = (page: number) => {
+    fetchDashboardData(page);
+};
   // Function to handle removing filters
   const handleRemoveFilter = (filter: string) => {
     if (filter === "LGA") {
@@ -304,7 +324,7 @@ export default function Main() {
   const hideSearchDropdown = () => {
     setSearchDropdown(false);
   };
-
+console.log(pagination)
   return (
     <>
       <FilterModal
@@ -866,32 +886,33 @@ export default function Main() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center col-span-12 intro-y sm:flex-row sm:flex-nowrap">
               {/* Pagination component */}
-              <Pagination className="w-full sm:w-auto sm:mr-auto">
-                <Pagination.Link>
-                  <Lucide icon="ChevronsLeft" className="w-4 h-4" />
-                </Pagination.Link>
-                <Pagination.Link>
-                  <Lucide icon="ChevronLeft" className="w-4 h-4" />
-                </Pagination.Link>
-                <Pagination.Link>...</Pagination.Link>
-                <Pagination.Link>1</Pagination.Link>
-                <Pagination.Link active>2</Pagination.Link>
-                <Pagination.Link>3</Pagination.Link>
-                <Pagination.Link>...</Pagination.Link>
-                <Pagination.Link>
-                  <Lucide icon="ChevronRight" className="w-4 h-4" />
-                </Pagination.Link>
-                <Pagination.Link>
-                  <Lucide icon="ChevronsRight" className="w-4 h-4" />
-                </Pagination.Link>
-              </Pagination>
-              <FormSelect className="w-20 mt-3 !box sm:mt-0">
+            
+              <Pagination
+  totalPages={pagination.last_page}  // Use last_page as total pages
+  currentPage={pagination.current_page}  // Track current page
+  onPageChange={(page) => {
+    setPagination((prev) => ({ ...prev, current_page: page }));
+    fetchDashboardData(page);  // Call API to fetch new page data
+  }}
+/>
+
+<div className="border-customColor rounded-lg border-2 ">
+              <FormSelect
+               value={pagination.per_page}
+               onChange={(e) => fetchDashboardData(1, parseInt(e.target.value))}
+              //  className="ml-4 px-2 py-1 border rounded"
+              className="w-20 mt-3 !box sm:mt-0 text-customColor dark:border-darkmode-400" 
+              >
                 <option>10</option>
                 <option>25</option>
                 <option>35</option>
                 <option>50</option>
               </FormSelect>
-            </div>
+
+              </div>
+
+
+                      </div>
 
             {/* Delete Confirmation Modal */}
             <Dialog

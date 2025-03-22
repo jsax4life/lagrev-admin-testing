@@ -733,7 +733,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
           {/* Pagination */}
           <div className="flex flex-wrap items-center col-span-12 intro-y sm:flex-row sm:flex-nowrap">
             {/* Pagination component */}
-            <Pagination className="w-full sm:w-auto sm:mr-auto">
+            {/* <Pagination className="w-full sm:w-auto sm:mr-auto">
             <Pagination.Link>
               <Lucide icon="ChevronsLeft" className="w-4 h-4" />
             </Pagination.Link>
@@ -751,7 +751,7 @@ onClick={() => { setOpenModal(true); setActiveFilter("LGA"); }}
             <Pagination.Link>
               <Lucide icon="ChevronsRight" className="w-4 h-4" />
             </Pagination.Link>
-          </Pagination>
+          </Pagination> */}
           <FormSelect className="w-20 mt-3 !box sm:mt-0">
             <option>10</option>
             <option>25</option>
